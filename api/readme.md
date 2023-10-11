@@ -4,6 +4,13 @@
 make install
 ```
 
+If make isn't working on your computer, launch : 
+
+```shell
+sh install.sh
+```
+For windows, use wsl or copy command line for install.sh
+
 ### Show all commands
 
 ```shell
