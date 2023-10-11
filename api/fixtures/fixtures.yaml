@@ -1,0 +1,3 @@
+App\Entity\Auth\User:
+  user_{1..50}:
+    email: '<email()>'

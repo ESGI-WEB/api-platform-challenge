@@ -1,102 +1,77 @@
-#syntax=docker/dockerfile:1.4
+#<<<<<<<<<<Start: PHP-FPM Image Target>>>>>>>>>>#
+FROM php:8.2-fpm-alpine as php
 
-# Adapted from https://github.com/dunglas/symfony-docker
+RUN apk update
+RUN apk add curl
 
+# Installing and enabling required PHP extension
 
-# Versions
-# hadolint ignore=DL3007
-FROM dunglas/frankenphp:latest-alpine AS frankenphp_upstream
-FROM composer/composer:2-bin AS composer_upstream
+# amqp
+RUN apk --no-cache add pcre-dev ${PHPIZE_DEPS} && \
+    apk add rabbitmq-c-dev \
+    && pecl install amqp \
+    && docker-php-ext-enable amqp
 
+# yaml
+RUN apk add --update yaml-dev \
+    && apk add --no-cache --virtual .build-deps g++ make autoconf \
+    && pecl channel-update pecl.php.net \
+    && pecl install yaml && docker-php-ext-enable yaml
 
-# The different stages of this Dockerfile are meant to be built into separate images
-# https://docs.docker.com/develop/develop-images/multistage-build/#stop-at-a-specific-build-stage
-# https://docs.docker.com/compose/compose-file/#target
+# pgsql
+# pgsql
+RUN apk add libpq-dev && \
+    docker-php-ext-install pdo pdo_pgsql && \
+    docker-php-ext-enable pdo_pgsql
 
+# zip
+RUN apk add libzip-dev && apk add zip && \
+    docker-php-ext-install zip
 
-# Base FrankenPHP image
-FROM frankenphp_upstream AS frankenphp_base
+# Installing Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-WORKDIR /app
+RUN mkdir /srv/app/
 
-# persistent / runtime deps
-# hadolint ignore=DL3018
-RUN apk add --no-cache \
-		acl \
-		file \
-		gettext \
-		git \
-	;
+RUN apk upgrade --update \
+    && apk add -U tzdata \
+    && cp /usr/share/zoneinfo/Europe/Paris /etc/localtime \
+    && apk del tzdata \
+    && rm -rf \
+    /var/cache/apk/*
 
-RUN set -eux; \
-    install-php-extensions \
-		apcu \
-		intl \
-		opcache \
-		zip \
-    ;
+COPY .docker/php/conf.d/custom.ini /usr/local/etc/php/conf.d/custom.ini
 
-###> recipes ###
-###> doctrine/doctrine-bundle ###
-RUN set -eux; \
-    install-php-extensions pdo_pgsql
-###< doctrine/doctrine-bundle ###
-###< recipes ###
+WORKDIR /srv/app/
 
-COPY --link frankenphp/conf.d/app.ini $PHP_INI_DIR/conf.d/
-COPY --link --chmod=755 frankenphp/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
-COPY --link frankenphp/Caddyfile /etc/caddy/Caddyfile
+#USER prod
 
-ENTRYPOINT ["docker-entrypoint"]
+COPY composer.json ./composer.lock* /srv/app/
+COPY symfony.lock /srv/app/
 
-# https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
-ENV COMPOSER_ALLOW_SUPERUSER=1
-ENV PATH="${PATH}:/root/.composer/vendor/bin"
+RUN composer install --no-dev --no-scripts
 
-COPY --from=composer_upstream --link /composer /usr/bin/composer
+COPY .. /srv/app/
 
-HEALTHCHECK --start-period=60s CMD curl -f http://localhost:2019/metrics || exit 1
-CMD [ "frankenphp", "run", "--config", "/etc/caddy/Caddyfile" ]
+RUN APP_ENV=prod composer run auto-scripts
 
-# Dev FrankenPHP image
-FROM frankenphp_base AS frankenphp_dev
+#<<<<<<<<<<End: PHP-FPM Image Target>>>>>>>>>>#
 
-ENV APP_ENV=dev XDEBUG_MODE=off
+#<<<<<<<<<<Start: PHP-FPM Image For the Dev Environment Target>>>>>>>>>>#
+FROM php as php_dev
 
-RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
+# xdebug
+RUN apk add --update linux-headers
+RUN apk --no-cache add pcre-dev ${PHPIZE_DEPS} && \
+    pecl install xdebug && \
+    docker-php-ext-enable xdebug
 
-RUN set -eux; \
-	install-php-extensions \
-    	xdebug \
-    ;
+#<<<<<<<<<<End: PHP-FPM Image For the Dev Environment Target>>>>>>>>>>#
 
-COPY --link frankenphp/conf.d/app.dev.ini $PHP_INI_DIR/conf.d/
+#<<<<<<<<<<Start: Server Image Target>>>>>>>>>>#
+FROM httpd:2 as server
 
-CMD [ "frankenphp", "run", "--config", "/etc/caddy/Caddyfile", "--watch" ]
+COPY .docker/httpd/httpd.conf /usr/local/apache2/conf/httpd.conf
 
-# Prod FrankenPHP image
-FROM frankenphp_base AS frankenphp_prod
-
-ENV APP_ENV=prod
-ENV FRANKENPHP_CONFIG="import worker.Caddyfile"
-
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-
-COPY --link frankenphp/conf.d/app.prod.ini $PHP_INI_DIR/conf.d/
-COPY --link frankenphp/worker.Caddyfile /etc/caddy/worker.Caddyfile
-
-# prevent the reinstallation of vendors at every changes in the source code
-COPY --link composer.* symfony.* ./
-RUN set -eux; \
-	composer install --no-cache --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress
-
-# copy sources
-COPY --link . ./
-RUN rm -Rf frankenphp/
-
-RUN set -eux; \
-	mkdir -p var/cache var/log; \
-	composer dump-autoload --classmap-authoritative --no-dev; \
-	composer dump-env prod; \
-	composer run-script --no-dev post-install-cmd; \
-	chmod +x bin/console; sync;
+COPY --from=php /srv/app/public /srv/app/public
+#<<<<<<<<<<End: Server Image Target>>>>>>>>>>#
