@@ -5,7 +5,7 @@ security:
     providers:
         user_provider:
             entity:
-                class: App\Entity\Auth\User
+                class: App\Entity\User
                 property: email
 
     password_hashers:
