@@ -11,6 +11,10 @@ sh install.sh
 ```
 For windows, use wsl or copy command line for install.sh
 
+### Links
+
+doc : http://localhost:8888/api/docs
+
 ### Show all commands
 
 ```shell
@@ -55,4 +59,10 @@ If make is not enabled :
 > bin/console doctrine:database:create --if-not-exists
 > bin/console doctrine:migrations:migrate -n
 > bin/console hautelook:fixture:load -n
+```
+
+# create entity
+
+```shell
+  php bin/console make:entity
 ```

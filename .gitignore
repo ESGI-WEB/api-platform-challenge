@@ -1,0 +1,10 @@
+.no-docker
+Makefile.local.mk
+.idea
+
+### macOS ###
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+*.icloud
