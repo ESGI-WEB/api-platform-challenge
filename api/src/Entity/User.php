@@ -72,36 +72,41 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private DateTimeImmutable $createdAt;
 
-    #[ORM\ManyToMany(targetEntity: Organisation::class, mappedBy: 'creator')]
-    private Collection $organisations;
-
-    #[ORM\Column(length: 255)]
-    private ?string $username = null;
-
+    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE->value])]
     #[ORM\Column(length: 255)]
     private ?string $firstname = null;
 
+    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE->value])]
     #[ORM\Column(length: 255)]
     private ?string $lastname = null;
 
+    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE_ADMIN->value])]
     #[ORM\Column]
     private ?bool $providerValidated = null;
 
-    #[ORM\OneToOne(mappedBy: 'user_id', cascade: ['persist', 'remove'])]
-    private ?Schedule $schedule = null;
+    #[ORM\OneToMany(mappedBy: 'provider', targetEntity: Schedule::class, orphanRemoval: true)]
+    private Collection $schedules;
 
-    #[ORM\OneToMany(mappedBy: 'user_id', targetEntity: Holiday::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'provider', targetEntity: Holiday::class, orphanRemoval: true)]
     private Collection $holidays;
 
-    #[ORM\OneToMany(mappedBy: 'client_id', targetEntity: Appointment::class, orphanRemoval: true)]
-    private Collection $appointments;
+    #[ORM\ManyToMany(targetEntity: Organisation::class, mappedBy: 'users')]
+    private Collection $organisations;
+
+    #[ORM\OneToMany(mappedBy: 'client', targetEntity: Appointment::class, orphanRemoval: true)]
+    private Collection $clientAppointments;
+
+    #[ORM\OneToMany(mappedBy: 'provider', targetEntity: Appointment::class, orphanRemoval: true)]
+    private Collection $providerAppointments;
 
     public function __construct()
     {
         $this->createdAt = new DateTimeImmutable();
-        $this->organisations = new ArrayCollection();
+        $this->schedules = new ArrayCollection();
         $this->holidays = new ArrayCollection();
-        $this->appointments = new ArrayCollection();
+        $this->organisations = new ArrayCollection();
+        $this->clientAppointments = new ArrayCollection();
+        $this->providerAppointments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -176,45 +181,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->createdAt = $createdAt;
     }
 
-    /**
-     * @return Collection<int, Organisation>
-     */
-    public function getOrganisations(): Collection
-    {
-        return $this->organisations;
-    }
-
-    public function addOrganisation(Organisation $organisation): static
-    {
-        if (!$this->organisations->contains($organisation)) {
-            $this->organisations->add($organisation);
-            $organisation->addCreator($this);
-        }
-
-        return $this;
-    }
-
-    public function removeOrganisation(Organisation $organisation): static
-    {
-        if ($this->organisations->removeElement($organisation)) {
-            $organisation->removeCreator($this);
-        }
-
-        return $this;
-    }
-
-    public function getUsername(): ?string
-    {
-        return $this->username;
-    }
-
-    public function setUsername(string $username): static
-    {
-        $this->username = $username;
-
-        return $this;
-    }
-
     public function getFirstname(): ?string
     {
         return $this->firstname;
@@ -251,19 +217,32 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getSchedule(): ?Schedule
+    /**
+     * @return Collection<int, Schedule>
+     */
+    public function getSchedules(): Collection
     {
-        return $this->schedule;
+        return $this->schedules;
     }
 
-    public function setSchedule(Schedule $schedule): static
+    public function addSchedule(Schedule $schedule): static
     {
-        // set the owning side of the relation if necessary
-        if ($schedule->getUserId() !== $this) {
-            $schedule->setUserId($this);
+        if (!$this->schedules->contains($schedule)) {
+            $this->schedules->add($schedule);
+            $schedule->setProvider($this);
         }
 
-        $this->schedule = $schedule;
+        return $this;
+    }
+
+    public function removeSchedule(Schedule $schedule): static
+    {
+        if ($this->schedules->removeElement($schedule)) {
+            // set the owning side to null (unless already changed)
+            if ($schedule->getProvider() === $this) {
+                $schedule->setProvider(null);
+            }
+        }
 
         return $this;
     }
@@ -280,7 +259,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->holidays->contains($holiday)) {
             $this->holidays->add($holiday);
-            $holiday->setUserId($this);
+            $holiday->setProvider($this);
         }
 
         return $this;
@@ -290,8 +269,65 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->holidays->removeElement($holiday)) {
             // set the owning side to null (unless already changed)
-            if ($holiday->getUserId() === $this) {
-                $holiday->setUserId(null);
+            if ($holiday->getProvider() === $this) {
+                $holiday->setProvider(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Organisation>
+     */
+    public function getOrganisations(): Collection
+    {
+        return $this->organisations;
+    }
+
+    public function addOrganisation(Organisation $organisation): static
+    {
+        if (!$this->organisations->contains($organisation)) {
+            $this->organisations->add($organisation);
+            $organisation->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrganisation(Organisation $organisation): static
+    {
+        if ($this->organisations->removeElement($organisation)) {
+            $organisation->removeUser($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Appointment>
+     */
+    public function getClientAppointments(): Collection
+    {
+        return $this->clientAppointments;
+    }
+
+    public function addClientAppointment(Appointment $clientAppointment): static
+    {
+        if (!$this->clientAppointments->contains($clientAppointment)) {
+            $this->clientAppointments->add($clientAppointment);
+            $clientAppointment->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeClientAppointment(Appointment $clientAppointment): static
+    {
+        if ($this->clientAppointments->removeElement($clientAppointment)) {
+            // set the owning side to null (unless already changed)
+            if ($clientAppointment->getClient() === $this) {
+                $clientAppointment->setClient(null);
             }
         }
 
@@ -301,27 +337,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, Appointment>
      */
-    public function getAppointments(): Collection
+    public function getProviderAppointments(): Collection
     {
-        return $this->appointments;
+        return $this->providerAppointments;
     }
 
-    public function addAppointment(Appointment $appointment): static
+    public function addProviderAppointment(Appointment $providerAppointment): static
     {
-        if (!$this->appointments->contains($appointment)) {
-            $this->appointments->add($appointment);
-            $appointment->setClientId($this);
+        if (!$this->providerAppointments->contains($providerAppointment)) {
+            $this->providerAppointments->add($providerAppointment);
+            $providerAppointment->setProvider($this);
         }
 
         return $this;
     }
 
-    public function removeAppointment(Appointment $appointment): static
+    public function removeProviderAppointment(Appointment $providerAppointment): static
     {
-        if ($this->appointments->removeElement($appointment)) {
+        if ($this->providerAppointments->removeElement($providerAppointment)) {
             // set the owning side to null (unless already changed)
-            if ($appointment->getClientId() === $this) {
-                $appointment->setClientId(null);
+            if ($providerAppointment->getProvider() === $this) {
+                $providerAppointment->setProvider(null);
             }
         }
 

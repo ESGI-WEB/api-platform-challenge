@@ -3,14 +3,47 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
+use App\Enum\AppointmentStatusEnum;
 use App\Repository\AppointmentRepository;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints\Choice;
 
+#[ApiResource(
+    operations: [
+        new GetCollection(), // TODO to secure
+    ],
+)]
+#[ApiResource(
+    uriTemplate: '/users/{id}/client_appointments',
+    operations: [
+        new GetCollection(), // TODO to secure
+    ],
+    uriVariables: [
+        'id' => new Link(
+            fromProperty: 'clientAppointments',
+            fromClass: User::class
+        ),
+    ],
+)]
+#[ApiResource(
+    uriTemplate: '/users/{id}/provider_appointments',
+    operations: [
+        new GetCollection(), // TODO to secure
+    ],
+    uriVariables: [
+        'id' => new Link(
+            fromProperty: 'providerAppointments',
+            fromClass: User::class
+        ),
+    ],
+)]
 #[ORM\Entity(repositoryClass: AppointmentRepository::class)]
-#[ApiResource]
 class Appointment
 {
     #[ORM\Id]
@@ -18,30 +51,35 @@ class Appointment
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'appointments')]
+    #[ORM\ManyToOne(inversedBy: 'clientAppointments')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $client_id = null;
+    private ?User $client = null;
+
+    #[ORM\ManyToOne(inversedBy: 'providerAppointments')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $provider = null;
 
     #[ORM\ManyToOne(inversedBy: 'appointments')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $provider_id = null;
-
-    #[ORM\ManyToOne(inversedBy: 'appointments')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Service $service_id = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $statut = null;
+    private ?Service $service = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $datetime = null;
 
-    #[ORM\OneToMany(mappedBy: 'appointment_id', targetEntity: Answer::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'appointment', targetEntity: Answer::class, orphanRemoval: true)]
     private Collection $answers;
+
+    #[ORM\Column]
+    private DateTimeImmutable $createdAt;
+
+    #[ORM\Column(length: 20, options: ['default' => AppointmentStatusEnum::valid])]
+    #[Choice(callback: [AppointmentStatusEnum::class, 'values'])]
+    private ?string $status = null;
 
     public function __construct()
     {
         $this->answers = new ArrayCollection();
+        $this->createdAt = new DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -49,50 +87,38 @@ class Appointment
         return $this->id;
     }
 
-    public function getClientId(): ?User
+    public function getClient(): ?User
     {
-        return $this->client_id;
+        return $this->client;
     }
 
-    public function setClientId(?User $client_id): static
+    public function setClient(?User $client): static
     {
-        $this->client_id = $client_id;
+        $this->client = $client;
 
         return $this;
     }
 
-    public function getProviderId(): ?User
+    public function getProvider(): ?User
     {
-        return $this->provider_id;
+        return $this->provider;
     }
 
-    public function setProviderId(?User $provider_id): static
+    public function setProvider(?User $provider): static
     {
-        $this->provider_id = $provider_id;
+        $this->provider = $provider;
 
         return $this;
     }
 
-    public function getServiceId(): ?Service
+    public function getService(): ?Service
     {
-        return $this->service_id;
+        return $this->service;
     }
 
-    public function setServiceId(?Service $service_id): static
+    public function setService(?Service $service): static
     {
-        $this->service_id = $service_id;
-
-        return $this;
-    }
-
-    public function getStatut(): ?string
-    {
-        return $this->statut;
-    }
-
-    public function setStatut(string $statut): static
-    {
-        $this->statut = $statut;
+        $this->service = $service;
 
         return $this;
     }
@@ -121,7 +147,7 @@ class Appointment
     {
         if (!$this->answers->contains($answer)) {
             $this->answers->add($answer);
-            $answer->setAppointmentId($this);
+            $answer->setAppointment($this);
         }
 
         return $this;
@@ -131,10 +157,32 @@ class Appointment
     {
         if ($this->answers->removeElement($answer)) {
             // set the owning side to null (unless already changed)
-            if ($answer->getAppointmentId() === $this) {
-                $answer->setAppointmentId(null);
+            if ($answer->getAppointment() === $this) {
+                $answer->setAppointment(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreatedAt(): DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(DateTimeImmutable $createdAt): void
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): static
+    {
+        $this->status = $status;
 
         return $this;
     }

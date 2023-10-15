@@ -3,12 +3,27 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
+use App\Enum\DaysEnum;
 use App\Repository\ScheduleRepository;
-use Doctrine\DBAL\Types\Types;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
+#[ApiResource(
+    uriTemplate: '/users/{id}/schedules',
+    operations: [
+        new GetCollection(), // TODO to secure
+    ],
+    uriVariables: [
+        'id' => new Link(
+            fromProperty: 'schedules',
+            fromClass: User::class
+        ),
+    ],
+)]
 #[ORM\Entity(repositoryClass: ScheduleRepository::class)]
-#[ApiResource]
 class Schedule
 {
     #[ORM\Id]
@@ -16,15 +31,24 @@ class Schedule
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 25)]
+    #[ORM\Column(length: 10)]
+    #[Assert\Choice(callback: [DaysEnum::class, 'values'])]
     private ?string $day = null;
 
-    #[ORM\Column(type: Types::ARRAY)]
+    #[ORM\Column]
     private array $hours = [];
 
-    #[ORM\OneToOne(inversedBy: 'schedule', cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(inversedBy: 'schedules')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $user_id = null;
+    private ?User $provider = null;
+
+    #[ORM\Column]
+    private DateTimeImmutable $createdAt;
+
+    public function __construct()
+    {
+        $this->createdAt = new DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -55,15 +79,25 @@ class Schedule
         return $this;
     }
 
-    public function getUserId(): ?User
+    public function getProvider(): ?User
     {
-        return $this->user_id;
+        return $this->provider;
     }
 
-    public function setUserId(User $user_id): static
+    public function setProvider(?User $provider): static
     {
-        $this->user_id = $user_id;
+        $this->provider = $provider;
 
         return $this;
+    }
+
+    public function getCreatedAt(): DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(DateTimeImmutable $createdAt): void
+    {
+        $this->createdAt = $createdAt;
     }
 }

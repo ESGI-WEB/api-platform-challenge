@@ -2,12 +2,15 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ServiceRepository;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+#[ApiResource]
 #[ORM\Entity(repositoryClass: ServiceRepository::class)]
 class Service
 {
@@ -26,16 +29,20 @@ class Service
     #[ORM\JoinColumn(nullable: false)]
     private ?Organisation $organisation = null;
 
-    #[ORM\OneToMany(mappedBy: 'service_id', targetEntity: Appointment::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'service', targetEntity: Feedback::class, orphanRemoval: true)]
+    private Collection $feedback;
+
+    #[ORM\OneToMany(mappedBy: 'service', targetEntity: Appointment::class, orphanRemoval: true)]
     private Collection $appointments;
 
-    #[ORM\OneToMany(mappedBy: 'service_id', targetEntity: Form::class, orphanRemoval: true)]
-    private Collection $forms;
+    #[ORM\Column]
+    private DateTimeImmutable $createdAt;
 
     public function __construct()
     {
+        $this->feedback = new ArrayCollection();
         $this->appointments = new ArrayCollection();
-        $this->forms = new ArrayCollection();
+        $this->createdAt = new DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -80,6 +87,36 @@ class Service
     }
 
     /**
+     * @return Collection<int, Feedback>
+     */
+    public function getFeedback(): Collection
+    {
+        return $this->feedback;
+    }
+
+    public function addFeedback(Feedback $feedback): static
+    {
+        if (!$this->feedback->contains($feedback)) {
+            $this->feedback->add($feedback);
+            $feedback->setService($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFeedback(Feedback $feedback): static
+    {
+        if ($this->feedback->removeElement($feedback)) {
+            // set the owning side to null (unless already changed)
+            if ($feedback->getService() === $this) {
+                $feedback->setService(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * @return Collection<int, Appointment>
      */
     public function getAppointments(): Collection
@@ -91,7 +128,7 @@ class Service
     {
         if (!$this->appointments->contains($appointment)) {
             $this->appointments->add($appointment);
-            $appointment->setServiceId($this);
+            $appointment->setService($this);
         }
 
         return $this;
@@ -101,41 +138,21 @@ class Service
     {
         if ($this->appointments->removeElement($appointment)) {
             // set the owning side to null (unless already changed)
-            if ($appointment->getServiceId() === $this) {
-                $appointment->setServiceId(null);
+            if ($appointment->getService() === $this) {
+                $appointment->setService(null);
             }
         }
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, Form>
-     */
-    public function getForms(): Collection
+    public function getCreatedAt(): DateTimeImmutable
     {
-        return $this->forms;
+        return $this->createdAt;
     }
 
-    public function addForm(Form $form): static
+    public function setCreatedAt(DateTimeImmutable $createdAt): void
     {
-        if (!$this->forms->contains($form)) {
-            $this->forms->add($form);
-            $form->setServiceId($this);
-        }
-
-        return $this;
-    }
-
-    public function removeForm(Form $form): static
-    {
-        if ($this->forms->removeElement($form)) {
-            // set the owning side to null (unless already changed)
-            if ($form->getServiceId() === $this) {
-                $form->setServiceId(null);
-            }
-        }
-
-        return $this;
+        $this->createdAt = $createdAt;
     }
 }

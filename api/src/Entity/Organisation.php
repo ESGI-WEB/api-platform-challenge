@@ -4,13 +4,14 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\OrganisationRepository;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+#[ApiResource] // TODO to secure
 #[ORM\Entity(repositoryClass: OrganisationRepository::class)]
-#[ApiResource]
 class Organisation
 {
     #[ORM\Id]
@@ -25,21 +26,25 @@ class Organisation
     private ?string $name = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 20, scale: 16)]
-    private ?string $longitude = null;
-
-    #[ORM\Column(type: Types::DECIMAL, precision: 20, scale: 16)]
     private ?string $latitude = null;
 
+    #[ORM\Column(type: Types::DECIMAL, precision: 20, scale: 16)]
+    private ?string $longitude = null;
+
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'organisations')]
-    private Collection $creator;
+    private Collection $users;
 
     #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: Service::class, orphanRemoval: true)]
     private Collection $services;
 
+    #[ORM\Column]
+    private DateTimeImmutable $createdAt;
+
     public function __construct()
     {
-        $this->creator = new ArrayCollection();
+        $this->users = new ArrayCollection();
         $this->services = new ArrayCollection();
+        $this->createdAt = new DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -71,18 +76,6 @@ class Organisation
         return $this;
     }
 
-    public function getLongitude(): ?string
-    {
-        return $this->longitude;
-    }
-
-    public function setLongitude(string $longitude): static
-    {
-        $this->longitude = $longitude;
-
-        return $this;
-    }
-
     public function getLatitude(): ?string
     {
         return $this->latitude;
@@ -95,26 +88,38 @@ class Organisation
         return $this;
     }
 
+    public function getLongitude(): ?string
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(string $longitude): static
+    {
+        $this->longitude = $longitude;
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, User>
      */
-    public function getCreator(): Collection
+    public function getUsers(): Collection
     {
-        return $this->creator;
+        return $this->users;
     }
 
-    public function addCreator(User $creator): static
+    public function addUser(User $user): static
     {
-        if (!$this->creator->contains($creator)) {
-            $this->creator->add($creator);
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
         }
 
         return $this;
     }
 
-    public function removeCreator(User $creator): static
+    public function removeUser(User $user): static
     {
-        $this->creator->removeElement($creator);
+        $this->users->removeElement($user);
 
         return $this;
     }
@@ -147,5 +152,15 @@ class Organisation
         }
 
         return $this;
+    }
+
+    public function getCreatedAt(): DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(DateTimeImmutable $createdAt): void
+    {
+        $this->createdAt = $createdAt;
     }
 }
