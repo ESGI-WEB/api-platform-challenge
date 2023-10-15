@@ -35,6 +35,7 @@ security:
     access_control:
         - { path: ^/api/docs, roles: PUBLIC_ACCESS }
         - { path: ^/api/users, roles: PUBLIC_ACCESS, method: POST }
+        - { path: ^/api/ping, roles: PUBLIC_ACCESS, method: GET } # test route, todo to delete
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
