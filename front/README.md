@@ -23,6 +23,7 @@ npm run dev
 
 # Development tools
 - All needed information about France official components: https://react-dsfr.codegouv.studio/
-- Other Icons available : https://remixicon.com/
 - Demo of components : https://components.react-dsfr.codegouv.studio/?path=/story/%F0%9F%87%AB%F0%9F%87%B7-introduction--page
 > ⚠️ Components describes [here](https://www.systeme-de-design.gouv.fr/elements-d-interface/composants/) are for plain html components not react-dsfr ones  
+- Icons : https://react-dsfr.codegouv.studio/icons
+> ⚠️ Whenever you add a new icon to your project, launch `npm run icons` or restart your local server, else you'll see a blue square instead of your icon

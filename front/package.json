@@ -9,11 +9,13 @@
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "postinstall": "copy-dsfr-to-public",
-    "predev": "only-include-used-icons",
-    "prebuild": "only-include-used-icons"
+    "predev": "npm run icons",
+    "prebuild": "npm run icons",
+    "icons": "only-include-used-icons"
   },
   "dependencies": {
     "@codegouvfr/react-dsfr": "^0.78.1",
+    "execa": "^8.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.17.0"

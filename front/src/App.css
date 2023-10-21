@@ -1,1 +1,30 @@
+#main-page-container {
+    margin: 32px;
+}
 
+/* displays */
+.flex {
+    display: flex;
+}
+.flex-center {
+    justify-content: center;
+    align-items: center;
+}
+.flex-column {
+    flex-direction: column;
+}
+.flex-row {
+    flex-direction: row;
+}
+.justify-center {
+    justify-content: center;
+}
+.align-center {
+    align-items: center;
+}
+.gap-2 {
+    gap: 1.2rem;
+}
+.centered {
+    margin: 0 auto;
+}

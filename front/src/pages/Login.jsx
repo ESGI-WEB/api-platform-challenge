@@ -1,40 +1,53 @@
-import { fr } from "@codegouvfr/react-dsfr";
-import React, {useState} from 'react';
-import PasswordInput from "@codegouvfr/react-dsfr/blocks/PasswordInput.js";
 import Button from "@codegouvfr/react-dsfr/Button.js";
+import LinkButton from "../components/LinkButton/LinkButton.jsx";
+import Input from "@codegouvfr/react-dsfr/Input.js";
+import ScriptedPasswordInput, {Severity} from "../components/ScriptedPasswordInput.jsx";
+import {useState} from "react";
+import {fr} from "@codegouvfr/react-dsfr";
 
-const Login = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+const Login = ({
+    onLoginSuccessful = void 0,
+}) => {
+    let email = '';
+    let password = '';
 
-    const handleLogin = () => {
-        // Mettez ici le code pour gérer la connexion
+    const [passwordErrorSeverity, setPasswordErrorSeverity] = useState(Severity.INFO);
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        setPasswordErrorSeverity(Severity.ERROR);
+
+        // TODO add loader
         console.log('Email:', email, 'Password:', password);
+
+        setTimeout(() => onLoginSuccessful('2342f2f1d131rf12'), 250);
     };
 
     return (
-        <>
-            <PasswordInput
-                label="Mot de passe"
-                messages={[
-                    {
-                        message: '12 caractères minimum',
-                        severity: 'info'
-                    },
-                    {
-                        message: '1 caractère spécial minimum',
-                        severity: 'valid'
-                    },
-                    {
-                        message: '1 chiffre minimum',
-                        severity: 'error'
-                    }
-                ]}
+        <form onSubmit={handleLogin} className={'fr-col-md-6 fr-col-lg-4 centered'}>
+            <h1 className={fr.cx('cente')}>Se connecter</h1>
+            <Input
+                label="Adresse mail"
+                nativeInputProps={{
+                    type: 'email',
+                }}
+                onChange={(e) => email = e.target.value}
+            ></Input>
+            <ScriptedPasswordInput
+                invalidType={passwordErrorSeverity}
+                onChange={(e) => password = e.target.value}
             />
-            <Button iconId="fr-icon-checkbox-circle-line">Label button MD</Button>
-            <span className={fr.cx("fr-icon-ancient-gate-fill")} aria-hidden={true}/>
-            <i className={fr.cx("fr-icon-ancient-gate-fill")} />
-        </>
+
+            <div className={'flex flex-column justify-center align-center gap-2 fr-my-4w'}>
+                <Button>Se connecter</Button>
+                <LinkButton
+                    to={'/'}
+                    suffixIcon='fr-icon-arrow-right-line fr-icon--sm'
+                >
+                    Créer un compte
+                </LinkButton>
+            </div>
+        </form>
     );
 };
 
