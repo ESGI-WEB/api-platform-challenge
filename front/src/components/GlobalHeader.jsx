@@ -9,10 +9,12 @@ export default function GlobalHeader({
   },
   id = "fr-header-header-with-quick-access-items",
   quickAccessItems = [],
+  serviceTitle = '',
 }) {
     return (
         <Header
             brandTop={brandTop}
+            serviceTitle={serviceTitle}
             homeLinkProps={homeLinkProps}
             id={id}
             quickAccessItems={[...quickAccessItems, headerFooterDisplayItem]}

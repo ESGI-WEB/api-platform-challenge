@@ -1,45 +1,75 @@
 import Button from "@codegouvfr/react-dsfr/Button.js";
 import LinkButton from "../components/LinkButton/LinkButton.jsx";
 import Input from "@codegouvfr/react-dsfr/Input.js";
-import ScriptedPasswordInput, {Severity} from "../components/ScriptedPasswordInput.jsx";
+import ScriptedPasswordInput, {PasswordSeverity} from "../components/ScriptedPasswordInput.jsx";
 import {useState} from "react";
-import {fr} from "@codegouvfr/react-dsfr";
+import useAuthService from "../services/useAuthService.js";
+import InPageAlert, {AlertSeverity} from "../components/InPageAlert.jsx";
+import LoadableButton from "../components/LoadableButton/LoadableButton.jsx";
 
-const Login = ({
+export default function Login ({
     onLoginSuccessful = void 0,
-}) => {
-    let email = '';
-    let password = '';
+}) {
+    const [isLoading, setIsLoading] = useState(false);
+    const [isPasswordValid, setIsPasswordValid] = useState(false);
+    const [email, setEmail] = useState('default');
+    const [password, setPassword] = useState('');
+    const [alert, setAlert] = useState(null);
+    const [passwordErrorSeverity, setPasswordErrorSeverity] = useState(PasswordSeverity.INFO);
+    const AuthService = useAuthService();
 
-    const [passwordErrorSeverity, setPasswordErrorSeverity] = useState(Severity.INFO);
-
-    const handleLogin = async (e) => {
+    const handleLogin = (e) => {
         e.preventDefault();
-        setPasswordErrorSeverity(Severity.ERROR);
+        setPasswordErrorSeverity(PasswordSeverity.ERROR);
 
-        // TODO add loader
-        console.log('Email:', email, 'Password:', password);
+        if (!isPasswordValid || !email) {
+            setAlert({
+                description: 'Le mail et/ou le mot de passe sont invalides',
+                severity: AlertSeverity.ERROR,
+            });
+            window.scrollTo(0, 0)
+            return;
+        }
 
-        setTimeout(() => onLoginSuccessful('2342f2f1d131rf12'), 250);
+        setAlert(null);
+        setIsLoading(true);
+
+        AuthService.login(email, password).then((response) => {
+            setPasswordErrorSeverity(PasswordSeverity.INFO);
+            onLoginSuccessful(response.token);
+        }).catch((error) => {
+            console.error(error)
+            setAlert({
+                description: 'Identifiants incorrects',
+                severity: AlertSeverity.ERROR,
+            });
+            window.scrollTo(0, 0)
+        }).finally(() => setIsLoading(false));
     };
 
     return (
         <form onSubmit={handleLogin} className={'fr-col-md-6 fr-col-lg-4 centered'}>
-            <h1 className={fr.cx('cente')}>Se connecter</h1>
+            <InPageAlert alert={alert} />
+            <h1>Se connecter</h1>
             <Input
                 label="Adresse mail"
                 nativeInputProps={{
                     type: 'email',
                 }}
-                onChange={(e) => email = e.target.value}
+                onChange={(e) => setEmail(e.target.value)}
             ></Input>
             <ScriptedPasswordInput
                 invalidType={passwordErrorSeverity}
-                onChange={(e) => password = e.target.value}
+                onChange={(e) => setPassword(e.target.value)}
+                onValidityChange={setIsPasswordValid}
             />
 
             <div className={'flex flex-column justify-center align-center gap-2 fr-my-4w'}>
-                <Button>Se connecter</Button>
+                <LoadableButton
+                    isLoading={isLoading}
+                >
+                    Se connecter
+                </LoadableButton>
                 <LinkButton
                     to={'/'}
                     suffixIcon='fr-icon-arrow-right-line fr-icon--sm'
@@ -50,5 +80,3 @@ const Login = ({
         </form>
     );
 };
-
-export default Login;

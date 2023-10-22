@@ -1,12 +1,16 @@
 import {
   Navigate,
 } from 'react-router-dom';
-import useAuth from "./useAuth.jsx";
+import useAuth, {Roles} from "./useAuth.js";
 
-export default function ProtectedRoute ({ children }) {
-  const {token} = useAuth();
+export default function ProtectedRoute ({
+  requiredRole = Roles.USER,
+  children
+}) {
+  const {token, data} = useAuth();
+  const hasRoleRequired = data && data.roles.includes(requiredRole);
 
-  if (!token) {
+  if (!token || !hasRoleRequired) {
     return <Navigate to="/" replace />;
   }
 

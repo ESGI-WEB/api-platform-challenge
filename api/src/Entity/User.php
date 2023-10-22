@@ -101,6 +101,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __construct()
     {
+        $this->providerValidated = false;
         $this->createdAt = new DateTimeImmutable();
         $this->schedules = new ArrayCollection();
         $this->holidays = new ArrayCollection();

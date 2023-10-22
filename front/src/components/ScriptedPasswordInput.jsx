@@ -1,7 +1,7 @@
 import PasswordInput from "@codegouvfr/react-dsfr/blocks/PasswordInput.js";
 import {useEffect, useState} from "react";
 
-export const Severity = {
+export const PasswordSeverity = {
     INFO: "info",
     VALID: "valid",
     ERROR: "error",
@@ -10,15 +10,16 @@ export const Severity = {
 export default function ScriptedPasswordInput({
     label = "Mot de passe",
     defaultPassword = "",
-    passwordLength = 12,
-    passwordLengthMessage = "12 caractères minimum",
+    passwordLength = 8,
+    passwordLengthMessage = "8 caractères minimum",
     specialCharactersRegex = /[^\w\s]/,
     specialCharactersMessage = "1 caractère spécial minimum",
     digitRegex = /\d/,
     digitMessage = "1 chiffre minimum",
-    validType = Severity.VALID,
-    invalidType = Severity.INFO,
+    validType = PasswordSeverity.VALID,
+    invalidType = PasswordSeverity.INFO,
     onChange,
+    onValidityChange,
 }) {
     const [messages, setMessages] = useState([]);
     const [password, setPassword] = useState(defaultPassword);
@@ -40,6 +41,8 @@ export default function ScriptedPasswordInput({
         },
     ];
 
+    let isValid = false;
+
     const validatePassword = (password) => {
         return validations.map(({ message, validator }) => ({
             message,
@@ -50,8 +53,16 @@ export default function ScriptedPasswordInput({
     const handlePasswordChange = (e) => {
         const newPassword = e.target.value;
         setPassword(newPassword);
-        setMessages(validatePassword(newPassword));
+
+        const messages = validatePassword(newPassword);
+        setMessages(messages);
         onChange(e);
+
+        let newValidity = !messages.some(({ severity }) => severity === invalidType);
+        if (newValidity !== isValid) {
+            isValid = newValidity;
+            onValidityChange(isValid);
+        }
     };
 
     useEffect(() => {
