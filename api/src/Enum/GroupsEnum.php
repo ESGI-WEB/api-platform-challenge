@@ -10,4 +10,9 @@ enum GroupsEnum: string
     case USER_WRITE = 'user:write';
     case USER_WRITE_ADMIN = 'user:write:admin';
     case USER_READ = 'user:read';
+    case SCHEDULE_WRITE = 'schedule:write';
+    case SCHEDULE_READ = 'schedule:read';
+    case HOLIDAY_WRITE = 'holiday:write';
+    case HOLIDAY_READ = 'holiday:read';
+    case AVAILABLE_SLOT_READ = 'available_slot:read';
 }

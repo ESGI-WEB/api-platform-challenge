@@ -56,6 +56,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private array $roles = [];
 
     #[ORM\Column]
+    // password must be 8 caracteres long, with 1 number, 1 uppercase, 1 lowercase, 1 special character
+    #[Assert\Regex(pattern: '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[A-Za-z\d\W]{8,}$/')]
     #[Assert\NotBlank(groups: [GroupsEnum::USER_CREATE->value])] // set by UserDenormalizer
     private string $password = '';
 

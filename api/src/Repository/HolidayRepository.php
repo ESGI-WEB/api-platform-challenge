@@ -21,6 +21,22 @@ class HolidayRepository extends ServiceEntityRepository
         parent::__construct($registry, Holiday::class);
     }
 
+    public function getNextHolidaysBefore(\DateTime $date, array $criteria): array
+    {
+        $qb = $this->createQueryBuilder('holidays');
+        $qb->where('holidays.datetimeStart <= :date')
+            ->andWhere('holidays.datetimeEnd >= :now')
+            ->setParameter('date', $date)
+            ->setParameter('now', new \DateTime());
+
+        foreach ($criteria as $key => $value) {
+            $qb->andWhere("holidays.$key = :$key")
+                ->setParameter($key, $value);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return Holiday[] Returns an array of Holiday objects
 //     */

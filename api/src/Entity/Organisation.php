@@ -40,11 +40,19 @@ class Organisation
     #[ORM\Column]
     private DateTimeImmutable $createdAt;
 
+    #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: Schedule::class)]
+    private Collection $schedules;
+
+    #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: Holiday::class)]
+    private Collection $holidays;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
         $this->services = new ArrayCollection();
         $this->createdAt = new DateTimeImmutable();
+        $this->schedules = new ArrayCollection();
+        $this->holidays = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -162,5 +170,65 @@ class Organisation
     public function setCreatedAt(DateTimeImmutable $createdAt): void
     {
         $this->createdAt = $createdAt;
+    }
+
+    /**
+     * @return Collection<int, Schedule>
+     */
+    public function getSchedules(): Collection
+    {
+        return $this->schedules;
+    }
+
+    public function addSchedule(Schedule $schedule): static
+    {
+        if (!$this->schedules->contains($schedule)) {
+            $this->schedules->add($schedule);
+            $schedule->setOrganisation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSchedule(Schedule $schedule): static
+    {
+        if ($this->schedules->removeElement($schedule)) {
+            // set the owning side to null (unless already changed)
+            if ($schedule->getOrganisation() === $this) {
+                $schedule->setOrganisation(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Holiday>
+     */
+    public function getHolidays(): Collection
+    {
+        return $this->holidays;
+    }
+
+    public function addHoliday(Holiday $holiday): static
+    {
+        if (!$this->holidays->contains($holiday)) {
+            $this->holidays->add($holiday);
+            $holiday->setOrganisation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHoliday(Holiday $holiday): static
+    {
+        if ($this->holidays->removeElement($holiday)) {
+            // set the owning side to null (unless already changed)
+            if ($holiday->getOrganisation() === $this) {
+                $holiday->setOrganisation(null);
+            }
+        }
+
+        return $this;
     }
 }
