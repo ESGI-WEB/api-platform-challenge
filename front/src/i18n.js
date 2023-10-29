@@ -25,7 +25,7 @@ i18n
                 HttpApi  // fallback
             ],
             backendOptions: [{
-                loadPath: '/api/translations' // http api load path
+                loadPath: '/api/translation' // http api load path
             }],
         },
     });
