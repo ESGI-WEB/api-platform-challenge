@@ -1,64 +1,73 @@
-import {useState, useEffect} from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
-import {useTranslation} from "react-i18next";
+import Login from "./pages/Login.jsx";
+import GlobalFooter from "./components/GlobalFooter.jsx";
+import GlobalHeader from "./components/GlobalHeader.jsx";
+import {Navigate, Route, Routes} from "react-router-dom";
+import Home from "./pages/Home.jsx";
+import Admin from "./pages/admin/Admin.jsx";
+import useAuth, {Roles} from "./auth/useAuth.js";
+import ProtectedRoute from "./auth/ProtectedRoute.jsx";
+import Badge from "@codegouvfr/react-dsfr/Badge.js";
 
 function App() {
-    const { t, i18n } = useTranslation();
-    const [count, setCount] = useState(0)
-    const [pong, setPong] = useState('calling backend...')
-
-    // call ping pong api route
-    const pingPong = () => {
-        fetch(import.meta.env.VITE_API_ENDPOINT + '/ping', {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json'
-            },
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error(response.statusText)
-                }
-
-                return response.json()
-            })
-            .then((data) => setPong(data.message + ', backend works! :D'))
-            .catch((error) => {
-                setPong('backend not working :( check console errors')
-                console.error(error)
-            });
+    const loginButton = {
+        iconId: 'fr-icon-user-line',
+        linkProps: {
+            to: '/login',
+        },
+        text: 'Se connecter'
+    };
+    const logoutButton = {
+        iconId: 'fr-icon-user-line',
+        linkProps: {
+            onClick: () => onLogout(),
+        },
+        text: 'Se déconnecter'
     }
+    const adminButton = {
+        iconId: 'fr-icon-user-line',
+        linkProps: {
+            to: '/admin',
+        },
+        text: 'Admin'
+    }
+    let quickAccessItems = [loginButton];
+    let serviceTitle = '';
+    const {onLogin, onLogout, token, data} = useAuth();
 
-    useEffect(() => {
-        pingPong();
-    }, []);
+    if (token) {
+        quickAccessItems = [logoutButton]
+        if (data.roles.includes(Roles.ADMIN)) {
+            quickAccessItems.push(adminButton);
+            serviceTitle = <Badge as="span" noIcon severity="warning">Admin</Badge>
+        } else if (data.roles.includes(Roles.PROVIDER)) {
+            serviceTitle = <Badge as="span" noIcon severity="info">Commissaire</Badge>
+        }
+    }
 
     return (
         <>
-            <div>
-                <h1>{t('title')}</h1>
-                <a href="https://vitejs.dev" target="_blank">
-                    <img src={viteLogo} className="logo" alt="Vite logo"/>
-                </a>
-                <a href="https://react.dev" target="_blank">
-                    <img src={reactLogo} className="logo react" alt="React logo"/>
-                </a>
+            <GlobalHeader
+                quickAccessItems={quickAccessItems}
+                serviceTitle={serviceTitle}
+            />
+            <div id="main-page-container">
+                <Routes>
+                    <Route index element={<Home />} />
+                    <Route path="login" element={
+                        <Login
+                            onLoginSuccessful={onLogin}
+                        />
+                    } />
+                    <Route path="admin" element={
+                        <ProtectedRoute requiredRole={Roles.ADMIN}>
+                            <Admin />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
             </div>
-            <h1>Vite + React</h1>
-            <h2>{pong}</h2>
-            <div className="card">
-                <button onClick={() => setCount((count) => count + 1)}>
-                    count is {count}
-                </button>
-                <p>
-                    Edit <code>src/App.jsx</code> and save to test HMR
-                </p>
-            </div>
-            <p className="read-the-docs">
-                Click on the Vite and React logos to learn more
-            </p>
+            <GlobalFooter />
         </>
     )
 }
