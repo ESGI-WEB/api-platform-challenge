@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 class TranslationStateProcessor implements ProcessorInterface
 {
     public function __construct(
-        protected KernelInterface $kernel,
+        protected KernelInterface $kernel
     ) {}
 
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): void
@@ -29,7 +29,7 @@ class TranslationStateProcessor implements ProcessorInterface
     protected function writeInFile(array $data): void
     {
         $filePath = $this->kernel->getProjectDir() . TranslationStateProvider::TRANSLATION_CSV_PATH;
-        $file = fopen($filePath, 'wb');
+        $file = fopen($filePath, 'ab');
         fputcsv($file, $data);
         fclose($file);
     }

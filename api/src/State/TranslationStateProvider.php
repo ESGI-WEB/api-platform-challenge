@@ -7,6 +7,7 @@ namespace App\State;
 use ApiPlatform\Metadata\CollectionOperationInterface;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
+use App\ValueObject\Translation;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class TranslationStateProvider implements ProviderInterface
@@ -35,16 +36,13 @@ class TranslationStateProvider implements ProviderInterface
 
         if (file_exists($filePath)) {
             $file = fopen($filePath, 'rb');
+
             while (($line = fgetcsv($file)) !== false) {
                 $language = $line[0];
                 $key = $line[1];
                 $value = $line[2];
 
-                if (!isset($result[$language])) {
-                    $result[$language] = [];
-                }
-
-                $result[$language][$key] = $value;
+                $result[] = new Translation($language, $key, $value);
             }
             fclose($file);
         }
