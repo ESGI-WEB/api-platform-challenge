@@ -5,12 +5,17 @@ import i18n from 'i18next';
 import HttpApi from 'i18next-http-backend';
 import Backend from 'i18next-chained-backend';
 
+const supportedLanguages = ['en', 'fr'];
+
 i18n
     .use(Backend)
     .use(initReactI18next)
+    .use(LanguageDetector)
     .init({
-        fallbackLng: 'en',
-        debug: true,
+        order: ['navigator'],
+        fallbackLng: 'fr',
+        supportedLngs: supportedLanguages,
+        load: 'languageOnly',
         backend: {
             backends: [
                 LocalStorageBackend,
