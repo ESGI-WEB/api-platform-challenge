@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\CollectionOperationInterface;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\ValueObject\Translation;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class TranslationStateProvider implements ProviderInterface
@@ -15,7 +16,8 @@ class TranslationStateProvider implements ProviderInterface
     public const TRANSLATION_CSV_PATH = '/var/uploads/translation.csv';
 
     public function __construct(
-        protected KernelInterface $kernel
+        protected KernelInterface $kernel,
+        protected RequestStack $requestStack
     ) {}
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): ?array
@@ -24,6 +26,14 @@ class TranslationStateProvider implements ProviderInterface
 
         if (!$operation instanceof CollectionOperationInterface) {
             return null;
+        }
+
+        $language = $this->requestStack->getCurrentRequest()->query->get('language');
+
+        if ($language !== null) {
+            $content = array_filter($content, function (Translation $translation) use ($language) {
+                return $translation->getLanguage() === $language;
+            });
         }
 
         return $content;

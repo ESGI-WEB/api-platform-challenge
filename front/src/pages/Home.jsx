@@ -6,7 +6,7 @@ export default function Home() {
 
     return (
         <div>
-            <h1>{t('Home')}</h1>
+            <h1>{t('home')}</h1>
         </div>
     )
 }
