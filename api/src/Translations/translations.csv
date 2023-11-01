@@ -1,0 +1,30 @@
+en,admin,Admin
+fr,admin,Admin
+en,errorOnIdentifiers,Invalid identifiers
+fr,errorOnIdentifiers,Identifiants invalides
+en,errorOnLogin,The mail and/or password are invalid
+fr,errorOnLogin,Le mail et/ou le mot de passe sont invalides
+en,createAccount,Create an account
+fr,createAccount,Créer un compte
+en,specialCharactersMessage,At least one special character
+fr,specialCharactersMessage,Au moins un caractère spécial
+en,digitMessage,At least one digit
+fr,digitMessage,Au moins un chiffre
+en,footerDescription,This site is a student project designed to put into practice the knowledge acquired during the course. It is not an official site of the French government and is not used outside the training framework.
+fr,footerDescription,Ce site est un projet étudiant ayant pour but de mettre en pratique les connaissances acquises durant la formation. Il ne s'agit pas d'un site officiel du gouvernement Français et n'est pas utilisé en dehors du cadre de la formation.
+en,headerBrandTop,e-commissariat
+fr,headerBrandTop,e-commissariat
+en,home,Home
+fr,home,Accueil
+en,login,Login
+fr,login,Se connecter
+en,logout,Logout
+fr,logout,Se déconnecter
+en,mail,Mail
+fr,mail,Adresse mail
+en,passwordLabel,Password
+fr,passwordLabel,Mot de passe
+en,passwordLengthMessage,8 characters minimum
+fr,passwordLengthMessage,8 caractères minimum
+en,superintendent,Superintendent
+fr,superintendent,Commissaire

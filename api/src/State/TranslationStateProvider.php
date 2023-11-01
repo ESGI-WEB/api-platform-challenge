@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 class TranslationStateProvider implements ProviderInterface
 {
-    public const TRANSLATION_CSV_PATH = '/var/uploads/translation.csv';
+    public const TRANSLATION_CSV_PATH = '/src/Translations/translations.csv';
 
     public function __construct(
         protected KernelInterface $kernel,
