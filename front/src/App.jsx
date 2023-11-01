@@ -8,28 +8,30 @@ import Admin from "./pages/admin/Admin.jsx";
 import useAuth, {Roles} from "./auth/useAuth.js";
 import ProtectedRoute from "./auth/ProtectedRoute.jsx";
 import Badge from "@codegouvfr/react-dsfr/Badge.js";
+import {useTranslation} from "react-i18next";
 
 function App() {
+    const { t } = useTranslation();
     const loginButton = {
         iconId: 'fr-icon-user-line',
         linkProps: {
             to: '/login',
         },
-        text: 'Se connecter'
+        text: t('login')
     };
     const logoutButton = {
         iconId: 'fr-icon-user-line',
         linkProps: {
             onClick: () => onLogout(),
         },
-        text: 'Se déconnecter'
+        text: t('logout')
     }
     const adminButton = {
         iconId: 'fr-icon-user-line',
         linkProps: {
             to: '/admin',
         },
-        text: 'Admin'
+        text: t('admin')
     }
     let quickAccessItems = [loginButton];
     let serviceTitle = '';
@@ -39,9 +41,9 @@ function App() {
         quickAccessItems = [logoutButton]
         if (data.roles.includes(Roles.ADMIN)) {
             quickAccessItems.push(adminButton);
-            serviceTitle = <Badge as="span" noIcon severity="warning">Admin</Badge>
+            serviceTitle = <Badge as="span" noIcon severity="warning">{t('admin')}</Badge>
         } else if (data.roles.includes(Roles.PROVIDER)) {
-            serviceTitle = <Badge as="span" noIcon severity="info">Commissaire</Badge>
+            serviceTitle = <Badge as="span" noIcon severity="info">{t('superintendent')}</Badge>
         }
     }
 

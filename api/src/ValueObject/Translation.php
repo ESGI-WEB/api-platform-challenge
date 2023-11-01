@@ -15,7 +15,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource(
     operations: [
         new GetCollection(),
-        new Post(),
     ],
     normalizationContext: ['groups' => ['translation:read']],
     provider: TranslationStateProvider::class,

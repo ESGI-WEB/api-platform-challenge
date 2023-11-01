@@ -1,6 +1,6 @@
 import LocalStorageBackend from 'i18next-localstorage-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import { initReactI18next } from 'react-i18next';
+import {initReactI18next} from 'react-i18next';
 import i18n from 'i18next';
 import HttpApi from 'i18next-http-backend';
 import Backend from 'i18next-chained-backend';
@@ -24,7 +24,7 @@ i18n
             backendOptions: [
                 {
                     prefix: 'i18next_res_',
-                    expirationTime: 7 * 24 * 60 * 60 * 1000,
+                    expirationTime: 14 * 24 * 60 * 60 * 1000,
                 },
                 {
                     loadPath: 'http://localhost:8888/api/translations?language={{lng}}',
