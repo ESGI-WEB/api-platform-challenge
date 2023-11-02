@@ -4,10 +4,11 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Link;
 use App\Enum\GroupsEnum;
 use App\Provider\AvailableSlotProvider;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
@@ -24,10 +25,15 @@ class AvailableSlot
     private DateTimeImmutable $datetime;
 
     #[Groups([GroupsEnum::AVAILABLE_SLOT_READ->value])]
-    private int $provider_id;
+    private Collection $providers;
 
-    #[Groups([GroupsEnum::AVAILABLE_SLOT_READ->value])]
     private int $organisation_id;
+
+
+    public function __construct()
+    {
+        $this->providers = new ArrayCollection();
+    }
 
     public function getDatetime(): DateTimeImmutable
     {
@@ -41,14 +47,26 @@ class AvailableSlot
         return $this;
     }
 
-    public function getProviderId(): int
+    /**
+     * @return Collection|User[]
+     */
+    public function getProviders(): Collection
     {
-        return $this->provider_id;
+        return $this->providers;
     }
 
-    public function setProviderId(int $provider_id): self
+    public function addProvider(User $provider): self
     {
-        $this->provider_id = $provider_id;
+        if (!$this->providers->contains($provider)) {
+            $this->providers[] = $provider;
+        }
+
+        return $this;
+    }
+
+    public function removeProvider(User $provider): self
+    {
+        $this->providers->removeElement($provider);
 
         return $this;
     }

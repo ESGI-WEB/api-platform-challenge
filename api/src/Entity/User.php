@@ -47,7 +47,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    #[Groups([GroupsEnum::USER_READ->value])]
+    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::AVAILABLE_SLOT_READ->value])]
     #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 
@@ -74,17 +74,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private DateTimeImmutable $createdAt;
 
-    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE->value])]
+    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE->value, GroupsEnum::AVAILABLE_SLOT_READ->value])]
     #[ORM\Column(length: 255)]
     private ?string $firstname = null;
 
-    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE->value])]
+    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE->value, GroupsEnum::AVAILABLE_SLOT_READ->value])]
     #[ORM\Column(length: 255)]
     private ?string $lastname = null;
 
     #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE_ADMIN->value])]
     #[ORM\Column]
-    private ?bool $providerValidated = null;
+    private ?bool $providerValidated;
 
     #[ORM\OneToMany(mappedBy: 'provider', targetEntity: Schedule::class, orphanRemoval: true)]
     private Collection $schedules;
