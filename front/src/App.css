@@ -28,3 +28,6 @@
 .centered {
     margin: 0 auto;
 }
+.flex-wrap {
+    flex-wrap: wrap;
+}

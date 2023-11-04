@@ -10,7 +10,20 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ApiResource] // TODO to secure
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+
+#[ApiResource(
+    operations: [
+        new Get(
+
+        ),
+        new GetCollection(),
+        new Post(
+        )
+    ]
+)] // TODO to secure
 #[ORM\Entity(repositoryClass: OrganisationRepository::class)]
 class Organisation
 {
