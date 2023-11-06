@@ -7,18 +7,24 @@ namespace App\ValueObject;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
 use App\State\TranslationStateProcessor;
 use App\State\TranslationStateProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
     operations: [
-        new GetCollection(),
+        new GetCollection(
+            paginationEnabled: false
+        ),
+        new Patch(
+            uriTemplate: '/translations/{language}/{key}',
+        ),
     ],
     normalizationContext: ['groups' => ['translation:read']],
+    denormalizationContext: ['groups' => ['translation:write']],
     provider: TranslationStateProvider::class,
-    processor: TranslationStateProcessor::class
+    processor: TranslationStateProcessor::class,
 )]
 class Translation
 {
@@ -30,11 +36,11 @@ class Translation
     #[Groups(['translation:read'])]
     protected string $key;
 
-    #[ApiProperty(identifier: false)]
-    #[Groups(['translation:read'])]
+    #[Groups(['translation:read', 'translation:write'])]
     protected string $value;
 
-    public function __construct(string $language = '', string $key = '', string $value = '') {
+    public function __construct(string $language = '', string $key = '', string $value = '')
+    {
         $this->language = $language;
         $this->key = $key;
         $this->value = $value;
