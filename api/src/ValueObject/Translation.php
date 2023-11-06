@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
+use App\Enum\GroupsEnum;
 use App\State\TranslationStateProcessor;
 use App\State\TranslationStateProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -29,14 +30,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class Translation
 {
     #[ApiProperty(identifier: true)]
-    #[Groups(['translation:read'])]
+    #[Groups([GroupsEnum::TRANSLATION_READ->value])]
     protected string $language;
 
     #[ApiProperty(identifier: true)]
-    #[Groups(['translation:read'])]
+    #[Groups([GroupsEnum::TRANSLATION_READ->value])]
     protected string $key;
 
-    #[Groups(['translation:read', 'translation:write'])]
+    #[Groups([GroupsEnum::TRANSLATION_READ->value, GroupsEnum::TRANSLATION_WRITE->value])]
     protected string $value;
 
     public function __construct(string $language = '', string $key = '', string $value = '')

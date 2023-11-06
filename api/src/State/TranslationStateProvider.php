@@ -7,18 +7,14 @@ namespace App\State;
 use ApiPlatform\Metadata\CollectionOperationInterface;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
+use App\Utils\TranslationsCsvFileHelper;
+use App\Utils\LanguageHelper;
 use App\ValueObject\Translation;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class TranslationStateProvider implements ProviderInterface
 {
-    public const WRITE_CSV_FILE = 'w';
-    public const READ_CSV_FILE = 'r';
-    public const EN_TRANSLATION_CSV_PATH = '/src/Translations/translations_en.csv';
-    public const FR_TRANSLATION_CSV_PATH = '/src/Translations/translations_fr.csv';
-    public const FR_LANGUAGE = 'fr';
-    public const EN_LANGUAGE = 'en';
     public const INVALID_PARAMETERS_ERROR = 400;
     public const TRANSLATION_NOT_FOUND_ERROR = 404;
 
@@ -40,74 +36,41 @@ class TranslationStateProvider implements ProviderInterface
                 throw new \InvalidArgumentException('Invalid parameters.', self::INVALID_PARAMETERS_ERROR);
             }
 
-            $translation = $this->findTranslationByKeyAndLanguage($key, $language);
-
-            if ($translation === null) {
-                throw new \Exception('Translation not found.', self::TRANSLATION_NOT_FOUND_ERROR);
-            }
-
-            return $translation;
+            return $this->findTranslationByKeyAndLanguage($key, $language);
         }
 
-        $language = $this->getRequestedLanguage();
+        $language = $this->requestStack->getCurrentRequest()->query->get('language');
 
-        if (!$this->validateLanguage($language)) {
+        if (!LanguageHelper::validateLanguage($language)) {
             throw new \RuntimeException('Invalid language.', self::INVALID_PARAMETERS_ERROR);
         }
 
-        return $this->getTranslationsData($language);
+        $csvPath = TranslationsCsvFileHelper::getCsvPathForLanguage($language);
+        $filePath = $this->getCompleteCsvFilePath($csvPath);
+
+        return TranslationsCsvFileHelper::readCsvFile($filePath);
     }
 
+    /**
+     * @throws \Exception
+     */
     protected function findTranslationByKeyAndLanguage(string $key, string $language): ?Translation
     {
-        $translations = $this->getTranslationsData($language);
+        $csvPath = TranslationsCsvFileHelper::getCsvPathForLanguage($language);
+        $filePath = $this->getCompleteCsvFilePath($csvPath);
+
+        $translations = TranslationsCsvFileHelper::readCsvFile($filePath);
 
         foreach ($translations as $translation) {
             if ($translation->getKey() === $key && $translation->getLanguage() === $language) {
                 return $translation;
             }
         }
-
-        return null;
+        throw new \Exception('Translation not found.', self::TRANSLATION_NOT_FOUND_ERROR);
     }
 
-    protected function getRequestedLanguage(): ?string
+    protected function getCompleteCsvFilePath(string $csvPath): string
     {
-        return $this->requestStack->getCurrentRequest()->query->get('language');
-    }
-
-    protected function getTranslationsData(string $language): array
-    {
-        $csvPath = $this->getCsvPathForLanguage($language);
-        $filePath = $this->kernel->getProjectDir() . $csvPath;
-
-        if (!file_exists($filePath)) {
-            return [];
-        }
-
-        $result = [];
-        $file = fopen($filePath, self::READ_CSV_FILE);
-
-        while (($line = fgetcsv($file)) !== false) {
-            $result[] = new Translation($line[0], $line[1], $line[2]);
-        }
-        fclose($file);
-
-        return $result;
-    }
-
-    protected function getCsvPathForLanguage(string $language): string
-    {
-        $csvPaths = [
-            self::FR_LANGUAGE => self::FR_TRANSLATION_CSV_PATH,
-            self::EN_LANGUAGE => self::EN_TRANSLATION_CSV_PATH,
-        ];
-
-        return $csvPaths[$language];
-    }
-
-    protected function validateLanguage(string $language): bool
-    {
-        return in_array($language, [self::FR_LANGUAGE, self::EN_LANGUAGE]);
+        return $this->kernel->getProjectDir() . $csvPath;
     }
 }
