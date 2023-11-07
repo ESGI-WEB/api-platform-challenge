@@ -22,8 +22,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
             uriTemplate: '/translations/{language}/{key}',
         ),
     ],
-    normalizationContext: ['groups' => ['translation:read']],
-    denormalizationContext: ['groups' => ['translation:write']],
+    normalizationContext: ['groups' => [GroupsEnum::TRANSLATION_READ->value]],
+    denormalizationContext: ['groups' => [GroupsEnum::TRANSLATION_WRITE->value]],
     provider: TranslationStateProvider::class,
     processor: TranslationStateProcessor::class,
 )]

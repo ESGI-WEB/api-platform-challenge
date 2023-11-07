@@ -33,7 +33,7 @@ class TranslationStateProvider implements ProviderInterface
             $language = $uriVariables['language'] ?? null;
 
             if ($key === null || $language === null) {
-                throw new \InvalidArgumentException('Invalid parameters.', self::INVALID_PARAMETERS_ERROR);
+                throw new \Exception('Invalid parameters.', self::INVALID_PARAMETERS_ERROR);
             }
 
             return $this->findTranslationByKeyAndLanguage($key, $language);
@@ -42,7 +42,7 @@ class TranslationStateProvider implements ProviderInterface
         $language = $this->requestStack->getCurrentRequest()->query->get('language');
 
         if (!LanguageHelper::validateLanguage($language)) {
-            throw new \RuntimeException('Invalid language.', self::INVALID_PARAMETERS_ERROR);
+            throw new \Exception('Invalid language.', self::INVALID_PARAMETERS_ERROR);
         }
 
         $csvPath = TranslationsCsvFileHelper::getCsvPathForLanguage($language);
