@@ -3,6 +3,7 @@ import {headerFooterDisplayItem} from "@codegouvfr/react-dsfr/Display";
 import {useTranslation} from "react-i18next";
 
 export default function GlobalHeader({
+  brandTop = null,
   homeLinkProps = {
       to: '/',
       title: 'Accueil - e-commissariat',
@@ -13,7 +14,7 @@ export default function GlobalHeader({
 }) {
     const { t } = useTranslation();
 
-    const brandTop = t("headerBrandTop");
+    brandTop = brandTop ?? t("headerBrandTop");
 
     return (
         <Header

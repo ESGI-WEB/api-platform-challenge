@@ -9,10 +9,14 @@ export const PasswordSeverity = {
 }
 
 export default function ScriptedPasswordInput({
+    passwordLabel = null,
     defaultPassword = "",
     passwordLength = 8,
+    passwordLengthMessage = null,
     specialCharactersRegex = /[^\w\s]/,
+    specialCharactersMessage = null,
     digitRegex = /\d/,
+    digitMessage = null,
     validType = PasswordSeverity.VALID,
     invalidType = PasswordSeverity.INFO,
     onChange,
@@ -20,10 +24,10 @@ export default function ScriptedPasswordInput({
 }) {
     const { t } = useTranslation();
 
-    const passwordLabel = t("passwordLabel");
-    const passwordLengthMessage = t("passwordLengthMessage");
-    const specialCharactersMessage = t("specialCharactersMessage");
-    const digitMessage = t("digitMessage");
+    passwordLabel = passwordLabel ?? t("passwordLabel");
+    passwordLengthMessage = passwordLengthMessage ?? t('passwordLengthMessage', { length: 8 });
+    specialCharactersMessage = specialCharactersMessage ?? t("specialCharactersMessage");
+    digitMessage = digitMessage ?? t("digitMessage");
 
     const [messages, setMessages] = useState([]);
     const [password, setPassword] = useState(defaultPassword);

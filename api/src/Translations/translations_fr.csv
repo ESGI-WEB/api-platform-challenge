@@ -11,5 +11,5 @@ fr,login,"Se connecter"
 fr,logout,"Se déconnecter"
 fr,mail,"Adresse mail"
 fr,passwordLabel,"Mot de passe"
-fr,passwordLengthMessage,"8 caractères minimum"
+fr,passwordLengthMessage,"{{ length }} caractères minimum"
 fr,superintendent,Commissaire
