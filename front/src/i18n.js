@@ -5,7 +5,13 @@ import i18n from 'i18next';
 import HttpApi from 'i18next-http-backend';
 import Backend from 'i18next-chained-backend';
 
+const baseUrl = import.meta.env.VITE_API_ENDPOINT;
 const supportedLanguages = ['en', 'fr'];
+
+i18n.failedLoadings = [];
+i18n.on('failedLoading', (lng) => {
+    i18n.failedLoadings.push(lng);
+});
 
 i18n
     .use(Backend)
@@ -27,9 +33,13 @@ i18n
                     expirationTime: 14 * 24 * 60 * 60 * 1000,
                 },
                 {
-                    loadPath: 'http://localhost:8888/api/translations?language={{lng}}',
+                    customHeaders: {
+                        "Content-Type" : 'application/json',
+                        "Accept": 'application/json',
+                    },
+                    loadPath: `${baseUrl}/translations?language={{lng}}`,
                     parse: (data) => {
-                        const parsedData = JSON.parse(data)["hydra:member"];
+                        const parsedData = JSON.parse(data);
                         const translations = {};
 
                         parsedData.forEach((resource) => {
@@ -37,17 +47,18 @@ i18n
                             const value = resource.value;
 
                             translations[key] = value;
-
                         });
-
                         return translations;
-                    }
-                }
+                    },
+                },
             ],
             cacheHitMode: 'refresh',
         },
+        react: {
+            useSuspense: true,
+        },
         interpolation: {
-            escapeValue: false
+            escapeValue: false,
         },
     });
 

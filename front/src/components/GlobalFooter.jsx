@@ -3,6 +3,7 @@ import {headerFooterDisplayItem} from "@codegouvfr/react-dsfr/Display";
 import {useTranslation} from "react-i18next";
 
 export default function GlobalFooter({
+  defaultContentDescription = null,
   accessibility = "fully compliant",
   contentDescription,
   bottomItems= [
@@ -10,7 +11,7 @@ export default function GlobalFooter({
   ],
 }) {
     const {t} = useTranslation();
-    const defaultContentDescription = t('footerDescription');
+    defaultContentDescription = defaultContentDescription ?? t('footerDescription');
 
     return (
         <Footer
