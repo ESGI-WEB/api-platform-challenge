@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use App\Enum\GroupsEnum;
+use App\Enum\RolesEnum;
 use App\State\TranslationStateProcessor;
 use App\State\TranslationStateProvider;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -20,6 +21,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         ),
         new Patch(
             uriTemplate: '/translations/{language}/{key}',
+            security: "is_granted('" . RolesEnum::ADMIN->value . "')"
         ),
     ],
     normalizationContext: ['groups' => [GroupsEnum::TRANSLATION_READ->value]],
