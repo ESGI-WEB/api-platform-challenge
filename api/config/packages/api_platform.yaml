@@ -18,3 +18,5 @@ api_platform:
                 type: header
 
     resource_class_directories:
+        - '%kernel.project_dir%/src/Entity'
+        - '%kernel.project_dir%/src/ValueObject'

@@ -15,4 +15,6 @@ enum GroupsEnum: string
     case HOLIDAY_WRITE = 'holiday:write';
     case HOLIDAY_READ = 'holiday:read';
     case AVAILABLE_SLOT_READ = 'available_slot:read';
+    case TRANSLATION_READ = 'translation:read';
+    case TRANSLATION_WRITE = 'translation:write';
 }
