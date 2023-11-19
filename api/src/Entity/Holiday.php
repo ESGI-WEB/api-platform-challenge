@@ -8,30 +8,49 @@ use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use App\Enum\GroupsEnum;
 use App\Repository\HolidayRepository;
+use App\Security\Voter\ScheduleHolidayVoter;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use App\Validator as CustomValidator;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ApiResource(
-    uriTemplate: 'organisations/{organisation_id}/users/{provider_id}/holidays',
+    uriTemplate: '/organisations/{organisation_id}/holidays',
     operations: [
-        new GetCollection(), // TODO to secure
-        new Post(denormalizationContext: ['groups' => [GroupsEnum::HOLIDAY_WRITE->value]]) // todo faut etre provider et avoir le user dans son organisation
+        new GetCollection(security: "is_granted('" . ScheduleHolidayVoter::VIEW_FOR_ORGANISATION . "', object)"),
     ],
     uriVariables: [
         'organisation_id' => new Link(
-            fromProperty: 'schedules',
+            toProperty: 'organisation',
             fromClass: Organisation::class,
         ),
-        'provider_id' => new Link(
-            fromProperty: 'holidays',
-            fromClass: User::class
+    ],
+    normalizationContext: ['groups' => [GroupsEnum::HOLIDAY_READ->value]],
+)]
+#[ApiResource(
+    uriTemplate: '/users/{user_id}/holidays',
+    operations: [
+        new GetCollection(security: "is_granted('" . ScheduleHolidayVoter::VIEW_FOR_USER . "', object)"),
+        new Post(denormalizationContext: ['groups' => [GroupsEnum::HOLIDAY_WRITE->value]],
+            security: "is_granted('" . ScheduleHolidayVoter::CREATE . "', object)"
+        ),
+        new Put(denormalizationContext: ['groups' => [GroupsEnum::HOLIDAY_WRITE->value]],
+            security: "is_granted('" . ScheduleHolidayVoter::EDIT . "', object)"
+        ),
+    ],
+    uriVariables: [
+        'user_id' => new Link(
+            toProperty: 'provider',
+            fromClass: User::class,
         ),
     ],
     normalizationContext: ['groups' => [GroupsEnum::HOLIDAY_READ->value]],
 )]
 #[ORM\Entity(repositoryClass: HolidayRepository::class)]
+#[CustomValidator\HolidayDateRange]
 class Holiday
 {
     #[ORM\Id]
@@ -42,13 +61,22 @@ class Holiday
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups([GroupsEnum::HOLIDAY_WRITE->value, GroupsEnum::HOLIDAY_READ->value])]
+    #[Assert\NotBlank]
+    #[Assert\DateTime]
     private ?\DateTimeInterface $datetimeStart = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank]
+    #[Assert\DateTime]
+    #[Assert\Expression(
+        expression: "this.getDatetimeEnd() > this.getDatetimeStart()",
+        message: "End date must be after the start date."
+    )]
     #[Groups([GroupsEnum::HOLIDAY_WRITE->value, GroupsEnum::HOLIDAY_READ->value])]
     private ?\DateTimeInterface $datetimeEnd = null;
 
     #[Groups([GroupsEnum::HOLIDAY_WRITE->value])]
+    #[Assert\NotBlank]
     #[ORM\ManyToOne(inversedBy: 'holidays')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $provider = null;

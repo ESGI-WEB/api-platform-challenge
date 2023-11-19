@@ -33,7 +33,7 @@ readonly class AvailableSlotProvider implements ProviderInterface
             return null;
         }
 
-        // TODO : - securisation
+        // TODO : - asserts
         //        - being able to order one datetime (aka déplacer ce code ailleurs)
 
         $organisation_id = $uriVariables['organisation_id'];

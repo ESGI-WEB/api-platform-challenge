@@ -8,5 +8,6 @@ enum RolesEnum: string
 {
     case ADMIN = 'ROLE_ADMIN';
     case PROVIDER = 'ROLE_PROVIDER';
+    case EMPLOYEE = 'ROLE_EMPLOYEE';
     case USER = 'ROLE_USER';
 }

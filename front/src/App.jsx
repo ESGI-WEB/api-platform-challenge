@@ -8,6 +8,7 @@ import Admin from "./pages/admin/Admin.jsx";
 import useAuth, {Roles} from "./auth/useAuth.js";
 import ProtectedRoute from "./auth/ProtectedRoute.jsx";
 import Badge from "@codegouvfr/react-dsfr/Badge.js";
+import Service from "./pages/Service.jsx";
 
 function App() {
     const loginButton = {
@@ -63,6 +64,9 @@ function App() {
                         <ProtectedRoute requiredRole={Roles.ADMIN}>
                             <Admin />
                         </ProtectedRoute>
+                    } />
+                    <Route path="service/:serviceId" element={
+                        <Service />
                     } />
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
