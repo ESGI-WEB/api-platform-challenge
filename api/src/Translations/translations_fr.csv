@@ -1,0 +1,15 @@
+fr,admin,Admin
+fr,errorOnIdentifiers,"Identifiants invalides"
+fr,errorOnLogin,"Le mail et/ou le mot de passe sont invalides"
+fr,createAccount,"Créer un compte"
+fr,specialCharactersMessage,"Au moins un caractère spécial"
+fr,digitMessage,"Au moins un chiffre"
+fr,footerDescription,"Ce site est un projet étudiant ayant pour but de mettre en pratique les connaissances acquises durant la formation. Il ne s'agit pas d'un site officiel du gouvernement Français et n'est pas utilisé en dehors du cadre de la formation."
+fr,headerBrandTop,e-commissariat
+fr,home,Accueil
+fr,login,"Se connecter"
+fr,logout,"Se déconnecter"
+fr,mail,"Adresse mail"
+fr,passwordLabel,"Mot de passe"
+fr,passwordLengthMessage,"{{ length }} caractères minimum"
+fr,superintendent,Commissaire

@@ -1,4 +1,3 @@
-import Button from "@codegouvfr/react-dsfr/Button.js";
 import LinkButton from "../components/LinkButton/LinkButton.jsx";
 import Input from "@codegouvfr/react-dsfr/Input.js";
 import ScriptedPasswordInput, {PasswordSeverity} from "../components/ScriptedPasswordInput.jsx";
@@ -6,10 +5,12 @@ import {useState} from "react";
 import useAuthService from "../services/useAuthService.js";
 import InPageAlert, {AlertSeverity} from "../components/InPageAlert.jsx";
 import LoadableButton from "../components/LoadableButton/LoadableButton.jsx";
+import {useTranslation} from "react-i18next";
 
 export default function Login ({
     onLoginSuccessful = void 0,
 }) {
+    const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
     const [isPasswordValid, setIsPasswordValid] = useState(false);
     const [email, setEmail] = useState('default');
@@ -24,7 +25,7 @@ export default function Login ({
 
         if (!isPasswordValid || !email) {
             setAlert({
-                description: 'Le mail et/ou le mot de passe sont invalides',
+                description: t('errorOnLogin'),
                 severity: AlertSeverity.ERROR,
             });
             window.scrollTo(0, 0)
@@ -40,7 +41,7 @@ export default function Login ({
         }).catch((error) => {
             console.error(error)
             setAlert({
-                description: 'Identifiants incorrects',
+                description: t('errorOnIdentifiers'),
                 severity: AlertSeverity.ERROR,
             });
             window.scrollTo(0, 0)
@@ -50,9 +51,9 @@ export default function Login ({
     return (
         <form onSubmit={handleLogin} className={'fr-col-md-6 fr-col-lg-4 centered'}>
             <InPageAlert alert={alert} />
-            <h1>Se connecter</h1>
+            <h1>{t('login')}</h1>
             <Input
-                label="Adresse mail"
+                label={t('mail')}
                 nativeInputProps={{
                     type: 'email',
                 }}
@@ -68,13 +69,13 @@ export default function Login ({
                 <LoadableButton
                     isLoading={isLoading}
                 >
-                    Se connecter
+                    {t('login')}
                 </LoadableButton>
                 <LinkButton
                     to={'/'}
                     suffixIcon='fr-icon-arrow-right-line fr-icon--sm'
                 >
-                    Créer un compte
+                    {t('createAccount')}
                 </LinkButton>
             </div>
         </form>

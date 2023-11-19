@@ -10,4 +10,6 @@ enum GroupsEnum: string
     case USER_WRITE = 'user:write';
     case USER_WRITE_ADMIN = 'user:write:admin';
     case USER_READ = 'user:read';
+    case TRANSLATION_READ = 'translation:read';
+    case TRANSLATION_WRITE = 'translation:write';
 }
