@@ -12,9 +12,14 @@ use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
-    uriTemplate: '/organisation/{organisation_id}/available-slots',
+    uriTemplate: '/organisations/{organisation_id}/available-slots',
     operations: [
-        new GetCollection(),
+        new GetCollection(
+            openapiContext: [
+                'tags' => ['Organisation'],
+                'summary' => 'Retrieve available slots for appointments for an organisation',
+            ],
+        ),
     ],
     normalizationContext: ['groups' => [GroupsEnum::AVAILABLE_SLOT_READ->value]],
     provider: AvailableSlotProvider::class,

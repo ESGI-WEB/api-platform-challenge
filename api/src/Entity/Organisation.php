@@ -3,17 +3,20 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use App\Enum\GroupsEnum;
 use App\Repository\OrganisationRepository;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource] // TODO to secure
 #[ORM\Entity(repositoryClass: OrganisationRepository::class)]
 class Organisation
 {
+    #[Groups([GroupsEnum::SERVICE_READ->value])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

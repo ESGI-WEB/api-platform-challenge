@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Enum\GroupsEnum;
 use App\Repository\HolidayRepository;
 use App\Security\Voter\ScheduleHolidayVoter;
@@ -13,9 +14,7 @@ use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-use App\Validator as CustomValidator;
 use Symfony\Component\Validator\Constraints as Assert;
-
 
 #[ApiResource(
     uriTemplate: '/organisations/{organisation_id}/holidays',
@@ -50,7 +49,6 @@ use Symfony\Component\Validator\Constraints as Assert;
     normalizationContext: ['groups' => [GroupsEnum::HOLIDAY_READ->value]],
 )]
 #[ORM\Entity(repositoryClass: HolidayRepository::class)]
-#[CustomValidator\HolidayDateRange]
 class Holiday
 {
     #[ORM\Id]

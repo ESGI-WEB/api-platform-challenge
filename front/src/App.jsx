@@ -14,7 +14,7 @@ import i18n from "i18next";
 import {useEffect, useState} from "react";
 
 function App() {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
     const [translationsLoaded, setTranslationsLoaded] = useState(true);
 
     useEffect(() => {
@@ -64,10 +64,10 @@ function App() {
                 quickAccessItems={quickAccessItems}
                 serviceTitle={serviceTitle}
             />
-                <div id="main-page-container">
-                    {translationsLoaded ? (
+            <div id="main-page-container">
+                {translationsLoaded ? (
                         <Routes>
-                            <Route index element={<Home />} />
+                            <Route index element={<Home/>}/>
                             <Route
                                 path="login"
                                 element={
@@ -80,20 +80,22 @@ function App() {
                                 path="admin"
                                 element={
                                     <ProtectedRoute requiredRole={Roles.ADMIN}>
-                                        <Admin />
+                                        <Admin/>
                                     </ProtectedRoute>
                                 }
                             />
                             <Route path="service/:serviceId" element={
-                        <Service />
-                    } />
-                    <Route path="*" element={<Navigate to="/" replace />} />
+                                <ProtectedRoute>
+                                    <Service/>
+                                </ProtectedRoute>
+                            }/>
+                            <Route path="*" element={<Navigate to="/" replace/>}/>
                         </Routes>)
-                        : (
-                            <div id="translations-error">Error on loading translations...</div>
-                        )}
-                </div>
-            <GlobalFooter />
+                    : (
+                        <div id="translations-error">Error on loading translations...</div>
+                    )}
+            </div>
+            <GlobalFooter/>
         </>
     );
 }

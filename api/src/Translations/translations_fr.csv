@@ -13,3 +13,5 @@ fr,mail,"Adresse mail"
 fr,passwordLabel,"Mot de passe"
 fr,passwordLengthMessage,"{{ length }} caractères minimum"
 fr,superintendent,Commissaire
+fr,loading,"Chargement en cours..."
+fr,error_occurred,"Une erreur est survenue, excusez-nous pour la gêne occasionnée."
