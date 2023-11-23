@@ -16,14 +16,15 @@
   "dependencies": {
     "@codegouvfr/react-dsfr": "^0.78.1",
     "execa": "^8.0.1",
-    "jwt-decode": "^3.1.2",
     "i18next": "^23.6.0",
     "i18next-browser-languagedetector": "^7.1.0",
     "i18next-http-backend": "^2.2.2",
+    "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^3.1.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.17.0",
-    "react-i18next": "^13.3.1"
+    "react-i18next": "^13.3.1",
+    "react-router-dom": "^6.17.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",

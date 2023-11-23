@@ -75,8 +75,6 @@ export default function LandingPagePresta() {
                       border
                       desc={presta.description}
                       enlargeLink
-                      imageAlt="texte alternatif de l’image"
-                      imageUrl="https://www.systeme-de-design.gouv.fr/img/placeholder.16x9.png"
                       linkProps={{
                         href: '#'
                       }}
@@ -111,8 +109,6 @@ export default function LandingPagePresta() {
                   border
                   desc={presta.description}
                   enlargeLink
-                  imageAlt="texte alternatif de l’image"
-                  imageUrl="https://www.systeme-de-design.gouv.fr/img/placeholder.16x9.png"
                   linkProps={{
                     href: '#'
                   }}

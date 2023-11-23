@@ -9,6 +9,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Enum\RolesEnum;
+
+use ApiPlatform\Metadata\Link;
 
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
@@ -16,14 +19,29 @@ use ApiPlatform\Metadata\Post;
 
 #[ApiResource(
     operations: [
-        new Get(
-
+        new Get(),
+        new GetCollection(
+            security: "is_granted('" . RolesEnum::ADMIN->value . "')"
         ),
-        new GetCollection(),
-        new Post(
-        )
+
+        new Post(security: "is_granted('" . RolesEnum::PROVIDER->value . "')")
     ]
 )] // TODO to secure
+
+#[ApiResource(
+    uriTemplate: '/users/{id}/organisations',
+    operations: [
+        new GetCollection(
+            security: "is_granted('" . RolesEnum::PROVIDER->value . "')"
+        ),
+    ],
+    uriVariables: [
+        'id' => new Link(
+            toProperty: 'users',
+            fromClass: User::class
+        )
+    ]
+)]
 #[ORM\Entity(repositoryClass: OrganisationRepository::class)]
 class Organisation
 {
@@ -176,4 +194,5 @@ class Organisation
     {
         $this->createdAt = $createdAt;
     }
+
 }

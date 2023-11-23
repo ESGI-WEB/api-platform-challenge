@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserVoter extends Voter
 {
-    public const VIEW = 'POST_VIEW';
+    public const VIEW = 'GET_VIEW';
     public const EDIT = 'POST_EDIT';
     public const DELETE = 'POST_DELETE';
 

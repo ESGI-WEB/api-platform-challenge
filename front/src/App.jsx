@@ -6,6 +6,8 @@ import {Navigate, Route, Routes} from "react-router-dom";
 import Home from "./pages/Home.jsx";
 import Admin from "./pages/admin/Admin.jsx";
 import LandingPagePresta from "./pages/LandingPagePresta.jsx";
+import CreateOrganisation from "./pages/CreateOrganisation.jsx";
+import ProvidersOrganisations from "./pages/ProvidersOrganisations.jsx";
 import useAuth, {Roles} from "./auth/useAuth.js";
 import ProtectedRoute from "./auth/ProtectedRoute.jsx";
 import Badge from "@codegouvfr/react-dsfr/Badge.js";
@@ -67,6 +69,16 @@ function App() {
                     } />
                     <Route path="prestations" element={
                         <LandingPagePresta/>
+                    } />
+                    <Route path="create-organisation" element={
+                        <ProtectedRoute requiredRole={Roles.PROVIDER}>
+                            <CreateOrganisation/>
+                        </ProtectedRoute>
+                    } />
+                    <Route path="providers-organisations" element={
+                        <ProtectedRoute requiredRole={Roles.PROVIDER}>
+                            <ProvidersOrganisations/>
+                        </ProtectedRoute>
                     } />
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
