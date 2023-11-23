@@ -1,0 +1,22 @@
+.calendar {
+    display: flex;
+    gap: 32px;
+    margin: auto;
+    padding: 32px 52px;
+    border: solid 1px #f1F1F1;
+    border-radius: 4px;
+    position: relative;
+    max-width: 100%;
+    overflow: auto;
+}
+
+.right-calendar-arrow {
+    position: absolute;
+    top: 32px;
+    right: 16px;
+}
+.left-calendar-arrow {
+    position: absolute;
+    top: 32px;
+    left: 16px;
+}

@@ -47,7 +47,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::AVAILABLE_SLOT_READ->value])]
+    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::AVAILABLE_SLOT_READ->value, GroupsEnum::APPOINTMENT_WRITE->value])]
     #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 

@@ -5,7 +5,10 @@ const useOrganisationService = () => {
     return {
         getSlots: (organisation_id) => api(`organisations/${organisation_id}/available-slots`, {
             method: 'GET',
-        })
+        }),
+        get: (organisation_id) => api(`organisations/${organisation_id}`, {
+            method: 'GET',
+        }),
     };
 };
 

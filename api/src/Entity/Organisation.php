@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
 use App\Enum\GroupsEnum;
 use App\Repository\OrganisationRepository;
 use DateTimeImmutable;
@@ -12,11 +13,17 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ApiResource] // TODO to secure
+#[ApiResource(
+    operations: [
+        new Get(
+            normalizationContext: ['groups' => [GroupsEnum::ORGANISATION_READ_DETAILED->value]]
+        ),
+    ],
+)]
 #[ORM\Entity(repositoryClass: OrganisationRepository::class)]
 class Organisation
 {
-    #[Groups([GroupsEnum::SERVICE_READ->value])]
+    #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -25,18 +32,22 @@ class Organisation
     #[ORM\Column(type: Types::GUID)]
     private ?string $uuid = null;
 
+    #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value])]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value])]
     #[ORM\Column(type: Types::DECIMAL, precision: 20, scale: 16)]
     private ?string $latitude = null;
 
+    #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value])]
     #[ORM\Column(type: Types::DECIMAL, precision: 20, scale: 16)]
     private ?string $longitude = null;
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'organisations')]
     private Collection $users;
 
+    #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value])]
     #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: Service::class, orphanRemoval: true)]
     private Collection $services;
 

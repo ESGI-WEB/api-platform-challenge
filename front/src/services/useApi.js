@@ -7,12 +7,12 @@ const useApi = () => {
     const location = useLocation();
     const baseUrl = import.meta.env.VITE_API_ENDPOINT;
 
-    return (url, options = {}, hydra = false) => {
+    return (url, options = {}, hydra = false, withAuthToken = true) => {
         const headers = {
             ...options.headers,
         };
 
-        if (token && !options.headers?.Authorization) {
+        if (token && !options.headers?.Authorization && withAuthToken) {
             headers.Authorization = `Bearer ${token}`;
         }
 

@@ -21,17 +21,17 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: ServiceRepository::class)]
 class Service
 {
-    #[Groups([GroupsEnum::SERVICE_READ->value])]
+    #[Groups([GroupsEnum::SERVICE_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups([GroupsEnum::SERVICE_READ->value])]
+    #[Groups([GroupsEnum::SERVICE_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value])]
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
-    #[Groups([GroupsEnum::SERVICE_READ->value])]
+    #[Groups([GroupsEnum::SERVICE_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value])]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 

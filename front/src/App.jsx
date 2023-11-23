@@ -8,7 +8,7 @@ import Admin from "./pages/admin/Admin.jsx";
 import useAuth, {Roles} from "./auth/useAuth.js";
 import ProtectedRoute from "./auth/ProtectedRoute.jsx";
 import Badge from "@codegouvfr/react-dsfr/Badge.js";
-import Service from "./pages/Service.jsx";
+import Organisation from "./pages/Organisation.jsx";
 import {useTranslation} from "react-i18next";
 import i18n from "i18next";
 import {useEffect, useState} from "react";
@@ -79,14 +79,14 @@ function App() {
                             <Route
                                 path="admin"
                                 element={
-                                    <ProtectedRoute requiredRole={Roles.ADMIN}>
+                                    <ProtectedRoute requiredRoles={[Roles.ADMIN]}>
                                         <Admin/>
                                     </ProtectedRoute>
                                 }
                             />
-                            <Route path="service/:serviceId" element={
+                            <Route path="station/:organisationId" element={
                                 <ProtectedRoute>
-                                    <Service/>
+                                    <Organisation/>
                                 </ProtectedRoute>
                             }/>
                             <Route path="*" element={<Navigate to="/" replace/>}/>

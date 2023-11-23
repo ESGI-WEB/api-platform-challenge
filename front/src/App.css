@@ -12,25 +12,71 @@
 .flex {
     display: flex;
 }
+
 .flex-center {
     justify-content: center;
     align-items: center;
 }
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
 .flex-column {
     flex-direction: column;
 }
+
 .flex-row {
     flex-direction: row;
 }
+
 .justify-center {
     justify-content: center;
 }
+
 .align-center {
     align-items: center;
 }
+
+.text-center {
+    text-align: center;
+}
+
+.align-baseline {
+    align-items: baseline;
+}
+
+.space-between {
+    justify-content: space-between;
+}
+
 .gap-2 {
     gap: 1.2rem;
 }
+
 .centered {
     margin: 0 auto;
+}
+
+.margin-0 {
+    margin: 0;
+}
+
+.margin-bottom-1 {
+    margin-bottom: 1rem;
+}
+
+.medium-map {
+    width: 300px;
+    height: 300px;
+    z-index: 1;
+    --underline-img: none;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.btn-with-background.fr-btn--secondary {
+    background-color: var(--background-default-grey);
 }

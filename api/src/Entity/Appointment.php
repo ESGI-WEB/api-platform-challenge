@@ -5,18 +5,26 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Post;
 use App\Enum\AppointmentStatusEnum;
+use App\Enum\GroupsEnum;
 use App\Repository\AppointmentRepository;
+use App\Security\Voter\AppointmentVoter;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints\Choice;
 
 #[ApiResource(
     operations: [
         new GetCollection(), // TODO to secure
+        new Post(
+            normalizationContext: ['groups' => [GroupsEnum::APPOINTMENT_WRITE->value]],
+            security: "is_granted('" . AppointmentVoter::CREATE . "', object)",
+        ),
     ],
 )]
 #[ApiResource(
@@ -51,28 +59,33 @@ class Appointment
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups([GroupsEnum::APPOINTMENT_WRITE->value])]
     #[ORM\ManyToOne(inversedBy: 'clientAppointments')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $client = null;
 
+    #[Groups([GroupsEnum::APPOINTMENT_WRITE->value])]
     #[ORM\ManyToOne(inversedBy: 'providerAppointments')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $provider = null;
 
+    #[Groups([GroupsEnum::APPOINTMENT_WRITE->value])]
     #[ORM\ManyToOne(inversedBy: 'appointments')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Service $service = null;
 
+    #[Groups([GroupsEnum::APPOINTMENT_WRITE->value])]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $datetime = null;
 
+    #[Groups([GroupsEnum::APPOINTMENT_WRITE->value])]
     #[ORM\OneToMany(mappedBy: 'appointment', targetEntity: Answer::class, orphanRemoval: true)]
     private Collection $answers;
 
     #[ORM\Column]
     private DateTimeImmutable $createdAt;
 
-    #[ORM\Column(length: 20, options: ['default' => AppointmentStatusEnum::valid])]
+    #[ORM\Column(length: 20, options: ['default' => AppointmentStatusEnum::valid->value])]
     #[Choice(callback: [AppointmentStatusEnum::class, 'values'])]
     private ?string $status = null;
 
