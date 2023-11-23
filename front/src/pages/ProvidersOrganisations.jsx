@@ -17,12 +17,11 @@ export default function ProvidersOrganisations() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await OrganisationService.organisations();
+        const result = await OrganisationService.providersOrganisations();
         setOrganisations(result);
       } catch (error) {
         console.error("Error fetching organisations:", error);
       } finally {
-        // Mettez à jour l'état de chargement une fois que les données sont récupérées, que ce soit avec succès ou en cas d'erreur.
         setLoading(false);
       }
     };
@@ -31,7 +30,6 @@ export default function ProvidersOrganisations() {
   }, [OrganisationService]);
 
   const navigateToCreateOrganisation = () => {
-    // 👇️ navigate to /contacts
     navigate('/create-organisation');
   };
 
