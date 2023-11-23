@@ -1,5 +1,6 @@
 import PasswordInput from "@codegouvfr/react-dsfr/blocks/PasswordInput.js";
 import {useEffect, useState} from "react";
+import {useTranslation} from "react-i18next";
 
 export const PasswordSeverity = {
     INFO: "info",
@@ -8,19 +9,26 @@ export const PasswordSeverity = {
 }
 
 export default function ScriptedPasswordInput({
-    label = "Mot de passe",
+    passwordLabel = null,
     defaultPassword = "",
     passwordLength = 8,
-    passwordLengthMessage = "8 caractères minimum",
+    passwordLengthMessage = null,
     specialCharactersRegex = /[^\w\s]/,
-    specialCharactersMessage = "1 caractère spécial minimum",
+    specialCharactersMessage = null,
     digitRegex = /\d/,
-    digitMessage = "1 chiffre minimum",
+    digitMessage = null,
     validType = PasswordSeverity.VALID,
     invalidType = PasswordSeverity.INFO,
     onChange,
     onValidityChange,
 }) {
+    const { t } = useTranslation();
+
+    passwordLabel = passwordLabel ?? t("passwordLabel");
+    passwordLengthMessage = passwordLengthMessage ?? t('passwordLengthMessage', { length: 8 });
+    specialCharactersMessage = specialCharactersMessage ?? t("specialCharactersMessage");
+    digitMessage = digitMessage ?? t("digitMessage");
+
     const [messages, setMessages] = useState([]);
     const [password, setPassword] = useState(defaultPassword);
     useEffect(() => {
@@ -71,7 +79,7 @@ export default function ScriptedPasswordInput({
 
     return (
         <PasswordInput
-            label={label}
+            label={passwordLabel}
             value={password}
             onChange={handlePasswordChange}
             messages={messages}

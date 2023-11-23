@@ -11,28 +11,40 @@ import ProvidersOrganisations from "./pages/ProvidersOrganisations.jsx";
 import useAuth, {Roles} from "./auth/useAuth.js";
 import ProtectedRoute from "./auth/ProtectedRoute.jsx";
 import Badge from "@codegouvfr/react-dsfr/Badge.js";
+import {useTranslation} from "react-i18next";
+import i18n from "i18next";
+import {useEffect, useState} from "react";
 
 function App() {
+    const { t } = useTranslation();
+    const [translationsLoaded, setTranslationsLoaded] = useState(true);
+
+    useEffect(() => {
+        if (i18n.failedLoadings.length > 0) {
+            setTranslationsLoaded(false);
+        }
+    }, []);
+
     const loginButton = {
         iconId: 'fr-icon-user-line',
         linkProps: {
             to: '/login',
         },
-        text: 'Se connecter'
+        text: t('login')
     };
     const logoutButton = {
         iconId: 'fr-icon-user-line',
         linkProps: {
             onClick: () => onLogout(),
         },
-        text: 'Se déconnecter'
+        text: t('logout')
     }
     const adminButton = {
         iconId: 'fr-icon-user-line',
         linkProps: {
             to: '/admin',
         },
-        text: 'Admin'
+        text: t('admin')
     }
     let quickAccessItems = [loginButton];
     let serviceTitle = '';
@@ -42,9 +54,9 @@ function App() {
         quickAccessItems = [logoutButton]
         if (data.roles.includes(Roles.ADMIN)) {
             quickAccessItems.push(adminButton);
-            serviceTitle = <Badge as="span" noIcon severity="warning">Admin</Badge>
+            serviceTitle = <Badge as="span" noIcon severity="warning">{t('admin')}</Badge>
         } else if (data.roles.includes(Roles.PROVIDER)) {
-            serviceTitle = <Badge as="span" noIcon severity="info">Commissaire</Badge>
+            serviceTitle = <Badge as="span" noIcon severity="info">{t('superintendent')}</Badge>
         }
     }
 
@@ -54,20 +66,27 @@ function App() {
                 quickAccessItems={quickAccessItems}
                 serviceTitle={serviceTitle}
             />
-            <div id="main-page-container">
-                <Routes>
-                    <Route index element={<Home />} />
-                    <Route path="login" element={
-                        <Login
-                            onLoginSuccessful={onLogin}
-                        />
-                    } />
-                    <Route path="admin" element={
-                        <ProtectedRoute requiredRole={Roles.ADMIN}>
-                            <Admin />
-                        </ProtectedRoute>
-                    } />
-                    <Route path="prestations" element={
+                <div id="main-page-container">
+                    {translationsLoaded ? (
+                        <Routes>
+                            <Route index element={<Home />} />
+                            <Route
+                                path="login"
+                                element={
+                                    <Login
+                                        onLoginSuccessful={onLogin}
+                                    />
+                                }
+                            />
+                            <Route
+                                path="admin"
+                                element={
+                                    <ProtectedRoute requiredRole={Roles.ADMIN}>
+                                        <Admin />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route path="prestations" element={
                         <LandingPagePresta/>
                     } />
                     <Route path="create-organisation" element={
@@ -81,11 +100,14 @@ function App() {
                         </ProtectedRoute>
                     } />
                     <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-            </div>
+                        </Routes>)
+                        : (
+                            <div id="translations-error">Error on loading translations...</div>
+                        )}
+                </div>
             <GlobalFooter />
         </>
-    )
+    );
 }
 
-export default App
+export default App;

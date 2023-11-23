@@ -1,0 +1,15 @@
+en,admin,Admin
+en,errorOnIdentifiers,"Invalid identifiers"
+en,errorOnLogin,"The mail and/or password are invalid"
+en,createAccount,"Create an account"
+en,specialCharactersMessage,"At least one special character"
+en,digitMessage,"At least one digit"
+en,footerDescription,"This site is a student project designed to put into practice the knowledge acquired during the course. It is not an official site of the French government and is not used outside the training framework."
+en,headerBrandTop,e-commissariat
+en,home,Home
+en,login,Login
+en,logout,Logout
+en,mail,Mail
+en,passwordLabel,Password
+en,passwordLengthMessage,"8 characters minimum"
+en,superintendent,Superintendent
