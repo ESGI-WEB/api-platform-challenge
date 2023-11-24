@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Enum\GroupsEnum;
 use App\Enum\RolesEnum;
+use App\Repository\UserRepository;
 use App\Security\Voter\UserVoter;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -44,10 +45,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 #[UniqueEntity(fields: ['email'])]
 #[ORM\Table(name: '`user`')]
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::AVAILABLE_SLOT_READ->value, GroupsEnum::APPOINTMENT_WRITE->value])]
+    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::AVAILABLE_SLOT_READ->value])]
     #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 

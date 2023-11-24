@@ -2,12 +2,6 @@
     margin: 32px;
 }
 
-#translations-error {
-    display: flex;
-    justify-content: center;
-    font-size: 1.5rem;
-}
-
 /* displays */
 .flex {
     display: flex;

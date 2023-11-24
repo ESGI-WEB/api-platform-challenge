@@ -21,7 +21,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: ServiceRepository::class)]
 class Service
 {
-    #[Groups([GroupsEnum::SERVICE_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value])]
+    #[Groups([GroupsEnum::SERVICE_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_WRITE->value])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

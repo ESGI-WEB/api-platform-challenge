@@ -23,6 +23,7 @@ export default function Organisation() {
     const organisationSrv = useOrganisationService();
     const appointmentService = useAppointmentService();
     const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
     const [isErrored, setIsErrored] = useState(false);
     const [organisation, setOrganisation] = useState(null);
     const [slots, setSlots] = useState([]);
@@ -76,13 +77,15 @@ export default function Organisation() {
 
     const handleSaveMeeting = () => {
         const data = {
-            provider: selectedSlotProvider.id,
+            provider: `api/users/${selectedSlotProvider.id}`,
             datetime: selectedSlot.datetime,
-            service: selectedService.id,
+            service: `api/services/${selectedService.id}`,
         }; // todo max width container global
 
+        setIsSaving(true);
         appointmentService.create(data).then((appointment) => {
             console.log(appointment);
+            setIsSaving(false);
         });
     }
 
@@ -186,7 +189,7 @@ export default function Organisation() {
                         {
                             onClick: () => handleSaveMeeting(),
                             children: "Prendre rendez-vous",
-                            disabled: selectedSlotProvider === null,
+                            disabled: selectedSlotProvider === null || isSaving,
                         }
                     ]
                 }

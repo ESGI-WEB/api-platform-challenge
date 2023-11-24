@@ -17,13 +17,14 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints\Choice;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
     operations: [
         new GetCollection(), // TODO to secure
         new Post(
             normalizationContext: ['groups' => [GroupsEnum::APPOINTMENT_WRITE->value]],
-            security: "is_granted('" . AppointmentVoter::CREATE . "', object)",
+            securityPostDenormalize: 'is_granted("' . AppointmentVoter::CREATE . '", object)',
         ),
     ],
 )]
@@ -60,21 +61,25 @@ class Appointment
     private ?int $id = null;
 
     #[Groups([GroupsEnum::APPOINTMENT_WRITE->value])]
-    #[ORM\ManyToOne(inversedBy: 'clientAppointments')]
+    #[Assert\NotNull]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'clientAppointments')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $client = null;
 
     #[Groups([GroupsEnum::APPOINTMENT_WRITE->value])]
-    #[ORM\ManyToOne(inversedBy: 'providerAppointments')]
+    #[Assert\NotNull]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'providerAppointments')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $provider = null;
 
     #[Groups([GroupsEnum::APPOINTMENT_WRITE->value])]
+    #[Assert\NotNull]
     #[ORM\ManyToOne(inversedBy: 'appointments')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Service $service = null;
 
     #[Groups([GroupsEnum::APPOINTMENT_WRITE->value])]
+    #[Assert\NotNull]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $datetime = null;
 
@@ -86,6 +91,7 @@ class Appointment
     private DateTimeImmutable $createdAt;
 
     #[ORM\Column(length: 20, options: ['default' => AppointmentStatusEnum::valid->value])]
+    #[Assert\Choice(callback: [AppointmentStatusEnum::class, 'values'])]
     #[Choice(callback: [AppointmentStatusEnum::class, 'values'])]
     private ?string $status = null;
 
@@ -93,6 +99,7 @@ class Appointment
     {
         $this->answers = new ArrayCollection();
         $this->createdAt = new DateTimeImmutable();
+        $this->status = AppointmentStatusEnum::valid->value;
     }
 
     public function getId(): ?int
