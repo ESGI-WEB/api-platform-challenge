@@ -48,7 +48,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::AVAILABLE_SLOT_READ->value])]
+    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::AVAILABLE_SLOT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
     #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 
@@ -75,17 +75,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private DateTimeImmutable $createdAt;
 
-    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE->value, GroupsEnum::AVAILABLE_SLOT_READ->value])]
+    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE->value, GroupsEnum::AVAILABLE_SLOT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
     #[ORM\Column(length: 255)]
     private ?string $firstname = null;
 
-    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE->value, GroupsEnum::AVAILABLE_SLOT_READ->value])]
+    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE->value, GroupsEnum::AVAILABLE_SLOT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
     #[ORM\Column(length: 255)]
     private ?string $lastname = null;
-
-    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE_ADMIN->value])]
-    #[ORM\Column]
-    private ?bool $providerValidated;
 
     #[ORM\OneToMany(mappedBy: 'provider', targetEntity: Schedule::class, orphanRemoval: true)]
     private Collection $schedules;
@@ -104,7 +100,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __construct()
     {
-        $this->providerValidated = false;
         $this->createdAt = new DateTimeImmutable();
         $this->schedules = new ArrayCollection();
         $this->holidays = new ArrayCollection();
@@ -205,18 +200,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastname(string $lastname): static
     {
         $this->lastname = $lastname;
-
-        return $this;
-    }
-
-    public function isProviderValidated(): ?bool
-    {
-        return $this->providerValidated;
-    }
-
-    public function setProviderValidated(bool $providerValidated): static
-    {
-        $this->providerValidated = $providerValidated;
 
         return $this;
     }

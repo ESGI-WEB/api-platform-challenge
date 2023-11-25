@@ -88,7 +88,7 @@ export default function Calendar({
                 {dates[displayedChunk].map(([day, calendarDates]) => (
                     <div key={day} className="text-center">
                         <p className="margin-0">{calendarDates[0].date.toLocaleDateString(undefined, {weekday: 'long'})}</p>
-                        <p className="margin-bottom-1">
+                        <p className="fr-mb-5v">
                             <small>{calendarDates[0].date.toLocaleDateString(undefined, {
                                 day: 'numeric',
                                 month: 'short'
@@ -101,7 +101,7 @@ export default function Calendar({
                                        className="pointer"
                                        onClick={() => onDateClick(date.data)}
                                 >
-                                    {date.date.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}
+                                    {date.date.toLocaleTimeString(undefined, {hour: '2-digit', minute: '2-digit'})}
                                 </Badge>
                             ))}
                         </div>

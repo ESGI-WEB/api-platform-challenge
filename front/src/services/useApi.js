@@ -22,7 +22,13 @@ const useApi = () => {
 
         const type = hydra ? 'application/ld+json' : 'application/json';
 
-        headers['Content-Type'] = headers['Accept'] = type;
+        if (!headers['Content-Type']) {
+            headers['Content-Type'] = type;
+        }
+
+        if (!headers['Accept']) {
+            headers['Accept'] = type;
+        }
 
         return fetch(`${baseUrl}/${url}`, {...options, headers}).then(response => {
             if (response.ok) {

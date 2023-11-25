@@ -23,7 +23,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: OrganisationRepository::class)]
 class Organisation
 {
-    #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value])]
+    #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -32,15 +32,15 @@ class Organisation
     #[ORM\Column(type: Types::GUID)]
     private ?string $uuid = null;
 
-    #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value])]
+    #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value])]
+    #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
     #[ORM\Column(type: Types::DECIMAL, precision: 20, scale: 16)]
     private ?string $latitude = null;
 
-    #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value])]
+    #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
     #[ORM\Column(type: Types::DECIMAL, precision: 20, scale: 16)]
     private ?string $longitude = null;
 

@@ -8,6 +8,7 @@ use App\Entity\Holiday;
 use App\Entity\Organisation;
 use App\Entity\Schedule;
 use App\Entity\User;
+use App\Enum\AppointmentStatusEnum;
 use App\Enum\RolesEnum;
 use App\Services\SlotsService;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -18,17 +19,23 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 class AppointmentVoter extends Voter
 {
     public const CREATE = 'CREATE_APPOINTMENT';
+    public const CLIENT_READ_COLLECTION = 'CLIENT_READ_APPOINTMENT_COLLECTION';
+    public const CLIENT_READ = 'CLIENT_READ_APPOINTMENT';
+    public const CLIENT_UPDATE = 'CLIENT_UPDATE_APPOINTMENT';
+    public const PROVIDER_READ_COLLECTION = 'PROVIDER_READ_APPOINTMENT_COLLECTION';
+    public const PROVIDER_READ = 'PROVIDER_READ_APPOINTMENT';
 
     public function __construct(
         private readonly Security $security,
-        private SlotsService $slotsService
+        private readonly SlotsService $slotsService,
+        private readonly RequestStack $requestStack
     ) {
     }
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        return in_array($attribute, [self::CREATE])
-            && ($subject instanceof Appointment);
+        return in_array($attribute, [self::CREATE, self::CLIENT_READ_COLLECTION, self::CLIENT_READ, self::PROVIDER_READ_COLLECTION, self::PROVIDER_READ, self::CLIENT_UPDATE])
+            && ($subject instanceof Appointment || $subject instanceof Paginator);
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
@@ -41,8 +48,42 @@ class AppointmentVoter extends Voter
 
         return match ($attribute) {
             self::CREATE => $this->canCreateAppointment($user, $subject),
+            self::CLIENT_READ_COLLECTION => $this->canClientReadAppointmentCollection($user),
+            self::CLIENT_READ => $this->canClientReadAppointment($user, $subject),
+            self::PROVIDER_READ_COLLECTION => $this->canProviderReadAppointmentCollection($user),
+            self::PROVIDER_READ => $this->canProviderReadAppointment($user, $subject),
+            self::CLIENT_UPDATE => $this->canClientUpdateAppointment($user, $subject),
             default => false,
         };
+    }
+
+    private function canClientReadAppointmentCollection(User $user): bool
+    {
+        $userQueried = intval($this->requestStack->getCurrentRequest()->attributes->get('user_id'));
+        return $user->getId() === $userQueried;
+    }
+
+    private function canClientReadAppointment(User $user, Appointment $appointment): bool
+    {
+        return $user->getId() === $appointment->getClient()->getId();
+    }
+
+    private function canProviderReadAppointmentCollection(User $user): bool
+    {
+        $userQueried = intval($this->requestStack->getCurrentRequest()->attributes->get('provider_id'));
+        return $user->getId() === $userQueried;
+    }
+
+    private function canProviderReadAppointment(User $user, Appointment $appointment): bool
+    {
+        return $user->getId() === $appointment->getProvider()->getId();
+    }
+
+    private function canClientUpdateAppointment(User $user, Appointment $appointment): bool
+    {
+        return $appointment->getStatus() == AppointmentStatusEnum::valid->value &&
+            $appointment->getDatetime() > new \DateTimeImmutable() && // may we must prevent updating if appointment is in less than 48h ?
+            $user->getId() === $appointment->getClient()->getId();
     }
 
     /**

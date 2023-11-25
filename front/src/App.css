@@ -1,5 +1,7 @@
 #main-page-container {
     margin: 32px;
+    display: flex;
+    justify-content: center;
 }
 
 /* displays */
@@ -14,6 +16,10 @@
 
 .flex-wrap {
     flex-wrap: wrap;
+}
+
+.flex-wrap-reverse {
+    flex-wrap: wrap-reverse;
 }
 
 .flex-column {
@@ -44,6 +50,10 @@
     justify-content: space-between;
 }
 
+.gap-1 {
+    gap: 0.4rem;
+}
+
 .gap-2 {
     gap: 1.2rem;
 }
@@ -54,10 +64,6 @@
 
 .margin-0 {
     margin: 0;
-}
-
-.margin-bottom-1 {
-    margin-bottom: 1rem;
 }
 
 .medium-map {
@@ -73,4 +79,8 @@
 
 .btn-with-background.fr-btn--secondary {
     background-color: var(--background-default-grey);
+}
+
+h4 {
+    color: var(--background-flat-blue-cumulus);
 }

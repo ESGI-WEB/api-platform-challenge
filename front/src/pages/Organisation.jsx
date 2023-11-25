@@ -10,13 +10,11 @@ import CallOut from "@codegouvfr/react-dsfr/CallOut.js";
 import Notice from "@codegouvfr/react-dsfr/Notice.js";
 import Button from "@codegouvfr/react-dsfr/Button.js";
 import ActionTile from "../components/ActionTile/ActionTile.jsx";
-import {createModal} from "@codegouvfr/react-dsfr/Modal";
 import useAppointmentService from "../services/useAppoitmentService.js";
-
-const modal = createModal({
-    id: "slot-reservation-modal",
-    isOpenedByDefault: false,
-});
+import Modal from "../components/Modal/Modal.jsx";
+import LoadableButton from "../components/LoadableButton/LoadableButton.jsx";
+import {useTranslation} from "react-i18next";
+import OrganisationLocation from "../components/OrganisationLocation.jsx";
 
 export default function Organisation() {
     const {organisationId} = useParams();
@@ -25,6 +23,7 @@ export default function Organisation() {
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [isErrored, setIsErrored] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [organisation, setOrganisation] = useState(null);
     const [slots, setSlots] = useState([]);
     const [selectedService, setSelectedService] = useState(null);
@@ -64,7 +63,7 @@ export default function Organisation() {
         } else {
             setSelectedSlotProvider(null);
         }
-        modal.open();
+        setIsModalOpen(true);
     }
 
     const handleProviderSelection = (provider) => {
@@ -80,14 +79,17 @@ export default function Organisation() {
             provider: `api/users/${selectedSlotProvider.id}`,
             datetime: selectedSlot.datetime,
             service: `api/services/${selectedService.id}`,
-        }; // todo max width container global
+        };
 
         setIsSaving(true);
         appointmentService.create(data).then((appointment) => {
-            console.log(appointment);
             setIsSaving(false);
+            setIsModalOpen(false);
+            navigate(`/appointment/${appointment.id}?display=success`);
         });
     }
+
+    const {t} = useTranslation();
 
     useEffect(() => {
         if (organisation === null || slots.length <= 0) {
@@ -110,23 +112,21 @@ export default function Organisation() {
             {(organisation.services.length <= 0 || slots.length <= 0) &&
                 <CallOut
                     buttonProps={{
-                        children: "Retour",
+                        children: t('back'),
                         onClick: () => navigate(-1),
                     }}
                     iconId="ri-calendar-close-fill"
-                    title="Ce commissariat ne propose pas de rendez-vous en ligne actuellement"
+                    title={t('this_station_has_no_appointment')}
 
                 >
-                    Il est possible que ce commissariat propose des rendez-vous en ligne prochainement. N'hésitez pas à
-                    revenir plus tard ou à vous rendre directement sur place. Sinon, vous pouvez rechercher un autre
-                    commissariat à proximité.
+                    {t('this_station_has_no_appointment_details')}
                 </CallOut>
             }
 
             {organisation.services.length > 0 && slots.length > 0 &&
                 <>
                     <ActionTile>
-                        <p className="margin-0">Les services disponibles dans ce commissariat</p>
+                        <p className="margin-0">{t('available_service_at_this_station')}</p>
 
                         <div className="flex flex-wrap gap-2">
                             {organisation.services.map((service, index) => (
@@ -144,7 +144,7 @@ export default function Organisation() {
 
                     {selectedService === null &&
                         <Notice
-                            title="Choissisez un service ci-dessus avant de prendre un rendez-vous"
+                            title={t('please_select_a_service_before_selecting_a_date')}
                         />
                     }
 
@@ -158,44 +158,17 @@ export default function Organisation() {
                         </>
                     }
 
-                    {organisation.longitude !== null && organisation.latitude !== null &&
-                        <div className="flex flex-wrap gap-2">
-                            <MapContainer center={[organisation.latitude, organisation.longitude]} zoom={17}
-                                          className="medium-map"
-                            >
-                                <TileLayer
-                                    attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                />
-                                <Marker position={[organisation.latitude, organisation.longitude]}/>
-                            </MapContainer>
-                            <div>
-                                <p className="margin-0">{organisation.name}</p>
-                            </div>
-                        </div>
-                    }
+                    <OrganisationLocation organisation={organisation} />
                 </>
             }
 
 
-            <modal.Component
-                title="Prendre rendez-vous"
-                iconId="ri-calendar-check-line"
-                buttons={
-                    [
-                        {
-                            children: "Retour"
-                        },
-                        {
-                            onClick: () => handleSaveMeeting(),
-                            children: "Prendre rendez-vous",
-                            disabled: selectedSlotProvider === null || isSaving,
-                        }
-                    ]
-                }
+            {isModalOpen && <Modal
+                title={t('take_an_appointment')}
+                onClose={() => setIsModalOpen(false)}
             >
-                {selectedSlot && <>
-                    <p>{
+                <div className="flex flex-column gap-2">
+                    <p className="margin-0">{
                         new Date(selectedSlot.datetime).toLocaleDateString(undefined, {
                             weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'
                         })
@@ -204,8 +177,8 @@ export default function Organisation() {
 
                     <ActionTile>
                         {selectedSlot.providers.length === 1 ?
-                            <p className="margin-0">Vous aurez rendez-vous avec</p> :
-                            <p className="margin-0">Choississez avec qui vous souhaitez prendre rendez-vous</p>
+                            <p className="margin-0">{t('youll_have_an_appointment_with')}</p> :
+                            <p className="margin-0">{t('please_select_a_provider')}</p>
                         }
                         <div className="flex flex-wrap gap-2">
                             {selectedSlot.providers.map((provider, index) => (
@@ -219,10 +192,26 @@ export default function Organisation() {
                                 </Button>
                             ))}
                         </div>
-
                     </ActionTile>
-                </>}
-            </modal.Component>
+
+                    <div className="flex space-between">
+                        <Button
+                            onClick={() => setIsModalOpen(false)}
+                            priority="tertiary no outline"
+                        >
+                            {t('back')}
+                        </Button>
+
+                        <LoadableButton
+                            onClick={() => handleSaveMeeting()}
+                            disabled={selectedSlotProvider === null || isSaving}
+                            isLoading={isSaving}
+                        >
+                            {t('take_an_appointment')}
+                        </LoadableButton>
+                    </div>
+                </div>
+            </Modal>}
         </div>
     );
 }

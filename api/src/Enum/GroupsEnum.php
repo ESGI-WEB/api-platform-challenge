@@ -20,5 +20,6 @@ enum GroupsEnum: string
     case TRANSLATION_READ = 'translation:read';
     case TRANSLATION_WRITE = 'translation:write';
     case APPOINTMENT_READ = 'appointment:read';
+    case APPOINTMENT_READ_DETAILED = 'appointment:read:detailed';
     case APPOINTMENT_WRITE = 'appointment:write';
 }

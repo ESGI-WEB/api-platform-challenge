@@ -13,6 +13,7 @@ import {useTranslation} from "react-i18next";
 import i18n from "i18next";
 import {useEffect, useState} from "react";
 import NoTranslations from "./pages/NoTranslations.jsx";
+import Appointment from "./pages/Appointment.jsx";
 
 function App() {
     const {t} = useTranslation();
@@ -66,38 +67,42 @@ function App() {
                 serviceTitle={serviceTitle}
             />
             <div id="main-page-container">
-                <div>
-
-                </div>
-                {translationsLoaded ?
-                    <Routes>
-                        <Route index element={<Home/>}/>
-                        <Route
-                            path="login"
-                            element={
-                                <Login
-                                    onLoginSuccessful={onLogin}
-                                />
-                            }
-                        />
-                        <Route
-                            path="admin"
-                            element={
-                                <ProtectedRoute requiredRoles={[Roles.ADMIN]}>
-                                    <Admin/>
+                <div className="fr-col-10">
+                    {translationsLoaded ?
+                        <Routes>
+                            <Route index element={<Home/>}/>
+                            <Route
+                                path="login"
+                                element={
+                                    <Login
+                                        onLoginSuccessful={onLogin}
+                                    />
+                                }
+                            />
+                            <Route
+                                path="admin"
+                                element={
+                                    <ProtectedRoute requiredRoles={[Roles.ADMIN]}>
+                                        <Admin/>
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route path="station/:organisationId" element={
+                                <ProtectedRoute>
+                                    <Organisation/>
                                 </ProtectedRoute>
-                            }
-                        />
-                        <Route path="station/:organisationId" element={
-                            <ProtectedRoute>
-                                <Organisation/>
-                            </ProtectedRoute>
-                        }/>
-                        <Route path="*" element={<Navigate to="/" replace/>}/>
-                    </Routes>
-                    :
-                    <NoTranslations/>
-                }
+                            }/>
+                            <Route path="appointment/:appointmentId" element={
+                                <ProtectedRoute>
+                                    <Appointment/>
+                                </ProtectedRoute>
+                            }/>
+                            <Route path="*" element={<Navigate to="/" replace/>}/>
+                        </Routes>
+                        :
+                        <NoTranslations/>
+                    }
+                </div>
             </div>
             <GlobalFooter/>
         </>

@@ -8,12 +8,12 @@ export const AlertSeverity = {
     ERROR: 'error',
 }
 
-export default function InPageAlert({alert = null}) {
+export default function InPageAlert({alert = null, noDescription = false}) {
     const { t } = useTranslation();
     return (
         alert && <Alert
             closable={alert.closable ?? true}
-            description={alert.description || t('error_occurred')}
+            description={!noDescription && (alert.description || t('error_occurred'))}
             severity={alert.severity ?? AlertSeverity.INFO}
             title={alert.title}
             className={alert.className ?? 'fr-mb-2w'}
