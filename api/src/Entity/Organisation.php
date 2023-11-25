@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use App\Enum\GroupsEnum;
 use App\Repository\OrganisationRepository;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -10,23 +12,23 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Enum\RolesEnum;
-
 use ApiPlatform\Metadata\Link;
-
-use ApiPlatform\Metadata\Get;
+use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 
 #[ApiResource(
     operations: [
-        new Get(),
+        new Get(
+            normalizationContext: ['groups' => [GroupsEnum::ORGANISATION_READ_DETAILED->value]]
+        ),
         new GetCollection(
             security: "is_granted('" . RolesEnum::ADMIN->value . "')"
         ),
 
         new Post(security: "is_granted('" . RolesEnum::PROVIDER->value . "')")
     ]
-)] // TODO to secure
+)]
 
 #[ApiResource(
     uriTemplate: '/users/{id}/organisations',
@@ -45,6 +47,7 @@ use ApiPlatform\Metadata\Post;
 #[ORM\Entity(repositoryClass: OrganisationRepository::class)]
 class Organisation
 {
+    #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -53,29 +56,41 @@ class Organisation
     #[ORM\Column(type: Types::GUID)]
     private ?string $uuid = null;
 
+    #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
     #[ORM\Column(type: Types::DECIMAL, precision: 20, scale: 16)]
     private ?string $latitude = null;
 
+    #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
     #[ORM\Column(type: Types::DECIMAL, precision: 20, scale: 16)]
     private ?string $longitude = null;
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'organisations')]
     private Collection $users;
 
+    #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value])]
     #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: Service::class, orphanRemoval: true)]
     private Collection $services;
 
     #[ORM\Column]
     private DateTimeImmutable $createdAt;
 
+    #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: Schedule::class)]
+    private Collection $schedules;
+
+    #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: Holiday::class)]
+    private Collection $holidays;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
         $this->services = new ArrayCollection();
         $this->createdAt = new DateTimeImmutable();
+        $this->schedules = new ArrayCollection();
+        $this->holidays = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -195,4 +210,63 @@ class Organisation
         $this->createdAt = $createdAt;
     }
 
+    /**
+     * @return Collection<int, Schedule>
+     */
+    public function getSchedules(): Collection
+    {
+        return $this->schedules;
+    }
+
+    public function addSchedule(Schedule $schedule): static
+    {
+        if (!$this->schedules->contains($schedule)) {
+            $this->schedules->add($schedule);
+            $schedule->setOrganisation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSchedule(Schedule $schedule): static
+    {
+        if ($this->schedules->removeElement($schedule)) {
+            // set the owning side to null (unless already changed)
+            if ($schedule->getOrganisation() === $this) {
+                $schedule->setOrganisation(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Holiday>
+     */
+    public function getHolidays(): Collection
+    {
+        return $this->holidays;
+    }
+
+    public function addHoliday(Holiday $holiday): static
+    {
+        if (!$this->holidays->contains($holiday)) {
+            $this->holidays->add($holiday);
+            $holiday->setOrganisation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHoliday(Holiday $holiday): static
+    {
+        if ($this->holidays->removeElement($holiday)) {
+            // set the owning side to null (unless already changed)
+            if ($holiday->getOrganisation() === $this) {
+                $holiday->setOrganisation(null);
+            }
+        }
+
+        return $this;
+    }
 }

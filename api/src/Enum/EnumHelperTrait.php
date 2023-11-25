@@ -8,8 +8,6 @@ trait EnumHelperTrait
 {
     public static function values(): array
     {
-        $reflection = new \ReflectionClass(static::class);
-
-        return array_values($reflection->getConstants());
+        return array_map(fn($case) => $case->value, static::cases());
     }
 }

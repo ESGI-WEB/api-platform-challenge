@@ -7,12 +7,12 @@ const useApi = () => {
     const location = useLocation();
     const baseUrl = import.meta.env.VITE_API_ENDPOINT;
 
-    return (url, options = {}, hydra = false) => {
+    return (url, options = {}, hydra = false, withAuthToken = true) => {
         const headers = {
             ...options.headers,
         };
 
-        if (token && !options.headers?.Authorization) {
+        if (token && !options.headers?.Authorization && withAuthToken) {
             headers.Authorization = `Bearer ${token}`;
         }
 
@@ -22,7 +22,13 @@ const useApi = () => {
 
         const type = hydra ? 'application/ld+json' : 'application/json';
 
-        headers['Content-Type'] = headers['Accept'] = type;
+        if (!headers['Content-Type']) {
+            headers['Content-Type'] = type;
+        }
+
+        if (!headers['Accept']) {
+            headers['Accept'] = type;
+        }
 
         return fetch(`${baseUrl}/${url}`, {...options, headers}).then(response => {
             if (response.ok) {
