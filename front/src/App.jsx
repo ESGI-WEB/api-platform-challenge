@@ -8,12 +8,15 @@ import Admin from "./pages/admin/Admin.jsx";
 import useAuth, {Roles} from "./auth/useAuth.js";
 import ProtectedRoute from "./auth/ProtectedRoute.jsx";
 import Badge from "@codegouvfr/react-dsfr/Badge.js";
+import Organisation from "./pages/Organisation.jsx";
 import {useTranslation} from "react-i18next";
 import i18n from "i18next";
 import {useEffect, useState} from "react";
+import NoTranslations from "./pages/NoTranslations.jsx";
+import Appointment from "./pages/Appointment.jsx";
 
 function App() {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
     const [translationsLoaded, setTranslationsLoaded] = useState(true);
 
     useEffect(() => {
@@ -63,10 +66,11 @@ function App() {
                 quickAccessItems={quickAccessItems}
                 serviceTitle={serviceTitle}
             />
-                <div id="main-page-container">
-                    {translationsLoaded ? (
+            <div id="main-page-container">
+                <div className="fr-col-10">
+                    {translationsLoaded ?
                         <Routes>
-                            <Route index element={<Home />} />
+                            <Route index element={<Home/>}/>
                             <Route
                                 path="login"
                                 element={
@@ -78,18 +82,29 @@ function App() {
                             <Route
                                 path="admin"
                                 element={
-                                    <ProtectedRoute requiredRole={Roles.ADMIN}>
-                                        <Admin />
+                                    <ProtectedRoute requiredRoles={[Roles.ADMIN]}>
+                                        <Admin/>
                                     </ProtectedRoute>
                                 }
                             />
-                            <Route path="*" element={<Navigate to="/" replace />} />
-                        </Routes>)
-                        : (
-                            <div id="translations-error">Error on loading translations...</div>
-                        )}
+                            <Route path="station/:organisationId" element={
+                                <ProtectedRoute>
+                                    <Organisation/>
+                                </ProtectedRoute>
+                            }/>
+                            <Route path="appointment/:appointmentId" element={
+                                <ProtectedRoute>
+                                    <Appointment/>
+                                </ProtectedRoute>
+                            }/>
+                            <Route path="*" element={<Navigate to="/" replace/>}/>
+                        </Routes>
+                        :
+                        <NoTranslations/>
+                    }
                 </div>
-            <GlobalFooter />
+            </div>
+            <GlobalFooter/>
         </>
     );
 }

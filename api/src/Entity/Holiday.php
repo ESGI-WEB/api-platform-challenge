@@ -5,22 +5,48 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use App\Enum\GroupsEnum;
 use App\Repository\HolidayRepository;
+use App\Security\Voter\ScheduleHolidayVoter;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
-    uriTemplate: '/users/{id}/holidays',
+    uriTemplate: '/organisations/{organisation_id}/holidays',
     operations: [
-        new GetCollection(), // TODO to secure
+        new GetCollection(security: "is_granted('" . ScheduleHolidayVoter::VIEW_FOR_ORGANISATION . "', object)"),
     ],
     uriVariables: [
-        'id' => new Link(
-            fromProperty: 'holidays',
-            fromClass: User::class
+        'organisation_id' => new Link(
+            toProperty: 'organisation',
+            fromClass: Organisation::class,
         ),
     ],
+    normalizationContext: ['groups' => [GroupsEnum::HOLIDAY_READ->value]],
+)]
+#[ApiResource(
+    uriTemplate: '/users/{user_id}/holidays',
+    operations: [
+        new GetCollection(security: "is_granted('" . ScheduleHolidayVoter::VIEW_FOR_USER . "', object)"),
+        new Post(denormalizationContext: ['groups' => [GroupsEnum::HOLIDAY_WRITE->value]],
+            security: "is_granted('" . ScheduleHolidayVoter::CREATE . "', object)"
+        ),
+        new Put(denormalizationContext: ['groups' => [GroupsEnum::HOLIDAY_WRITE->value]],
+            security: "is_granted('" . ScheduleHolidayVoter::EDIT . "', object)"
+        ),
+    ],
+    uriVariables: [
+        'user_id' => new Link(
+            toProperty: 'provider',
+            fromClass: User::class,
+        ),
+    ],
+    normalizationContext: ['groups' => [GroupsEnum::HOLIDAY_READ->value]],
 )]
 #[ORM\Entity(repositoryClass: HolidayRepository::class)]
 class Holiday
@@ -28,23 +54,37 @@ class Holiday
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups([GroupsEnum::HOLIDAY_READ->value])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $date = null;
+    #[Groups([GroupsEnum::HOLIDAY_WRITE->value, GroupsEnum::HOLIDAY_READ->value])]
+    #[Assert\NotBlank]
+    #[Assert\DateTime]
+    private ?\DateTimeInterface $datetimeStart = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $datetime_start = null;
+    #[Assert\NotBlank]
+    #[Assert\DateTime]
+    #[Assert\Expression(
+        expression: "this.getDatetimeEnd() > this.getDatetimeStart()",
+        message: "End date must be after the start date."
+    )]
+    #[Groups([GroupsEnum::HOLIDAY_WRITE->value, GroupsEnum::HOLIDAY_READ->value])]
+    private ?\DateTimeInterface $datetimeEnd = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $datetime_end = null;
-
+    #[Groups([GroupsEnum::HOLIDAY_WRITE->value])]
+    #[Assert\NotBlank]
     #[ORM\ManyToOne(inversedBy: 'holidays')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $provider = null;
 
     #[ORM\Column]
     private DateTimeImmutable $createdAt;
+
+    #[ORM\ManyToOne(inversedBy: 'holidays')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Organisation $organisation = null;
 
     public function __construct()
     {
@@ -56,38 +96,26 @@ class Holiday
         return $this->id;
     }
 
-    public function getDate(): ?\DateTimeInterface
-    {
-        return $this->date;
-    }
-
-    public function setDate(\DateTimeInterface $date): static
-    {
-        $this->date = $date;
-
-        return $this;
-    }
-
     public function getDatetimeStart(): ?\DateTimeInterface
     {
-        return $this->datetime_start;
+        return $this->datetimeStart;
     }
 
-    public function setDatetimeStart(\DateTimeInterface $datetime_start): static
+    public function setDatetimeStart(\DateTimeInterface $datetimeStart): static
     {
-        $this->datetime_start = $datetime_start;
+        $this->datetimeStart = $datetimeStart;
 
         return $this;
     }
 
     public function getDatetimeEnd(): ?\DateTimeInterface
     {
-        return $this->datetime_end;
+        return $this->datetimeEnd;
     }
 
-    public function setDatetimeEnd(\DateTimeInterface $datetime_end): static
+    public function setDatetimeEnd(\DateTimeInterface $datetimeEnd): static
     {
-        $this->datetime_end = $datetime_end;
+        $this->datetimeEnd = $datetimeEnd;
 
         return $this;
     }
@@ -112,5 +140,17 @@ class Holiday
     public function setCreatedAt(DateTimeImmutable $createdAt): void
     {
         $this->createdAt = $createdAt;
+    }
+
+    public function getOrganisation(): ?Organisation
+    {
+        return $this->organisation;
+    }
+
+    public function setOrganisation(?Organisation $organisation): static
+    {
+        $this->organisation = $organisation;
+
+        return $this;
     }
 }

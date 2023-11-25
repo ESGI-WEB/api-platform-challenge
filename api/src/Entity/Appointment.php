@@ -3,76 +3,164 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Enum\AppointmentStatusEnum;
+use App\Enum\GroupsEnum;
+use App\Enum\RolesEnum;
 use App\Repository\AppointmentRepository;
+use App\Security\Voter\AppointmentVoter;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints\Choice;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
     operations: [
-        new GetCollection(), // TODO to secure
-    ],
-)]
-#[ApiResource(
-    uriTemplate: '/users/{id}/client_appointments',
-    operations: [
-        new GetCollection(), // TODO to secure
-    ],
-    uriVariables: [
-        'id' => new Link(
-            fromProperty: 'clientAppointments',
-            fromClass: User::class
+        new GetCollection(security: 'is_granted("' . RolesEnum::ADMIN->value . '")'),
+        new Post(
+            normalizationContext: ['groups' => [GroupsEnum::APPOINTMENT_READ->value]],
+            denormalizationContext: ['groups' => [GroupsEnum::APPOINTMENT_WRITE->value]],
+            securityPostDenormalize: 'is_granted("' . AppointmentVoter::CREATE . '", object)',
         ),
     ],
 )]
 #[ApiResource(
-    uriTemplate: '/users/{id}/provider_appointments',
+    uriTemplate: '/users/{user_id}/client_appointments',
     operations: [
-        new GetCollection(), // TODO to secure
+        new GetCollection(
+            openapiContext: [
+                'summary' => 'Get all appointments where user is a client',
+            ],
+            security: 'is_granted("' . AppointmentVoter::CLIENT_READ_COLLECTION . '", object)',
+        ),
     ],
     uriVariables: [
-        'id' => new Link(
-            fromProperty: 'providerAppointments',
+        'user_id' => new Link(
+            toProperty: 'client',
             fromClass: User::class
         ),
     ],
+    normalizationContext: ['groups' => [GroupsEnum::APPOINTMENT_READ->value]],
+)]
+#[ApiResource(
+    uriTemplate: '/users/{user_id}/client_appointments/{appointment_id}',
+    operations: [
+        new Get(
+            openapiContext: [
+                'summary' => 'Get an appointment where user is a client',
+            ],
+            normalizationContext: ['groups' => [GroupsEnum::APPOINTMENT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value]],
+            security: 'is_granted("' . AppointmentVoter::CLIENT_READ . '", object)',
+        ),
+        new Patch(
+            openapiContext: [
+                'summary' => 'Update an appointment where user is a client',
+            ],
+            normalizationContext: ['groups' => [GroupsEnum::APPOINTMENT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value]],
+            security: 'is_granted("' . AppointmentVoter::CLIENT_UPDATE . '", object)',
+        ),
+    ],
+    uriVariables: [
+        'user_id' => new Link(
+            toProperty: 'client',
+            fromClass: User::class
+        ),
+        'appointment_id' => new Link(
+            fromClass: Appointment::class
+        ),
+    ],
+    normalizationContext: ['groups' => [GroupsEnum::APPOINTMENT_READ->value]],
+)]
+#[ApiResource(
+    uriTemplate: '/users/{provider_id}/provider_appointments',
+    operations: [
+        new GetCollection(
+            openapiContext: [
+                'summary' => 'Get all appointments where user is a provider',
+            ],
+            security: 'is_granted("' . AppointmentVoter::PROVIDER_READ_COLLECTION . '", object)',
+        ),
+    ],
+    uriVariables: [
+        'provider_id' => new Link(
+            toProperty: 'provider',
+            fromClass: User::class
+        ),
+    ],
+    normalizationContext: ['groups' => [GroupsEnum::APPOINTMENT_READ->value]],
+)]
+#[ApiResource(
+    uriTemplate: '/users/{provider_id}/provider_appointments/{appointment_id}',
+    operations: [
+        new Get(
+            openapiContext: [
+                'summary' => 'Get an appointment where user is a provider',
+            ],
+            security: 'is_granted("' . AppointmentVoter::PROVIDER_READ . '", object)',
+        ),
+    ],
+    uriVariables: [
+        'provider_id' => new Link(
+            toProperty: 'provider',
+            fromClass: User::class
+        ),
+        'appointment_id' => new Link(
+            fromClass: Appointment::class
+        ),
+    ],
+    normalizationContext: ['groups' => [GroupsEnum::APPOINTMENT_READ->value]],
 )]
 #[ORM\Entity(repositoryClass: AppointmentRepository::class)]
 class Appointment
 {
+    #[Groups([GroupsEnum::APPOINTMENT_READ->value])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'clientAppointments')]
+    #[Groups([GroupsEnum::APPOINTMENT_WRITE->value, GroupsEnum::APPOINTMENT_READ->value])]
+    #[Assert\NotNull]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'clientAppointments')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $client = null;
 
-    #[ORM\ManyToOne(inversedBy: 'providerAppointments')]
+    #[Groups([GroupsEnum::APPOINTMENT_WRITE->value, GroupsEnum::APPOINTMENT_READ->value])]
+    #[Assert\NotNull]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'providerAppointments')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $provider = null;
 
+    #[Groups([GroupsEnum::APPOINTMENT_WRITE->value, GroupsEnum::APPOINTMENT_READ->value])]
+    #[Assert\NotNull]
     #[ORM\ManyToOne(inversedBy: 'appointments')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Service $service = null;
 
+    #[Groups([GroupsEnum::APPOINTMENT_WRITE->value, GroupsEnum::APPOINTMENT_READ->value])]
+    #[Assert\NotNull]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $datetime = null;
 
+    #[Groups([GroupsEnum::APPOINTMENT_WRITE->value])]
     #[ORM\OneToMany(mappedBy: 'appointment', targetEntity: Answer::class, orphanRemoval: true)]
     private Collection $answers;
 
+    #[Groups([GroupsEnum::APPOINTMENT_READ->value])]
     #[ORM\Column]
     private DateTimeImmutable $createdAt;
 
-    #[ORM\Column(length: 20, options: ['default' => AppointmentStatusEnum::valid])]
+    #[Groups([GroupsEnum::APPOINTMENT_READ->value])]
+    #[ORM\Column(length: 20, options: ['default' => AppointmentStatusEnum::valid->value])]
+    #[Assert\Choice(callback: [AppointmentStatusEnum::class, 'values'])]
     #[Choice(callback: [AppointmentStatusEnum::class, 'values'])]
     private ?string $status = null;
 
@@ -80,6 +168,7 @@ class Appointment
     {
         $this->answers = new ArrayCollection();
         $this->createdAt = new DateTimeImmutable();
+        $this->status = AppointmentStatusEnum::valid->value;
     }
 
     public function getId(): ?int
