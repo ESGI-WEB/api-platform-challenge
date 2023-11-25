@@ -21,7 +21,7 @@ use ApiPlatform\Metadata\Post;
     operations: [
         new Get(),
         new GetCollection(),
-        new Post(
+//        new Post(
 //             uriTemplate: '/organisations/{id}/services',
 //             uriVariables: [
 //                 'id' => new Link(
@@ -29,7 +29,7 @@ use ApiPlatform\Metadata\Post;
 //                     fromProperty: 'id',
 //                 )
 //             ],
-        )
+//        )
     ],
     normalizationContext: ['groups' => [GroupsEnum::SERVICE_READ->value]],
 )]

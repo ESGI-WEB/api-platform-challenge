@@ -6,6 +6,7 @@ import Input from "@codegouvfr/react-dsfr/Input.js";
 
 
 export default function CreateOrganisation() {
+  // TODO TO REWORD (translations, form with addresses)
   const [name, setName] = useState("test initial");
   const [latitude, setLatitude] = useState("12.3456789");
   const [longitude, setLongitude] = useState("12.3456789");

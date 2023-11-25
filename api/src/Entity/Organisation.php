@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use App\Enum\GroupsEnum;
 use App\Repository\OrganisationRepository;
+use App\Security\Voter\OrganisationVoter;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -16,29 +17,27 @@ use ApiPlatform\Metadata\Link;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
     operations: [
-        new Get(
-            normalizationContext: ['groups' => [GroupsEnum::ORGANISATION_READ_DETAILED->value]]
-        ),
-        new GetCollection(
-            security: "is_granted('" . RolesEnum::ADMIN->value . "')"
-        ),
-
-        new Post(security: "is_granted('" . RolesEnum::PROVIDER->value . "')")
-    ]
-)]
-
-#[ApiResource(
-    uriTemplate: '/users/{id}/organisations',
-    operations: [
-        new GetCollection(
+        new Get(),
+        new GetCollection(),
+        new Post( // TODO DENORMALIZER
             security: "is_granted('" . RolesEnum::PROVIDER->value . "')"
+        )
+    ],
+    normalizationContext: ['groups' => [GroupsEnum::ORGANISATION_READ_DETAILED->value]],
+)]
+#[ApiResource(
+    uriTemplate: '/users/{user_id}/organisations',
+    operations: [
+        new GetCollection(
+            security: "is_granted('" . OrganisationVoter::USER_READ_ORGANISATIONS . "', object)"
         ),
     ],
     uriVariables: [
-        'id' => new Link(
+        'user_id' => new Link(
             toProperty: 'users',
             fromClass: User::class
         )
@@ -57,6 +56,8 @@ class Organisation
     private ?string $uuid = null;
 
     #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 3, max: 255)]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
