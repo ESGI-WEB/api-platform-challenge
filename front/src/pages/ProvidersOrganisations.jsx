@@ -38,7 +38,7 @@ export default function ProvidersOrganisations() {
 
   return (
     <div>
-      <div className={"mb-20"}>
+      <div className="fr-mb-8v">
         <Button onClick={navigateToCreateOrganisation}>
           Créer une organisation
         </Button>
