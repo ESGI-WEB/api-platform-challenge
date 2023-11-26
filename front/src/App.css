@@ -73,6 +73,13 @@
     --underline-img: none;
 }
 
+.large-map {
+    width: 500px;
+    height: 300px;
+    z-index: 1;
+    --underline-img: none;
+}
+
 .pointer {
     cursor: pointer;
 }
@@ -83,4 +90,8 @@
 
 h4 {
     color: var(--background-flat-blue-cumulus);
+}
+
+.full-width {
+    width: 100%;
 }

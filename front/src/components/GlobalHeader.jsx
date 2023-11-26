@@ -11,6 +11,7 @@ export default function GlobalHeader({
   id = "fr-header-header-with-quick-access-items",
   quickAccessItems = [],
   serviceTitle = '',
+  navigation = [],
 }) {
     const { t } = useTranslation();
 
@@ -23,6 +24,7 @@ export default function GlobalHeader({
             homeLinkProps={homeLinkProps}
             id={id}
             quickAccessItems={[...quickAccessItems, headerFooterDisplayItem]}
+            navigation={navigation}
         />
     )
 }

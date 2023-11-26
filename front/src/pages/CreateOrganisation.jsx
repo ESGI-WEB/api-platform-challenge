@@ -1,76 +1,101 @@
-import useOrganisationService from "../services/useOrganisationService.js";
-import { useState } from "react";
+import {useState} from "react";
 import InPageAlert, {AlertSeverity} from "../components/InPageAlert.jsx";
 import LoadableButton from "../components/LoadableButton/LoadableButton.jsx";
 import Input from "@codegouvfr/react-dsfr/Input.js";
-
+import OrganisationLocation from "../components/OrganisationLocation.jsx";
+import useOrganisationService from "../services/useOrganisationService.js";
+import AddressAutocomplete from "../components/AddressAutocomplete.jsx";
+import {useNavigate} from "react-router-dom";
+import {useTranslation} from "react-i18next";
 
 export default function CreateOrganisation() {
-  // TODO TO REWORD (translations, form with addresses)
-  const [name, setName] = useState("test initial");
-  const [latitude, setLatitude] = useState("12.3456789");
-  const [longitude, setLongitude] = useState("12.3456789");
-  const [message, setMessage] = useState("");
+    // TODO TO REWORD (translations, form with addresses)
+    const [organisation, setOrganisation] = useState({});
+    const [alert, setAlert] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const errorState = {state: 'error', text: 'This field is required'};
+    const [nameInputState, setNameInputState] = useState({});
+    const [addressInputState, setAddressInputState] = useState({});
 
+    const organisationService = useOrganisationService();
+    const navigate = useNavigate();
+    const {t} = useTranslation();
 
-  const [alert, setAlert] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+    const handleCreateOrganisation = async (e) => {
+        e.preventDefault();
+        setNameInputState({});
+        setAddressInputState({});
+        setAlert(null);
 
+        if (!organisation.name) {
+            setNameInputState(errorState);
+            return;
+        }
 
-  const OrganisationService = useOrganisationService();
+        if (!isFinite(organisation.latitude) || !isFinite(organisation.longitude)) {
+            setAddressInputState(errorState);
+            return;
+        }
+        setIsLoading(true);
 
+        organisationService.createOrganisation(organisation).then((response) => {
+            if (response) {
+                navigate(`/station/${response.id}`);
+            }
+        }).catch((error) => {
+            console.error(error)
+            setAlert({
+                severity: AlertSeverity.ERROR,
+            });
+            window.scrollTo(0, 0)
+        }).finally(() => setIsLoading(false));
+    }
 
-  const handleCreateOrganisation = async (e) => {
-    e.preventDefault();
-    setMessage("")
-    setIsLoading(true);
+    const handleAddressChange = (address) => {
+        setAddressInputState({});
+        if (!address) {
+            return;
+        }
 
-    OrganisationService.organisation(name, latitude, longitude).then((response) => {
-      if(response){
-        setMessage("Organisation created")
-        console.log(response)
-      }
-    }).catch((error) => {
-      console.error(error)
-      setAlert({
-        description: "Une erreur s'est produite",
-        severity: AlertSeverity.ERROR,
-      });
-      window.scrollTo(0, 0)
-    }).finally(() => setIsLoading(false));
-  }
+        organisation.address = address.properties.name;
+        organisation.zipcode = address.properties.postcode;
+        organisation.city = address.properties.city;
+        organisation.latitude = address.geometry.coordinates[1].toString();
+        organisation.longitude = address.geometry.coordinates[0].toString();
 
+        setOrganisation({...organisation});
+    }
 
-  return (
-    <div>
-      <InPageAlert alert={alert} />
-      <form onSubmit={handleCreateOrganisation} className={'flex flex-center flex-column'}>
-        <Input
-          label="Name"
-          nativeInputProps={{
-            type: 'text',
-          }}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <Input
-          label="Latitude"
-          nativeInputProps={{
-            type: 'text',
-          }}
-          onChange={(e) => setLatitude(e.target.value)}
-        />
-        <Input
-          label="Longitude"
-          nativeInputProps={{
-            type: 'text',
-          }}
-          onChange={(e) => setLongitude(e.target.value)}
-        />
+    const handleNameChange = (name) => {
+        organisation.name = name;
+        setOrganisation(organisation);
+    }
 
-        <LoadableButton type="submit" isLoading={isLoading}>Create</LoadableButton>
-        <div className="message">{message ? <p>{message}</p> : null}</div>
+    return (
+        <div className="flex flex-column gap-2 justify-center fr-col-8 fr-m-auto">
+            <InPageAlert alert={alert}/>
+            <form onSubmit={handleCreateOrganisation} className={'flex flex-column gap-2'}>
+                <Input
+                    label="Name"
+                    nativeInputProps={{
+                        type: 'text',
+                    }}
+                    onChange={(e) => handleNameChange(e.target.value)}
+                    className="fr-mb-0 full-width"
+                    state={nameInputState.state}
+                    stateRelatedMessage={nameInputState.text}
+                />
 
-      </form>
-    </div>
-  )
+                <AddressAutocomplete
+                    state={addressInputState.state}
+                    stateRelatedMessage={addressInputState.text}
+                    onChange={(address) => handleAddressChange(address)}
+                ></AddressAutocomplete>
+
+                <OrganisationLocation organisation={organisation}/>
+
+                <LoadableButton className="fr-ml-auto" type="submit" isLoading={isLoading}>{t('create_police_station')}</LoadableButton>
+            </form>
+        </div>
+    )
 }

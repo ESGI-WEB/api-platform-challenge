@@ -5,15 +5,15 @@ const useOrganisationService = () => {
     const api = useApi();
     const {data} = useAuth();
     return {
-        organisations: () => api('organisations', {
+        organisations: (page = 1) => api(`organisations?page=${page}`, {
             method: 'GET',
-        }),
-        providersOrganisations: () => api(`users/${data.id}/organisations`, {
+        }, true),
+        providersOrganisations: (page = 1) => api(`users/${data.id}/organisations?page=${page}`, {
             method: 'GET',
-        }),
-        organisation: (name, latitude, longitude) => api('organisations', {
+        }, true),
+        createOrganisation: (body) => api(`organisations`, {
             method: 'POST',
-            body: {name, latitude, longitude},
+            body: body,
         }),
         getSlots: (organisation_id) => api(`organisations/${organisation_id}/available-slots`, {
             method: 'GET',
@@ -21,6 +21,9 @@ const useOrganisationService = () => {
         get: (organisation_id) => api(`organisations/${organisation_id}`, {
             method: 'GET',
         }),
+        getCoordinatesFromAddress: (address, limit = 5) => fetch(
+            `http://api-adresse.data.gouv.fr/search/?q=${address}&limit=${limit}`
+        ).then(response => response.json()),
     };
 };
 

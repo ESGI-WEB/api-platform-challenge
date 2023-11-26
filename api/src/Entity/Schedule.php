@@ -48,6 +48,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         ),
     ],
     normalizationContext: ['groups' => [GroupsEnum::SCHEDULE_READ->value]],
+    paginationEnabled: false,
 )]
 #[UniqueEntity(fields: ['day', 'provider', 'organisation'])]
 #[ORM\Entity(repositoryClass: ScheduleRepository::class)]

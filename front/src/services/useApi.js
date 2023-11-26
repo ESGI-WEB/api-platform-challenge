@@ -2,7 +2,7 @@ import useAuth from "../auth/useAuth.js";
 import {useLocation, useNavigate} from "react-router-dom";
 
 const useApi = () => {
-    const {token} = useAuth();
+    const {token, data} = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const baseUrl = import.meta.env.VITE_API_ENDPOINT;
@@ -13,7 +13,9 @@ const useApi = () => {
         };
 
         if (token && !options.headers?.Authorization && withAuthToken) {
-            headers.Authorization = `Bearer ${token}`;
+            if (new Date(data.exp*1000) > new Date()) {
+                headers.Authorization = `Bearer ${token}`;
+            }
         }
 
         if (options.body && typeof options.body !== 'string') {

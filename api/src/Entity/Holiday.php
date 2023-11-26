@@ -47,6 +47,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         ),
     ],
     normalizationContext: ['groups' => [GroupsEnum::HOLIDAY_READ->value]],
+    paginationEnabled: false,
 )]
 #[ORM\Entity(repositoryClass: HolidayRepository::class)]
 class Holiday

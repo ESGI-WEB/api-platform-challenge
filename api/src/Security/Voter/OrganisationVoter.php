@@ -2,6 +2,7 @@
 
 namespace App\Security\Voter;
 
+use ApiPlatform\Doctrine\Orm\AbstractPaginator;
 use ApiPlatform\Doctrine\Orm\Paginator;
 use App\Entity\Appointment;
 use App\Entity\Holiday;
@@ -29,7 +30,7 @@ class OrganisationVoter extends Voter
     protected function supports(string $attribute, mixed $subject): bool
     {
         return in_array($attribute, [self::USER_READ_ORGANISATIONS])
-            && ($subject instanceof Organisation || $subject instanceof Paginator);
+            && ($subject instanceof Organisation || $subject instanceof AbstractPaginator);
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
@@ -53,6 +54,6 @@ class OrganisationVoter extends Voter
     private function canUserReadOrganisations(User $user): bool
     {
         $userQueried = intval($this->requestStack->getCurrentRequest()->attributes->get('user_id'));
-        return $this->security->isGranted(RolesEnum::PROVIDER) && $user->getId() === $userQueried;
+        return $this->security->isGranted(RolesEnum::PROVIDER->value) && $user->getId() === $userQueried;
     }
 }

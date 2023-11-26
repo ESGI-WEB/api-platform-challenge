@@ -15,11 +15,11 @@ export default function CreateService() {
     const [isLoading, setIsLoading] = useState(false);
     const {t} = useTranslation();
 
-    const AuthService = useOrganisationService();
+    const organisationService = useOrganisationService();
 
 
     function handleClick() {
-        AuthService.organisations().then((response) => {
+        organisationService.organisations().then((response) => {
             console.log(response);
         })
     }
@@ -29,7 +29,7 @@ export default function CreateService() {
         setMessage(t('service_created'));
         setIsLoading(true);
 
-        AuthService.organisation(title, description).then((response) => {
+        organisationService.organisation(title, description).then((response) => {
             if (response) {
                 setMessage();
                 console.log(response);
