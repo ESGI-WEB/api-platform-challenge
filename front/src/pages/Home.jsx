@@ -15,7 +15,7 @@ export default function Home() {
     const organisationService = useOrganisationService();
     const [organisationPage, setOrganisationPage] = useState(1);
     const [hasNextPage, setHasNextPage] = useState(true);
-    const [mapCenter, setMapCenter] = useState([46.9965771,1.6894783]);
+    const [mapCenter, setMapCenter] = useState([46.9965771,1.6894783]); // france center by default
     const zoom = 5;
     const mapRef = useRef(null);
 
