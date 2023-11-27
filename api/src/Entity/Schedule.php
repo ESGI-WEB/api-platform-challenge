@@ -5,10 +5,16 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Enum\DaysEnum;
+use App\Enum\GroupsEnum;
 use App\Repository\ScheduleRepository;
+use App\Security\Voter\ScheduleHolidayVoter;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
@@ -17,38 +23,76 @@ use Symfony\Component\Validator\Constraints as Assert;
     ],
 )]
 #[ApiResource(
-    uriTemplate: '/users/{id}/schedules',
+    uriTemplate: '/organisations/{organisation_id}/schedules',
     operations: [
-        new GetCollection(), // TODO to secure
+        new GetCollection(security: "is_granted('" . ScheduleHolidayVoter::VIEW_FOR_ORGANISATION . "', object)"),
     ],
     uriVariables: [
-        'id' => new Link(
-            fromProperty: 'schedules',
-            fromClass: User::class
+        'organisation_id' => new Link(
+            toProperty: 'organisation',
+            fromClass: Organisation::class,
         ),
     ],
+    normalizationContext: ['groups' => [GroupsEnum::SCHEDULE_READ->value]],
 )]
+#[ApiResource(
+    uriTemplate: '/users/{user_id}/schedules',
+    operations: [
+        new GetCollection(security: "is_granted('" . ScheduleHolidayVoter::VIEW_FOR_USER . "', object)"),
+        new Post(denormalizationContext: ['groups' => [GroupsEnum::SCHEDULE_WRITE->value]],
+            security: "is_granted('" . ScheduleHolidayVoter::CREATE . "', object)"
+        ),
+        new Put(denormalizationContext: ['groups' => [GroupsEnum::SCHEDULE_WRITE->value]],
+            security: "is_granted('" . ScheduleHolidayVoter::EDIT . "', object)"
+        ),
+    ],
+    uriVariables: [
+        'user_id' => new Link(
+            toProperty: 'provider',
+            fromClass: User::class,
+        ),
+    ],
+    normalizationContext: ['groups' => [GroupsEnum::SCHEDULE_READ->value]],
+    paginationEnabled: false,
+)]
+#[UniqueEntity(fields: ['day', 'provider', 'organisation'])]
 #[ORM\Entity(repositoryClass: ScheduleRepository::class)]
 class Schedule
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups([GroupsEnum::SCHEDULE_READ->value])]
     private ?int $id = null;
 
+    #[Groups([GroupsEnum::SCHEDULE_WRITE->value, GroupsEnum::SCHEDULE_READ->value])]
     #[ORM\Column(length: 10)]
+    #[Assert\NotBlank]
     #[Assert\Choice(callback: [DaysEnum::class, 'values'])]
     private ?string $day = null;
 
+    #[Groups([GroupsEnum::SCHEDULE_WRITE->value, GroupsEnum::SCHEDULE_READ->value])]
     #[ORM\Column]
+    #[Assert\NotBlank]
+    #[Assert\All(constraints: [
+        new Assert\NotBlank(),
+        new Assert\Regex(pattern: '/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/') // match 00:00 to 23:59
+    ])]
     private array $hours = [];
 
+    #[Groups([GroupsEnum::SCHEDULE_WRITE->value, GroupsEnum::SCHEDULE_READ->value])]
+    #[Assert\NotBlank]
     #[ORM\ManyToOne(inversedBy: 'schedules')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $provider = null;
 
     #[ORM\Column]
     private DateTimeImmutable $createdAt;
+
+    #[ORM\ManyToOne(inversedBy: 'schedules')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups([GroupsEnum::SCHEDULE_READ->value])]
+    private ?Organisation $organisation = null;
 
     public function __construct()
     {
@@ -104,5 +148,17 @@ class Schedule
     public function setCreatedAt(DateTimeImmutable $createdAt): void
     {
         $this->createdAt = $createdAt;
+    }
+
+    public function getOrganisation(): ?Organisation
+    {
+        return $this->organisation;
+    }
+
+    public function setOrganisation(?Organisation $organisation): static
+    {
+        $this->organisation = $organisation;
+
+        return $this;
     }
 }

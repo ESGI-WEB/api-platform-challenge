@@ -29,13 +29,17 @@ security:
             jwt: ~
 
     role_hierarchy:
-        ROLE_ADMIN: [ROLE_USER, ROLE_ALLOWED_TO_SWITCH]
+        ROLE_ADMIN: ROLE_PROVIDER
+        ROLE_PROVIDER_MANAGER: ROLE_PROVIDER
+        ROLE_PROVIDER: ROLE_USER
+        ROLE_PROVIDER_TO_VALIDATE: ROLE_USER
         ROLE_USER: []
 
     access_control:
         - { path: ^/api/docs, roles: PUBLIC_ACCESS }
+        - { path: ^/api/organisations, roles: PUBLIC_ACCESS, method: GET }
         - { path: ^/api/translations, roles: PUBLIC_ACCESS, method: GET }
-        - { path: ^/api/(login|users), roles: PUBLIC_ACCESS, method: POST }
+        - { path: ^/api/(login|users)$, roles: PUBLIC_ACCESS, method: POST }
         - { path: ^/api$, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
 

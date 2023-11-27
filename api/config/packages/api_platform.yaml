@@ -10,6 +10,13 @@ api_platform:
             vary: ['Content-Type', 'Authorization', 'Origin']
         extra_properties:
             standard_put: true
+        pagination_enabled: true
+        pagination_items_per_page: 10
+        pagination_partial: true
+        pagination_client_enabled: true
+        pagination_client_items_per_page: true
+        pagination_client_partial: true
+        pagination_maximum_items_per_page: 100
 
     swagger:
         api_keys:

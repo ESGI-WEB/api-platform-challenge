@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Enum\GroupsEnum;
 use App\Enum\RolesEnum;
+use App\Repository\UserRepository;
 use App\Security\Voter\UserVoter;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -44,10 +45,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 #[UniqueEntity(fields: ['email'])]
 #[ORM\Table(name: '`user`')]
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    #[Groups([GroupsEnum::USER_READ->value])]
+    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::AVAILABLE_SLOT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
     #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 
@@ -56,6 +57,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private array $roles = [];
 
     #[ORM\Column]
+    // password must be 8 caracteres long, with 1 number, 1 uppercase, 1 lowercase, 1 special character
+    #[Assert\Regex(pattern: '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[A-Za-z\d\W]{8,}$/')]
     #[Assert\NotBlank(groups: [GroupsEnum::USER_CREATE->value])] // set by UserDenormalizer
     private string $password = '';
 
@@ -72,17 +75,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private DateTimeImmutable $createdAt;
 
-    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE->value])]
+    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE->value, GroupsEnum::AVAILABLE_SLOT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
     #[ORM\Column(length: 255)]
     private ?string $firstname = null;
 
-    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE->value])]
+    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE->value, GroupsEnum::AVAILABLE_SLOT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
     #[ORM\Column(length: 255)]
     private ?string $lastname = null;
-
-    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE_ADMIN->value])]
-    #[ORM\Column]
-    private ?bool $providerValidated = null;
 
     #[ORM\OneToMany(mappedBy: 'provider', targetEntity: Schedule::class, orphanRemoval: true)]
     private Collection $schedules;
@@ -101,7 +100,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __construct()
     {
-        $this->providerValidated = false;
         $this->createdAt = new DateTimeImmutable();
         $this->schedules = new ArrayCollection();
         $this->holidays = new ArrayCollection();
@@ -202,18 +200,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastname(string $lastname): static
     {
         $this->lastname = $lastname;
-
-        return $this;
-    }
-
-    public function isProviderValidated(): ?bool
-    {
-        return $this->providerValidated;
-    }
-
-    public function setProviderValidated(bool $providerValidated): static
-    {
-        $this->providerValidated = $providerValidated;
 
         return $this;
     }

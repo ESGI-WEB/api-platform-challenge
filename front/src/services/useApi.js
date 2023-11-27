@@ -2,18 +2,20 @@ import useAuth from "../auth/useAuth.js";
 import {useLocation, useNavigate} from "react-router-dom";
 
 const useApi = () => {
-    const {token} = useAuth();
+    const {token, data} = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const baseUrl = import.meta.env.VITE_API_ENDPOINT;
 
-    return (url, options = {}, hydra = false) => {
+    return (url, options = {}, hydra = false, withAuthToken = true) => {
         const headers = {
             ...options.headers,
         };
 
-        if (token && !options.headers?.Authorization) {
-            headers.Authorization = `Bearer ${token}`;
+        if (token && !options.headers?.Authorization && withAuthToken) {
+            if (new Date(data.exp*1000) > new Date()) {
+                headers.Authorization = `Bearer ${token}`;
+            }
         }
 
         if (options.body && typeof options.body !== 'string') {
@@ -22,7 +24,13 @@ const useApi = () => {
 
         const type = hydra ? 'application/ld+json' : 'application/json';
 
-        headers['Content-Type'] = headers['Accept'] = type;
+        if (!headers['Content-Type']) {
+            headers['Content-Type'] = type;
+        }
+
+        if (!headers['Accept']) {
+            headers['Accept'] = type;
+        }
 
         return fetch(`${baseUrl}/${url}`, {...options, headers}).then(response => {
             if (response.ok) {

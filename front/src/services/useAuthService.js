@@ -6,7 +6,7 @@ const useAuthService = () => {
         login: (email, password) => api('login', {
             method: 'POST',
             body: {email, password},
-        })
+        }, false, false),
     };
 };
 

@@ -9,6 +9,5 @@ enum AppointmentStatusEnum: string
     use EnumHelperTrait;
 
     case valid = 'valid';
-    case canceled = 'canceled';
-    case reported = 'reported';
+    case cancelled = 'cancelled';
 }

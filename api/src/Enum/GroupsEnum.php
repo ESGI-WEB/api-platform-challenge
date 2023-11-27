@@ -10,6 +10,17 @@ enum GroupsEnum: string
     case USER_WRITE = 'user:write';
     case USER_WRITE_ADMIN = 'user:write:admin';
     case USER_READ = 'user:read';
+    case ORGANISATION_READ_DETAILED = 'organisation:read:detailed';
+    case ORGANISATION_UPDATE = 'organisation:update';
+    case SERVICE_READ = 'service:read';
+    case SCHEDULE_WRITE = 'schedule:write';
+    case SCHEDULE_READ = 'schedule:read';
+    case HOLIDAY_WRITE = 'holiday:write';
+    case HOLIDAY_READ = 'holiday:read';
+    case AVAILABLE_SLOT_READ = 'available_slot:read';
     case TRANSLATION_READ = 'translation:read';
     case TRANSLATION_WRITE = 'translation:write';
+    case APPOINTMENT_READ = 'appointment:read';
+    case APPOINTMENT_READ_DETAILED = 'appointment:read:detailed';
+    case APPOINTMENT_WRITE = 'appointment:write';
 }

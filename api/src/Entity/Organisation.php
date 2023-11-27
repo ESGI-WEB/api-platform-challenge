@@ -3,17 +3,52 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use App\Enum\GroupsEnum;
 use App\Repository\OrganisationRepository;
+use App\Security\Voter\OrganisationVoter;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Enum\RolesEnum;
+use ApiPlatform\Metadata\Link;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use Symfony\Component\Validator\Constraints as Assert;
 
-#[ApiResource] // TODO to secure
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(
+            security: "is_granted('" . RolesEnum::PROVIDER->value . "')"
+        )
+    ],
+    normalizationContext: ['groups' => [GroupsEnum::ORGANISATION_READ_DETAILED->value]],
+    denormalizationContext: ['groups' => [GroupsEnum::ORGANISATION_UPDATE->value]],
+)]
+#[ApiResource(
+    uriTemplate: '/users/{user_id}/organisations',
+    operations: [
+        new GetCollection(
+            security: "is_granted('" . OrganisationVoter::USER_READ_ORGANISATIONS . "', object)"
+        ),
+    ],
+    uriVariables: [
+        'user_id' => new Link(
+            toProperty: 'users',
+            fromClass: User::class
+        )
+    ],
+    normalizationContext: ['groups' => [GroupsEnum::ORGANISATION_READ_DETAILED->value]],
+)]
 #[ORM\Entity(repositoryClass: OrganisationRepository::class)]
 class Organisation
 {
+    #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -22,29 +57,89 @@ class Organisation
     #[ORM\Column(type: Types::GUID)]
     private ?string $uuid = null;
 
+    #[Groups([
+        GroupsEnum::ORGANISATION_READ_DETAILED->value,
+        GroupsEnum::APPOINTMENT_READ_DETAILED->value,
+        GroupsEnum::ORGANISATION_UPDATE->value
+    ])]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 3, max: 255)]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[Groups([
+        GroupsEnum::ORGANISATION_READ_DETAILED->value,
+        GroupsEnum::APPOINTMENT_READ_DETAILED->value,
+        GroupsEnum::ORGANISATION_UPDATE->value
+    ])]
+    #[Assert\NotBlank]
+    #[Assert\Regex(pattern: '/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?)$/', message: 'Latitude is not valid')]
     #[ORM\Column(type: Types::DECIMAL, precision: 20, scale: 16)]
     private ?string $latitude = null;
 
+    #[Groups([
+        GroupsEnum::ORGANISATION_READ_DETAILED->value,
+        GroupsEnum::APPOINTMENT_READ_DETAILED->value,
+        GroupsEnum::ORGANISATION_UPDATE->value
+    ])]
+    #[Assert\NotBlank]
+    #[Assert\Regex(pattern: '/^[-]?((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+)$/', message: 'Longitude is not valid')]
     #[ORM\Column(type: Types::DECIMAL, precision: 20, scale: 16)]
     private ?string $longitude = null;
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'organisations')]
     private Collection $users;
 
+    #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::ORGANISATION_UPDATE->value])]
     #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: Service::class, orphanRemoval: true)]
     private Collection $services;
 
     #[ORM\Column]
     private DateTimeImmutable $createdAt;
 
+    #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: Schedule::class)]
+    private Collection $schedules;
+
+    #[ORM\OneToMany(mappedBy: 'organisation', targetEntity: Holiday::class)]
+    private Collection $holidays;
+
+    #[Groups([
+        GroupsEnum::ORGANISATION_READ_DETAILED->value,
+        GroupsEnum::APPOINTMENT_READ_DETAILED->value,
+        GroupsEnum::ORGANISATION_UPDATE->value
+    ])]
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
+    private ?string $address = null;
+
+    #[Groups([
+        GroupsEnum::ORGANISATION_READ_DETAILED->value,
+        GroupsEnum::APPOINTMENT_READ_DETAILED->value,
+        GroupsEnum::ORGANISATION_UPDATE->value
+    ])]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 10)]
+    #[ORM\Column(length: 10)]
+    private ?string $zipcode = null;
+
+    #[Groups([
+        GroupsEnum::ORGANISATION_READ_DETAILED->value,
+        GroupsEnum::APPOINTMENT_READ_DETAILED->value,
+        GroupsEnum::ORGANISATION_UPDATE->value
+    ])]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
+    #[ORM\Column(length: 255)]
+    private ?string $city = null;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
         $this->services = new ArrayCollection();
         $this->createdAt = new DateTimeImmutable();
+        $this->schedules = new ArrayCollection();
+        $this->holidays = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -162,5 +257,101 @@ class Organisation
     public function setCreatedAt(DateTimeImmutable $createdAt): void
     {
         $this->createdAt = $createdAt;
+    }
+
+    /**
+     * @return Collection<int, Schedule>
+     */
+    public function getSchedules(): Collection
+    {
+        return $this->schedules;
+    }
+
+    public function addSchedule(Schedule $schedule): static
+    {
+        if (!$this->schedules->contains($schedule)) {
+            $this->schedules->add($schedule);
+            $schedule->setOrganisation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSchedule(Schedule $schedule): static
+    {
+        if ($this->schedules->removeElement($schedule)) {
+            // set the owning side to null (unless already changed)
+            if ($schedule->getOrganisation() === $this) {
+                $schedule->setOrganisation(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Holiday>
+     */
+    public function getHolidays(): Collection
+    {
+        return $this->holidays;
+    }
+
+    public function addHoliday(Holiday $holiday): static
+    {
+        if (!$this->holidays->contains($holiday)) {
+            $this->holidays->add($holiday);
+            $holiday->setOrganisation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHoliday(Holiday $holiday): static
+    {
+        if ($this->holidays->removeElement($holiday)) {
+            // set the owning side to null (unless already changed)
+            if ($holiday->getOrganisation() === $this) {
+                $holiday->setOrganisation(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(string $address): static
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    public function getZipcode(): ?string
+    {
+        return $this->zipcode;
+    }
+
+    public function setZipcode(string $zipcode): static
+    {
+        $this->zipcode = $zipcode;
+
+        return $this;
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(string $city): static
+    {
+        $this->city = $city;
+
+        return $this;
     }
 }

@@ -5,15 +5,24 @@ import GlobalHeader from "./components/GlobalHeader.jsx";
 import {Navigate, Route, Routes} from "react-router-dom";
 import Home from "./pages/Home.jsx";
 import Admin from "./pages/admin/Admin.jsx";
+import LandingPagePresta from "./pages/LandingPagePresta.jsx";
+import CreateOrganisation from "./pages/CreateOrganisation.jsx";
+import ProvidersOrganisations from "./pages/ProvidersOrganisations.jsx";
 import useAuth, {Roles} from "./auth/useAuth.js";
 import ProtectedRoute from "./auth/ProtectedRoute.jsx";
 import Badge from "@codegouvfr/react-dsfr/Badge.js";
+import Organisation from "./pages/Organisation.jsx";
 import {useTranslation} from "react-i18next";
 import i18n from "i18next";
 import {useEffect, useState} from "react";
+import NoTranslations from "./pages/NoTranslations.jsx";
+import Appointment from "./pages/Appointment.jsx";
+import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
+import MuiDsfrThemeProvider from "@codegouvfr/react-dsfr/mui.js";
 
 function App() {
-    const { t } = useTranslation();
+    startReactDsfr({ defaultColorScheme: "system" });
+    const {t} = useTranslation();
     const [translationsLoaded, setTranslationsLoaded] = useState(true);
 
     useEffect(() => {
@@ -43,7 +52,17 @@ function App() {
         },
         text: t('admin')
     }
+    const navigation = [
+        {
+            role: Roles.PROVIDER,
+            linkProps: {
+                to: '/providers-organisations',
+            },
+            text: t('your_police_stations'),
+        },
+    ];
     let quickAccessItems = [loginButton];
+    let navigationItemsByRole = [];
     let serviceTitle = '';
     const {onLogin, onLogout, token, data} = useAuth();
 
@@ -55,41 +74,79 @@ function App() {
         } else if (data.roles.includes(Roles.PROVIDER)) {
             serviceTitle = <Badge as="span" noIcon severity="info">{t('superintendent')}</Badge>
         }
+
+        navigationItemsByRole = navigation.filter((item) => {
+            if (location.pathname === item.linkProps.to) {
+                item.isActive = true;
+            }
+            return item.role === undefined || data.roles.includes(item.role);
+        });
     }
 
     return (
         <>
-            <GlobalHeader
-                quickAccessItems={quickAccessItems}
-                serviceTitle={serviceTitle}
-            />
+            <MuiDsfrThemeProvider>
+
+                <GlobalHeader
+                    quickAccessItems={quickAccessItems}
+                    serviceTitle={serviceTitle}
+                    navigation={navigationItemsByRole}
+                />
                 <div id="main-page-container">
-                    {translationsLoaded ? (
-                        <Routes>
-                            <Route index element={<Home />} />
-                            <Route
-                                path="login"
-                                element={
-                                    <Login
-                                        onLoginSuccessful={onLogin}
-                                    />
-                                }
-                            />
-                            <Route
-                                path="/admin/*"
-                                element={
-                                    <ProtectedRoute requiredRole={Roles.ADMIN}>
-                                        <Admin />
+                    <div className="fr-col-10">
+                        {translationsLoaded ?
+                            <Routes>
+                                <Route index element={<Home/>}/>
+                                <Route
+                                    path="login"
+                                    element={
+                                        <Login
+                                            onLoginSuccessful={onLogin}
+                                        />
+                                    }
+                                />
+                                <Route
+                                    path="admin/*"
+                                    element={
+                                        <ProtectedRoute requiredRoles={[Roles.ADMIN]}>
+                                            <Admin/>
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route path="station/:organisationId" element={
+                                    <ProtectedRoute>
+                                        <Organisation/>
                                     </ProtectedRoute>
-                                }
-                            />
-                            <Route path="*" element={<Navigate to="/" replace />} />
-                        </Routes>)
-                        : (
-                            <div id="translations-error">Error on loading translations...</div>
-                        )}
+                                }/>
+                                <Route path="appointment/:appointmentId" element={
+                                    <ProtectedRoute>
+                                        <Appointment/>
+                                    </ProtectedRoute>
+                                }/>
+                                <Route path="prestations" element={
+                                    <ProtectedRoute requiredRoles={Roles.PROVIDER}>
+                                        <LandingPagePresta/>
+                                    </ProtectedRoute>
+                                }/>
+                                <Route path="create-organisation" element={
+                                    <ProtectedRoute requiredRole={Roles.PROVIDER}>
+                                        <CreateOrganisation/>
+                                    </ProtectedRoute>
+                                }/>
+                                <Route path="providers-organisations" element={
+                                    <ProtectedRoute requiredRole={Roles.PROVIDER}>
+                                        <ProvidersOrganisations/>
+                                    </ProtectedRoute>
+                                }/>
+                                <Route path="*" element={<Navigate to="/" replace/>}/>
+                            </Routes>
+                            :
+                            <NoTranslations/>
+                        }
+                    </div>
                 </div>
-            <GlobalFooter />
+                <GlobalFooter/>
+            </MuiDsfrThemeProvider>
         </>
     );
 }

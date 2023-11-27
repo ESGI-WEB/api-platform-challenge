@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
 import {AuthContext, Roles} from "./useAuth.js";
-import jwtDecode from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 
 export default function AuthProvider({ children }) {
     const localKey = "token";
@@ -17,16 +17,16 @@ export default function AuthProvider({ children }) {
 
         const originalPath = location.state?.from?.pathname;
         if (originalPath && !originalPath.includes('/login')) {
-            navigate(originalPath);
+            navigate(originalPath, {replace: true});
             return;
         }
 
         if (token && tokenData.roles.includes(Roles.ADMIN)) {
-            navigate('/admin');
+            navigate('/admin', {replace: true});
             return;
         }
 
-        navigate('/');
+        navigate('/', {replace: true});
     };
 
     const handleLogout = () => {
