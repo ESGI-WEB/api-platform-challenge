@@ -9,7 +9,29 @@ const useAppointmentService = () => {
             method: 'POST',
             body: JSON.stringify(appointment),
         }),
-        getClientAppointment: (id) => api(`users/${data.id}/client_appointments/${id}`),
+        getClientAppointment: (id) => api(`users/${data.id}/client_appointments/${id}`, {
+            method: 'GET',
+        }),
+        getClientAppointments: (page, filters = null) => {
+            let url = `users/${data.id}/client_appointments?page=${page}`;
+            if (filters) {
+                Object.keys(filters).forEach(key => url += `&${key}=${filters[key]}`);
+            }
+
+            return api(url, {
+                method: 'GET',
+            }, true)
+        },
+        getProviderAppointments: (page, filters = null) => {
+            let url = `users/${data.id}/provider_appointments?page=${page}`;
+            if (filters) {
+                Object.keys(filters).forEach(key => url += `&${key}=${filters[key]}`);
+            }
+
+            return api(url.href, {
+                method: 'GET',
+            }, true)
+        },
         patchClientAppointment: (id, body) => api(`users/${data.id}/client_appointments/${id}`, {
             method: 'PATCH',
             body: JSON.stringify(body),

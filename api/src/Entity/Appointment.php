@@ -2,6 +2,11 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Common\Filter\SearchFilterInterface;
+use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
@@ -31,6 +36,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             securityPostDenormalize: 'is_granted("' . AppointmentVoter::CREATE . '", object)',
         ),
     ],
+    normalizationContext: ['groups' => [GroupsEnum::APPOINTMENT_READ->value]],
 )]
 #[ApiResource(
     uriTemplate: '/users/{user_id}/client_appointments',
@@ -38,6 +44,12 @@ use Symfony\Component\Validator\Constraints as Assert;
         new GetCollection(
             openapiContext: [
                 'summary' => 'Get all appointments where user is a client',
+            ],
+            normalizationContext: [
+                'groups' => [
+                    GroupsEnum::APPOINTMENT_READ->value,
+                    GroupsEnum::APPOINTMENT_READ_DETAILED->value
+                ]
             ],
             security: 'is_granted("' . AppointmentVoter::CLIENT_READ_COLLECTION . '", object)',
         ),
@@ -57,14 +69,24 @@ use Symfony\Component\Validator\Constraints as Assert;
             openapiContext: [
                 'summary' => 'Get an appointment where user is a client',
             ],
-            normalizationContext: ['groups' => [GroupsEnum::APPOINTMENT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value]],
+            normalizationContext: [
+                'groups' => [
+                    GroupsEnum::APPOINTMENT_READ->value,
+                    GroupsEnum::APPOINTMENT_READ_DETAILED->value
+                ]
+            ],
             security: 'is_granted("' . AppointmentVoter::CLIENT_READ . '", object)',
         ),
         new Patch(
             openapiContext: [
                 'summary' => 'Update an appointment where user is a client',
             ],
-            normalizationContext: ['groups' => [GroupsEnum::APPOINTMENT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value]],
+            normalizationContext: [
+                'groups' => [
+                    GroupsEnum::APPOINTMENT_READ->value,
+                    GroupsEnum::APPOINTMENT_READ_DETAILED->value
+                ]
+            ],
             security: 'is_granted("' . AppointmentVoter::CLIENT_UPDATE . '", object)',
         ),
     ],
@@ -85,6 +107,12 @@ use Symfony\Component\Validator\Constraints as Assert;
         new GetCollection(
             openapiContext: [
                 'summary' => 'Get all appointments where user is a provider',
+            ],
+            normalizationContext: [
+                'groups' => [
+                    GroupsEnum::APPOINTMENT_READ->value,
+                    GroupsEnum::APPOINTMENT_READ_DETAILED->value
+                ]
             ],
             security: 'is_granted("' . AppointmentVoter::PROVIDER_READ_COLLECTION . '", object)',
         ),
@@ -118,6 +146,9 @@ use Symfony\Component\Validator\Constraints as Assert;
     ],
     normalizationContext: ['groups' => [GroupsEnum::APPOINTMENT_READ->value]],
 )]
+#[ApiFilter(OrderFilter::class, properties: ['id', 'datetime'])]
+#[ApiFilter(SearchFilter::class, properties: ['status' => SearchFilterInterface::STRATEGY_EXACT])]
+#[ApiFilter(DateFilter::class, properties: ['datetime'])]
 #[ORM\Entity(repositoryClass: AppointmentRepository::class)]
 class Appointment
 {

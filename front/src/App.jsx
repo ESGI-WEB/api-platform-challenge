@@ -19,6 +19,7 @@ import NoTranslations from "./pages/NoTranslations.jsx";
 import Appointment from "./pages/Appointment.jsx";
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import MuiDsfrThemeProvider from "@codegouvfr/react-dsfr/mui.js";
+import Appointments from "./pages/Appointments.jsx";
 
 function App() {
     startReactDsfr({ defaultColorScheme: "system" });
@@ -59,6 +60,13 @@ function App() {
                 to: '/providers-organisations',
             },
             text: t('your_police_stations'),
+        },
+        {
+            role: Roles.USER,
+            linkProps: {
+                to: '/appointments',
+            },
+            text: t('your_appointments'),
         },
     ];
     let quickAccessItems = [loginButton];
@@ -123,11 +131,11 @@ function App() {
                                         <Appointment/>
                                     </ProtectedRoute>
                                 }/>
-                                <Route path="prestations" element={
-                                    <ProtectedRoute requiredRoles={Roles.PROVIDER}>
-                                        <LandingPagePresta/>
-                                    </ProtectedRoute>
-                                }/>
+                                {/*<Route path="prestations" element={*/}
+                                {/*    <ProtectedRoute requiredRoles={Roles.PROVIDER}>*/}
+                                {/*        <LandingPagePresta/>*/}
+                                {/*    </ProtectedRoute>*/}
+                                {/*}/>*/}
                                 <Route path="create-organisation" element={
                                     <ProtectedRoute requiredRole={Roles.PROVIDER}>
                                         <CreateOrganisation/>
@@ -136,6 +144,11 @@ function App() {
                                 <Route path="providers-organisations" element={
                                     <ProtectedRoute requiredRole={Roles.PROVIDER}>
                                         <ProvidersOrganisations/>
+                                    </ProtectedRoute>
+                                }/>
+                                <Route path="appointments" element={
+                                    <ProtectedRoute requiredRole={Roles.USER}>
+                                        <Appointments/>
                                     </ProtectedRoute>
                                 }/>
                                 <Route path="*" element={<Navigate to="/" replace/>}/>
