@@ -11,6 +11,11 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ApiResource(
+    operations: [
+        new GetCollection(),
+    ],
+)]
+#[ApiResource(
     uriTemplate: '/users/{id}/holidays',
     operations: [
         new GetCollection(), // TODO to secure

@@ -12,6 +12,11 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
+    operations: [
+        new GetCollection(),
+    ],
+)]
+#[ApiResource(
     uriTemplate: '/users/{id}/schedules',
     operations: [
         new GetCollection(), // TODO to secure

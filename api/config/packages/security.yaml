@@ -36,6 +36,7 @@ security:
         - { path: ^/api/docs, roles: PUBLIC_ACCESS }
         - { path: ^/api/translations, roles: PUBLIC_ACCESS, method: GET }
         - { path: ^/api/(login|users), roles: PUBLIC_ACCESS, method: POST }
+        - { path: ^/api$, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:

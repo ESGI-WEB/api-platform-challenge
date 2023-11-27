@@ -9,6 +9,11 @@ use App\Repository\FeedbackChoicesRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ApiResource(
+    operations: [
+        new GetCollection(),
+    ],
+)]
+#[ApiResource(
     uriTemplate: '/services/{service_id}/feedbacks/{feedback_id}/choices',
     operations: [
         new GetCollection(), // TODO to secure

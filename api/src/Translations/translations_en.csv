@@ -2,6 +2,8 @@ en,admin,Admin
 en,errorOnIdentifiers,"Invalid identifiers"
 en,errorOnLogin,"The mail and/or password are invalid"
 en,createAccount,"Create an account"
+fr,descriptionAppointmentsIndicator,"Number of appointments with a commissioner recorded."
+fr,descriptionUsersIndicator,"Number of registered users on the platform"
 en,specialCharactersMessage,"At least one special character"
 en,digitMessage,"At least one digit"
 en,footerDescription,"This site is a student project designed to put into practice the knowledge acquired during the course. It is not an official site of the French government and is not used outside the training framework."

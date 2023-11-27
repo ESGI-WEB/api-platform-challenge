@@ -14,6 +14,11 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
+    operations: [
+        new GetCollection(),
+    ],
+)]
+#[ApiResource(
     uriTemplate: '/services/{id}/feedbacks',
     operations: [
         new GetCollection(), // TODO to secure
