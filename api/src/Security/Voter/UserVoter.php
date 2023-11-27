@@ -11,9 +11,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserVoter extends Voter
 {
-    public const VIEW = 'VIEW';
-    public const EDIT = 'EDIT';
-    public const DELETE = 'DELETE';
+    public const VIEW = 'VIEW_USER';
+    public const EDIT = 'EDIT_USER';
+    public const DELETE = 'DELETE_USER';
 
     private Security $security;
     public function __construct(Security $security)
@@ -49,10 +49,9 @@ class UserVoter extends Voter
 
     private function canEdit(User $subject, UserInterface $user): bool
     {
-        // TODO
-//        if ($this->security->isGranted(RolesEnum::PROVIDER->value) && !$user->isApproved()) {
-//            return true;
-//        }
+        if ($this->security->isGranted(RolesEnum::PROVIDER_TO_VALIDATE->value)) {
+            return false;
+        }
         return $user === $subject;
     }
 

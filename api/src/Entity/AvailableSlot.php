@@ -19,6 +19,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
                 'tags' => ['Organisation'],
                 'summary' => 'Retrieve available slots for appointments for an organisation',
             ],
+            paginationEnabled: false,
         ),
     ],
     normalizationContext: ['groups' => [GroupsEnum::AVAILABLE_SLOT_READ->value]],

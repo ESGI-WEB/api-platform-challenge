@@ -12,11 +12,26 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+
 
 #[ApiResource(
     operations: [
-        new Get(normalizationContext: ['groups' => [GroupsEnum::SERVICE_READ->value]]),
-    ]
+        new Get(),
+        new GetCollection(),
+//        new Post(
+//             uriTemplate: '/organisations/{id}/services',
+//             uriVariables: [
+//                 'id' => new Link(
+//                     fromClass: Organisation::class,
+//                     fromProperty: 'id',
+//                 )
+//             ],
+//        )
+    ],
+    normalizationContext: ['groups' => [GroupsEnum::SERVICE_READ->value]],
 )]
 #[ORM\Entity(repositoryClass: ServiceRepository::class)]
 class Service

@@ -2,6 +2,7 @@
 
 namespace App\Security\Voter;
 
+use ApiPlatform\Doctrine\Orm\AbstractPaginator;
 use ApiPlatform\Doctrine\Orm\Paginator;
 use App\Entity\Holiday;
 use App\Entity\Organisation;
@@ -32,7 +33,7 @@ class ScheduleHolidayVoter extends Voter
     protected function supports(string $attribute, mixed $subject): bool
     {
         return in_array($attribute, [self::VIEW_FOR_ORGANISATION, self::VIEW_FOR_USER, self::CREATE, self::EDIT])
-            && ($subject instanceof Schedule || $subject instanceof Holiday || $subject instanceof Paginator);
+            && ($subject instanceof Schedule || $subject instanceof Holiday || $subject instanceof AbstractPaginator);
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool

@@ -11,6 +11,7 @@ enum GroupsEnum: string
     case USER_WRITE_ADMIN = 'user:write:admin';
     case USER_READ = 'user:read';
     case ORGANISATION_READ_DETAILED = 'organisation:read:detailed';
+    case ORGANISATION_UPDATE = 'organisation:update';
     case SERVICE_READ = 'service:read';
     case SCHEDULE_WRITE = 'schedule:write';
     case SCHEDULE_READ = 'schedule:read';

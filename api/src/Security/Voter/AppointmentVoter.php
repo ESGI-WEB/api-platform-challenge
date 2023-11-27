@@ -2,6 +2,7 @@
 
 namespace App\Security\Voter;
 
+use ApiPlatform\Doctrine\Orm\AbstractPaginator;
 use ApiPlatform\Doctrine\Orm\Paginator;
 use App\Entity\Appointment;
 use App\Entity\Holiday;
@@ -35,7 +36,7 @@ class AppointmentVoter extends Voter
     protected function supports(string $attribute, mixed $subject): bool
     {
         return in_array($attribute, [self::CREATE, self::CLIENT_READ_COLLECTION, self::CLIENT_READ, self::PROVIDER_READ_COLLECTION, self::PROVIDER_READ, self::CLIENT_UPDATE])
-            && ($subject instanceof Appointment || $subject instanceof Paginator);
+            && ($subject instanceof Appointment || $subject instanceof AbstractPaginator);
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
