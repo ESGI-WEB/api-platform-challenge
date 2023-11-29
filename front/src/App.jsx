@@ -61,14 +61,7 @@ function App() {
             text: t('your_police_stations'),
         },
     ];
-    const test = {
-        iconId: 'fr-icon-user-line',
-        linkProps: {
-            to: '/',
-        },
-        text: (<LanguageSelector />)
-    }
-    let quickAccessItems = [loginButton, test];
+    let quickAccessItems = [loginButton];
     let navigationItemsByRole = [];
     let serviceTitle = '';
     const {onLogin, onLogout, token, data} = useAuth();
@@ -93,12 +86,12 @@ function App() {
     return (
         <>
             <MuiDsfrThemeProvider>
-                <LanguageSelector/>
                 <GlobalHeader
                     quickAccessItems={quickAccessItems}
                     serviceTitle={serviceTitle}
                     navigation={navigationItemsByRole}
                 />
+                <LanguageSelector/>
                 <div id="main-page-container">
                     <div className="fr-col-10">
                         {translationsLoaded ?
