@@ -17,11 +17,11 @@ import i18n from "i18next";
 import {useEffect, useState} from "react";
 import NoTranslations from "./pages/NoTranslations.jsx";
 import Appointment from "./pages/Appointment.jsx";
-import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import MuiDsfrThemeProvider from "@codegouvfr/react-dsfr/mui.js";
+import LanguageSelector from "./components/LanguageSelector/LanguageSelector.jsx";
 
 function App() {
-    startReactDsfr({ defaultColorScheme: "system" });
+    //startReactDsfr({ defaultColorScheme: "system" });
     const {t} = useTranslation();
     const [translationsLoaded, setTranslationsLoaded] = useState(true);
 
@@ -61,7 +61,14 @@ function App() {
             text: t('your_police_stations'),
         },
     ];
-    let quickAccessItems = [loginButton];
+    const test = {
+        iconId: 'fr-icon-user-line',
+        linkProps: {
+            to: '/',
+        },
+        text: (<LanguageSelector />)
+    }
+    let quickAccessItems = [loginButton, test];
     let navigationItemsByRole = [];
     let serviceTitle = '';
     const {onLogin, onLogout, token, data} = useAuth();
@@ -86,7 +93,7 @@ function App() {
     return (
         <>
             <MuiDsfrThemeProvider>
-
+                <LanguageSelector/>
                 <GlobalHeader
                     quickAccessItems={quickAccessItems}
                     serviceTitle={serviceTitle}
