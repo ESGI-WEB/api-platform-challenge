@@ -1,5 +1,5 @@
 import Card from "@codegouvfr/react-dsfr/Card.js";
-import {Count} from "react-admin";
+import {Count, useGetList} from "react-admin";
 import "./CardIndicator.css";
 
 export default function CardIndicator({
@@ -10,7 +10,6 @@ export default function CardIndicator({
 
     return (
         <Card
-            className={"title"}
             background
             border
             desc={desc}

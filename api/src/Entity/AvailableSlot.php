@@ -12,6 +12,11 @@ use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
+    operations: [
+        new GetCollection(),
+    ],
+)]
+#[ApiResource(
     uriTemplate: '/organisations/{organisation_id}/available-slots',
     operations: [
         new GetCollection(
