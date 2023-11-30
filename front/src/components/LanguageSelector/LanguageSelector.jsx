@@ -2,7 +2,7 @@ import {useTranslation} from "react-i18next";
 import './LanguageSelector.css';
 
 export default function LanguageSelector() {
-    const {i18n} = useTranslation();
+    const {i18n, t} = useTranslation();
 
     const changeLanguage = (event) => {
         i18n.changeLanguage(event.target.value);
@@ -17,7 +17,7 @@ export default function LanguageSelector() {
         <nav role="navigation" className="fr-translate fr-nav">
             <div className="fr-nav__item fr-translate fr-nav">
                 <button className="fr-translate__btn fr-btn fr-btn--tertiary" aria-controls="translate-1177"
-                        aria-expanded="false" title="Sélectionner une langue">
+                        aria-expanded="false" title={t('select_language')}>
                     {i18n.language === "fr" ? "FR" : "EN"}
                     <span className="fr-hidden-lg">
                         {i18n.language === "fr" ? " - Français" : " - English"}
