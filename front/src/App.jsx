@@ -5,7 +5,6 @@ import GlobalHeader from "./components/GlobalHeader.jsx";
 import {Navigate, Route, Routes} from "react-router-dom";
 import Home from "./pages/Home.jsx";
 import Admin from "./pages/admin/Admin.jsx";
-import LandingPagePresta from "./pages/LandingPagePresta.jsx";
 import CreateOrganisation from "./pages/CreateOrganisation.jsx";
 import ProvidersOrganisations from "./pages/ProvidersOrganisations.jsx";
 import useAuth, {Roles} from "./auth/useAuth.js";
@@ -20,6 +19,7 @@ import Appointment from "./pages/Appointment.jsx";
 import MuiDsfrThemeProvider from "@codegouvfr/react-dsfr/mui.js";
 import LanguageSelector from "./components/LanguageSelector/LanguageSelector.jsx";
 import Appointments from "./pages/Appointments.jsx";
+import {headerFooterDisplayItem} from "@codegouvfr/react-dsfr/Display";
 
 function App() {
     const {t} = useTranslation();
@@ -51,6 +51,10 @@ function App() {
             to: '/admin',
         },
         text: t('admin')
+    }
+    const languageSelector = {
+        linkProps: {},
+        text: <LanguageSelector/>
     }
     const navigation = [
         {
@@ -90,6 +94,8 @@ function App() {
         });
     }
 
+    quickAccessItems.push(headerFooterDisplayItem, languageSelector);
+
     return (
         <>
             <MuiDsfrThemeProvider>
@@ -98,7 +104,6 @@ function App() {
                     serviceTitle={serviceTitle}
                     navigation={navigationItemsByRole}
                 />
-                <LanguageSelector/>
                 <div id="main-page-container">
                     <div className="fr-col-10">
                         {translationsLoaded ?

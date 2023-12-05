@@ -11,7 +11,7 @@ en,login,Login
 en,logout,Logout
 en,mail,Mail
 en,passwordLabel,Password
-en,passwordLengthMessage,"8 characters minimum"
+en,passwordLengthMessage,"{{ length }} characters minimum"
 en,superintendent,Superintendent
 en,loading,"Loading..."
 en,error_occurred,"An error occurred, please excuse us for the inconvenience"

@@ -22,7 +22,7 @@ export default function ScriptedPasswordInput({
     onChange,
     onValidityChange,
 }) {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     passwordLabel = passwordLabel ?? t("passwordLabel");
     passwordLengthMessage = passwordLengthMessage ?? t('passwordLengthMessage', { length: 8 });
@@ -33,7 +33,8 @@ export default function ScriptedPasswordInput({
     const [password, setPassword] = useState(defaultPassword);
     useEffect(() => {
         setMessages(validatePassword(password));
-    }, [invalidType]);
+    }, [invalidType, i18n.language]);
+
     const validations = [
         {
             message: passwordLengthMessage,
