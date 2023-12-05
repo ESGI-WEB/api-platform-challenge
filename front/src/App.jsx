@@ -17,12 +17,11 @@ import i18n from "i18next";
 import {useEffect, useState} from "react";
 import NoTranslations from "./pages/NoTranslations.jsx";
 import Appointment from "./pages/Appointment.jsx";
-import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import MuiDsfrThemeProvider from "@codegouvfr/react-dsfr/mui.js";
+import LanguageSelector from "./components/LanguageSelector/LanguageSelector.jsx";
 import Appointments from "./pages/Appointments.jsx";
 
 function App() {
-    startReactDsfr({ defaultColorScheme: "system" });
     const {t} = useTranslation();
     const [translationsLoaded, setTranslationsLoaded] = useState(true);
 
@@ -94,12 +93,12 @@ function App() {
     return (
         <>
             <MuiDsfrThemeProvider>
-
                 <GlobalHeader
                     quickAccessItems={quickAccessItems}
                     serviceTitle={serviceTitle}
                     navigation={navigationItemsByRole}
                 />
+                <LanguageSelector/>
                 <div id="main-page-container">
                     <div className="fr-col-10">
                         {translationsLoaded ?

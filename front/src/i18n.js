@@ -16,7 +16,6 @@ i18n.on('failedLoading', (lng) => {
 i18n
     .use(Backend)
     .use(initReactI18next)
-    .use(LanguageDetector)
     .init({
         order: ['navigator'],
         fallbackLng: 'fr',
