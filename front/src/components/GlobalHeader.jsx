@@ -1,5 +1,4 @@
 import {Header} from "@codegouvfr/react-dsfr/Header";
-import {headerFooterDisplayItem} from "@codegouvfr/react-dsfr/Display";
 import {useTranslation} from "react-i18next";
 
 export default function GlobalHeader({
@@ -23,7 +22,7 @@ export default function GlobalHeader({
             serviceTitle={serviceTitle}
             homeLinkProps={homeLinkProps}
             id={id}
-            quickAccessItems={[...quickAccessItems, headerFooterDisplayItem]}
+            quickAccessItems={quickAccessItems}
             navigation={navigation}
         />
     )

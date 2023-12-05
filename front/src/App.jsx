@@ -5,7 +5,6 @@ import GlobalHeader from "./components/GlobalHeader.jsx";
 import {Navigate, Route, Routes} from "react-router-dom";
 import Home from "./pages/Home.jsx";
 import Admin from "./pages/admin/Admin.jsx";
-import LandingPagePresta from "./pages/LandingPagePresta.jsx";
 import CreateOrganisation from "./pages/CreateOrganisation.jsx";
 import ProvidersOrganisations from "./pages/ProvidersOrganisations.jsx";
 import useAuth, {Roles} from "./auth/useAuth.js";
@@ -19,9 +18,10 @@ import NoTranslations from "./pages/NoTranslations.jsx";
 import Appointment from "./pages/Appointment.jsx";
 import MuiDsfrThemeProvider from "@codegouvfr/react-dsfr/mui.js";
 import LanguageSelector from "./components/LanguageSelector/LanguageSelector.jsx";
+import Appointments from "./pages/Appointments.jsx";
+import {headerFooterDisplayItem} from "@codegouvfr/react-dsfr/Display";
 
 function App() {
-    //startReactDsfr({ defaultColorScheme: "system" });
     const {t} = useTranslation();
     const [translationsLoaded, setTranslationsLoaded] = useState(true);
 
@@ -52,6 +52,10 @@ function App() {
         },
         text: t('admin')
     }
+    const languageSelector = {
+        linkProps: {},
+        text: <LanguageSelector/>
+    }
     const navigation = [
         {
             role: Roles.PROVIDER,
@@ -59,6 +63,13 @@ function App() {
                 to: '/providers-organisations',
             },
             text: t('your_police_stations'),
+        },
+        {
+            role: Roles.USER,
+            linkProps: {
+                to: '/appointments',
+            },
+            text: t('your_appointments'),
         },
     ];
     let quickAccessItems = [loginButton];
@@ -83,6 +94,8 @@ function App() {
         });
     }
 
+    quickAccessItems.push(headerFooterDisplayItem, languageSelector);
+
     return (
         <>
             <MuiDsfrThemeProvider>
@@ -91,7 +104,6 @@ function App() {
                     serviceTitle={serviceTitle}
                     navigation={navigationItemsByRole}
                 />
-                <LanguageSelector/>
                 <div id="main-page-container">
                     <div className="fr-col-10">
                         {translationsLoaded ?
@@ -123,11 +135,11 @@ function App() {
                                         <Appointment/>
                                     </ProtectedRoute>
                                 }/>
-                                <Route path="prestations" element={
-                                    <ProtectedRoute requiredRoles={Roles.PROVIDER}>
-                                        <LandingPagePresta/>
-                                    </ProtectedRoute>
-                                }/>
+                                {/*<Route path="prestations" element={*/}
+                                {/*    <ProtectedRoute requiredRoles={Roles.PROVIDER}>*/}
+                                {/*        <LandingPagePresta/>*/}
+                                {/*    </ProtectedRoute>*/}
+                                {/*}/>*/}
                                 <Route path="create-organisation" element={
                                     <ProtectedRoute requiredRole={Roles.PROVIDER}>
                                         <CreateOrganisation/>
@@ -136,6 +148,11 @@ function App() {
                                 <Route path="providers-organisations" element={
                                     <ProtectedRoute requiredRole={Roles.PROVIDER}>
                                         <ProvidersOrganisations/>
+                                    </ProtectedRoute>
+                                }/>
+                                <Route path="appointments" element={
+                                    <ProtectedRoute requiredRole={Roles.USER}>
+                                        <Appointments/>
                                     </ProtectedRoute>
                                 }/>
                                 <Route path="*" element={<Navigate to="/" replace/>}/>

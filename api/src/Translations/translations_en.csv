@@ -11,7 +11,7 @@ en,login,Login
 en,logout,Logout
 en,mail,Mail
 en,passwordLabel,Password
-en,passwordLengthMessage,"8 characters minimum"
+en,passwordLengthMessage,"{{ length }} characters minimum"
 en,superintendent,Superintendent
 en,loading,"Loading..."
 en,error_occurred,"An error occurred, please excuse us for the inconvenience"
@@ -47,4 +47,10 @@ en,your_police_stations,"Your police stations"
 en,create_police_station,"Create a police station"
 en,load_more,"Load more"
 en,services_available,"Available services:"
+en,your_appointments,"Your appointments"
+en,back_to_home,"Back to home"
+en,no_appointment_yet,"You don't have any appointment yet"
+en,no_appointments_details,"You can make an appointment online by finding a police station or a service from the home page."
+en,only_future_appointments,"Only future appointments"
+en,only_valid_appointments,"Only valid appointments"
 en,select_language,"Select a language"

@@ -19,7 +19,6 @@ export default function Home() {
     const zoom = 5;
     const mapRef = useRef(null);
 
-
     const loadOrganisations = () => {
         if (!hasNextPage) {
             return;
@@ -51,9 +50,9 @@ export default function Home() {
         <div>
             <h1>{t('home')}</h1>
 
-            <MapContainer center={mapCenter} zoom={zoom}
-                          className="large-map"
-                          whenCreated={(map) => mapRef.current = map}
+            {organisations.length > 0 && <MapContainer center={mapCenter} zoom={zoom}
+                           className="large-map"
+                           whenCreated={(map) => mapRef.current = map}
             >
                 <ChangeView center={mapCenter} zoom={zoom}/>
                 <TileLayer
@@ -67,16 +66,14 @@ export default function Home() {
                         </Popup>
                     </Marker>
                 )}
-            </MapContainer>
+            </MapContainer>}
 
-            <div className="flex">
+            <div className="flex fr-mt-5v">
                 <div className="flex flex-wrap gap-2 fr-mb-5v">
                     {organisations.map((organisation) =>
                         <OrganisationCard key={organisation.id} organisation={organisation}/>
                     )}
                 </div>
-
-
             </div>
 
 

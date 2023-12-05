@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Entity\AvailableSlot;
 use App\Entity\User;
+use App\Enum\AppointmentStatusEnum;
 use App\Enum\DaysEnum;
 use App\Repository\AppointmentRepository;
 use App\Repository\HolidayRepository;
@@ -58,7 +59,7 @@ class SlotsService
         $nextTwoWeeksAppointments = $this->appointmentRepository->findByDateTimeBetween(
             $startDate,
             $endDate,
-            [],
+            ['status' => AppointmentStatusEnum::valid->value],
             ['service' => ['service.organisation', $organisation_id]],
         );
 
