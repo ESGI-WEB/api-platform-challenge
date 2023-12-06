@@ -21,7 +21,7 @@ class StatisticsController extends AbstractController
         $this->security = $security;
     }
 
-    #[Route('/appointment_count', name: 'appointment_count', methods: ['GET'])]
+    #[Route('/appointments_count', name: 'appointments_count', methods: ['GET'])]
     public function getAppointmentCount(): JsonResponse
     {
         $user = $this->security->getUser();

@@ -2,7 +2,6 @@ import {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import InPageAlert, {AlertSeverity} from "../components/InPageAlert.jsx";
 import useOrganisationService from "../services/useOrganisationService.js";
-import {MapContainer, Marker, TileLayer} from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
 import PageLoader from "../components/PageLoader/PageLoader.jsx";
 import Calendar from "../components/Calendar/Calendar.jsx";

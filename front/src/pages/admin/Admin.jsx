@@ -1,15 +1,57 @@
 import Dashboard from "../../components/Dashboard.jsx";
+import useOrganisationService from "../../services/useOrganisationService.js";
+import useStatisticsService from "../../services/useStatisticsService.js";
+import {useEffect, useState} from "react";
+import InPageAlert, {AlertSeverity} from "../../components/InPageAlert.jsx";
+import PageLoader from "../../components/PageLoader/PageLoader.jsx";
+import {useTranslation} from "react-i18next";
 
 export default function Admin() {
+    const {t} = useTranslation();
+    const [isLoading, setIsLoading] = useState(true);
+    const [isErrored, setIsErrored] = useState(false);
+    const [appointmentsCount, setAppointmentsCount] = useState(null);
+    const [appointmentsCount2, setAppointmentsCount2] = useState(null);
+
+    const statisticsService = useStatisticsService();
+
+    const loadStatistics = () => {
+        setIsLoading(true);
+
+        Promise.all([
+            statisticsService.appointments_count(),
+            statisticsService.appointments_count(),
+        ]).then(([appointmentsCount, appointmentsCount2]) => {
+            setAppointmentsCount(appointmentsCount);
+            setAppointmentsCount2(appointmentsCount2);
+        }).catch((e) => {
+            console.error(e);
+            setIsErrored(true);
+        }).finally(() => {
+            setIsLoading(false);
+        });
+    }
+
+    useEffect(() => {
+        loadStatistics()
+    }, []);
+
+    if (isErrored) {
+        return <InPageAlert alert={{severity: AlertSeverity.ERROR, closable: false}}/>;
+    }
+
+    if (isLoading) {
+        return <PageLoader isLoading={isLoading}/>;
+    }
 
     const cardIndicators = [
         {
-            title: "3",
-            description: "Rendez-vous enregistrés aujourd'hui",
+            count: appointmentsCount.count,
+            description: t('appointments_count'),
             to: "#"
         },
         {
-            title: "18",
+            count: "18",
             description: "Utilisateurs inscrits sur e-commissariat",
             to: "#"
         }
