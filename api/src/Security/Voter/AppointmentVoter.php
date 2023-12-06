@@ -108,6 +108,6 @@ class AppointmentVoter extends Voter
         }
 
         // check que la date de rdv est bien disponible
-        return !empty($this->slotsService->getAvailableSlots($appointment->getService()->getOrganisation()->getId(), $appointment->getDatetime(), $appointment->getProvider()));
+        return !empty($this->slotsService->getAvailableSlots($appointment->getService()->getOrganisation()->getId(), $appointment->getDatetime(), $appointment->getProvider()->getId()));
     }
 }

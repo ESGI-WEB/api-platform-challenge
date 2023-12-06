@@ -6,13 +6,14 @@ export default function PageLoader({
     loaderIcon = 'ri-loader-4-line',
     loadingText = null,
     Component: Component = 'div',
+    className = '',
 }) {
     const { t } = useTranslation();
 
     loadingText = loadingText || t('loading');
     return (
         isLoading &&
-        <Component className="page-loader">
+        <Component className={"page-loader " + className}>
             <i className={'page-loader-icon ' + loaderIcon}></i>
             <p>{loadingText}</p>
         </Component>
