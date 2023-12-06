@@ -15,6 +15,8 @@ import Modal from "../components/Modal/Modal.jsx";
 import LoadableButton from "../components/LoadableButton/LoadableButton.jsx";
 import {useTranslation} from "react-i18next";
 import OrganisationLocation from "../components/OrganisationLocation.jsx";
+import CalendarItem from "../components/Calendar/CalendarItem.jsx";
+import CalendarHeaderDate from "../components/Calendar/CalendarHeaderDate.jsx";
 
 export default function Organisation() {
     const {organisationId} = useParams();
@@ -152,6 +154,8 @@ export default function Organisation() {
                         <>
                             <p className="margin-0">{selectedService.description}</p>
                             <Calendar
+                                calendarDateHeader={CalendarHeaderDate}
+                                calendarItem={CalendarItem}
                                 data={slots}
                                 onDateClick={(slot) => handleSlotSelection(slot)}
                             ></Calendar>
