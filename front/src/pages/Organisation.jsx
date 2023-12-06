@@ -15,6 +15,8 @@ import Modal from "../components/Modal/Modal.jsx";
 import LoadableButton from "../components/LoadableButton/LoadableButton.jsx";
 import {useTranslation} from "react-i18next";
 import OrganisationLocation from "../components/OrganisationLocation.jsx";
+import CalendarItem from "../components/Calendar/CalendarItem.jsx";
+import CalendarHeaderDate from "../components/Calendar/CalendarHeaderDate.jsx";
 
 export default function Organisation() {
     const {organisationId} = useParams();
@@ -89,7 +91,7 @@ export default function Organisation() {
         });
     }
 
-    const {t} = useTranslation();
+    const {t,i18n} = useTranslation();
 
     useEffect(() => {
         if (organisation === null || slots.length <= 0) {
@@ -152,6 +154,8 @@ export default function Organisation() {
                         <>
                             <p className="margin-0">{selectedService.description}</p>
                             <Calendar
+                                calendarDateHeader={CalendarHeaderDate}
+                                calendarItem={CalendarItem}
                                 data={slots}
                                 onDateClick={(slot) => handleSlotSelection(slot)}
                             ></Calendar>
@@ -169,7 +173,7 @@ export default function Organisation() {
             >
                 <div className="flex flex-column gap-2">
                     <p className="margin-0">{
-                        new Date(selectedSlot.datetime).toLocaleDateString(undefined, {
+                        new Date(selectedSlot.datetime).toLocaleDateString(i18n.language, {
                             weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'
                         })
                     }</p>

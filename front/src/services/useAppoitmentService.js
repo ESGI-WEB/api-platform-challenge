@@ -28,7 +28,7 @@ const useAppointmentService = () => {
                 Object.keys(filters).forEach(key => url += `&${key}=${filters[key]}`);
             }
 
-            return api(url.href, {
+            return api(url, {
                 method: 'GET',
             }, true)
         },

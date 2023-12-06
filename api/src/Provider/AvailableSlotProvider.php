@@ -33,6 +33,7 @@ readonly class AvailableSlotProvider implements ProviderInterface
         if (!$operation instanceof CollectionOperationInterface) {
             return null;
         }
-        return $this->slotsService->getAvailableSlots($uriVariables['organisation_id']);
+
+        return $this->slotsService->getAvailableSlots($uriVariables['organisation_id'], null, $uriVariables['provider_id'] ?? null);
     }
 }

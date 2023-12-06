@@ -18,6 +18,9 @@ const useOrganisationService = () => {
         getSlots: (organisation_id) => api(`organisations/${organisation_id}/available-slots`, {
             method: 'GET',
         }),
+        getProviderSlots: (organisation_id, provider_id) => api(`organisations/${organisation_id}/providers/${provider_id}/available-slots`, {
+            method: 'GET',
+        }),
         get: (organisation_id) => api(`organisations/${organisation_id}`, {
             method: 'GET',
         }),

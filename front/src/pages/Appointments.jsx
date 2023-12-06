@@ -12,7 +12,7 @@ import {Card} from "@codegouvfr/react-dsfr/Card";
 import {ToggleButton, ToggleButtonGroup} from "@mui/material";
 
 export default function Appointments() {
-    const {t} = useTranslation();
+    const {t, i18n} = useTranslation();
     const navigate = useNavigate();
     const auth = useAuth();
     const [appointments, setAppointments] = useState([]);
@@ -107,7 +107,7 @@ export default function Appointments() {
                             <li><Badge>{appointment.service.title}</Badge></li>
                             <li>
                                 <Badge severity="new">
-                                    {new Date(appointment.datetime).toLocaleDateString(undefined, {
+                                    {new Date(appointment.datetime).toLocaleDateString(i18n.language, {
                                         weekday: 'long',
                                         year: 'numeric',
                                         month: 'long',

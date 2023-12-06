@@ -25,7 +25,7 @@ class SlotsService
     /**
      * @throws \Exception
      */
-    public function getAvailableSlots(int $organisation_id, DateTime $targetDateTime = null, User $provider = null): array
+    public function getAvailableSlots(int $organisation_id, DateTime $targetDateTime = null, int $providerId = null): array
     {
         $startDate = new DateTime();
         $endDate = new DateTime('+2 weeks');
@@ -38,8 +38,8 @@ class SlotsService
         $interval = DateInterval::createFromDateString('1 day');
 
         $schedulesDataCriteria = ['organisation' => $organisation_id];
-        if ($provider !== null) {
-            $schedulesDataCriteria['provider'] = $provider->getId();
+        if ($providerId !== null) {
+            $schedulesDataCriteria['provider'] = $providerId;
         }
         $schedules = $this->scheduleRepository->findBy($schedulesDataCriteria);
 
