@@ -4,7 +4,7 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import {useTranslation} from "react-i18next";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import * as React from "react";
+
 export default function CardIndicator({
     title,
     description,
