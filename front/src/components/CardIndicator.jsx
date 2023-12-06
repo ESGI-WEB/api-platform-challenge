@@ -1,10 +1,10 @@
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import {useTranslation} from "react-i18next";
-import LinkButton from "./LinkButton/LinkButton.jsx";
+import { Button } from "@codegouvfr/react-dsfr/Button";
+import * as React from "react";
 export default function CardIndicator({
     title,
     description,
@@ -23,12 +23,15 @@ export default function CardIndicator({
                 </Typography>
             </CardContent>
             <CardActions sx={{justifyContent: 'end'}}>
-                <LinkButton
-                    className={"fr-link--sm"}
-                    to={to}
+                <Button
+                    size="small"
+                    linkProps={{
+                        href: {to}
+                    }}
+                    priority="tertiary no outline"
                 >
-                    {t('see_more')}
-                </LinkButton>
+                    {t("see_more")}
+                </Button>
             </CardActions>
         </Card>
     );

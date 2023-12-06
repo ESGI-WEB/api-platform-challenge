@@ -8,7 +8,8 @@ import CardList from "./CardList.jsx";
 export default function Dashboard({
     cardIndicators = [],
     barChartData = {},
-    tableDatas = {},
+    tableData = {},
+    listsData = [],
 }) {
 
     const {t} = useTranslation();
@@ -28,11 +29,12 @@ export default function Dashboard({
                         )}
                     </div>
                     <ChartIndicator data={barChartData} />
-                    <TableIndicator data={tableDatas}/>
+                    <TableIndicator data={tableData}/>
                 </div>
                 <div className="flex flex-row gap-2 flex-1 align-start">
-                    <CardList />
-                    <CardList />
+                    {listsData.map(list =>
+                        <CardList key={list.title} title={list.title} description={list.description} list={list.rows}/>
+                    )}
                 </div>
             </div>
         </>

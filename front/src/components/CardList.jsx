@@ -9,132 +9,66 @@ import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
-import Button from "@mui/material/Button";
+import {useTranslation} from "react-i18next";
+import { Button } from "@codegouvfr/react-dsfr/Button";
 
-export default function CardList() {
+export default function CardList({
+    title,
+    description,
+    list = [],
+    to
+}) {
+
+    const { t } = useTranslation();
+
     return (
         <Card variant="outlined" sx={{ flexGrow: 1, flexBasis: 0 }}>
             <CardContent sx={{ minHeight: 160 }}>
                 <Typography gutterBottom variant="h5" component="div">
-                    titre
+                    {title}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                   description longue de mon indicateur blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla blabla vdddi deii ijiohjik yg g
+                    {description}
                 </Typography>
             </CardContent>
             <List variant="outlined">
-                <ListItem alignItems="flex-start">
-                    <ListItemAvatar>
-                        <Avatar alt="Remy Sharp"/>
-                    </ListItemAvatar>
-                    <ListItemText
-                        primary="Brunch this weekend?"
-                        secondary={
-                            <React.Fragment>
-                                <Typography
-                                    sx={{ display: 'inline' }}
-                                    component="span"
-                                    variant="body2"
-                                    color="text.primary"
-                                >
-                                    Ali Connors
-                                </Typography>
-                                {" — I'll be in your neighborhood doing errands this…"}
-                            </React.Fragment>
-                        }
-                    />
-                </ListItem>
-                <Divider variant="inset" component="li" />
-                <ListItem alignItems="flex-start">
-                    <ListItemAvatar>
-                        <Avatar alt="Remy Sharp"/>
-                    </ListItemAvatar>
-                    <ListItemText
-                        primary="Summer BBQ"
-                        secondary={
-                            <React.Fragment>
-                                <Typography
-                                    sx={{ display: 'inline' }}
-                                    component="span"
-                                    variant="body2"
-                                    color="text.primary"
-                                >
-                                    to Scott, Alex, Jennifer
-                                </Typography>
-                                {" — Wish I could come, but I'm out of town this…"}
-                            </React.Fragment>
-                        }
-                    />
-                </ListItem>
-                <Divider variant="inset" component="li" />
-                <ListItem alignItems="flex-start">
-                    <ListItemAvatar>
-                        <Avatar alt="Remy Sharp"/>
-                    </ListItemAvatar>
-                    <ListItemText
-                        primary="Oui Oui"
-                        secondary={
-                            <React.Fragment>
-                                <Typography
-                                    sx={{ display: 'inline' }}
-                                    component="span"
-                                    variant="body2"
-                                    color="text.primary"
-                                >
-                                    Sandra Adams
-                                </Typography>
-                                {' — Do you have Paris recommendations? Have you ever…'}
-                            </React.Fragment>
-                        }
-                    />
-                </ListItem>
-                <Divider variant="inset" component="li" />
-                <ListItem alignItems="flex-start">
-                    <ListItemAvatar>
-                        <Avatar alt="Remy Sharp"/>
-                    </ListItemAvatar>
-                    <ListItemText
-                        primary="Oui Oui"
-                        secondary={
-                            <React.Fragment>
-                                <Typography
-                                    sx={{ display: 'inline' }}
-                                    component="span"
-                                    variant="body2"
-                                    color="text.primary"
-                                >
-                                    Sandra Adams
-                                </Typography>
-                                {' — Do you have Paris recommendations? Have you ever…'}
-                            </React.Fragment>
-                        }
-                    />
-                </ListItem>
-                <Divider variant="inset" component="li" />
-                <ListItem alignItems="flex-start">
-                    <ListItemAvatar>
-                        <Avatar alt="Remy Sharp"/>
-                    </ListItemAvatar>
-                    <ListItemText
-                        primary="Oui Oui"
-                        secondary={
-                            <React.Fragment>
-                                <Typography
-                                    sx={{ display: 'inline' }}
-                                    component="span"
-                                    variant="body2"
-                                    color="text.primary"
-                                >
-                                    Sandra Adams
-                                </Typography>
-                                {' — Do you have Paris recommendations? Have you ever…'}
-                            </React.Fragment>
-                        }
-                    />
-                </ListItem>
+                {list.map((item, index) => (
+                    <React.Fragment key={index}>
+                        <ListItem alignItems="flex-start">
+                            <ListItemAvatar>
+                                <Avatar>{item.name[0]}{item.firstName[0]}</Avatar>
+                            </ListItemAvatar>
+                            <ListItemText
+                                primary={item.name + " " +item.firstName}
+                                secondary={
+                                    <React.Fragment>
+                                        <Typography
+                                            sx={{ display: 'inline' }}
+                                            component="span"
+                                            variant="body2"
+                                            color="text.primary"
+                                        >
+                                            {item.date}
+                                        </Typography>
+                                        {" — " + item.commissariat}
+                                    </React.Fragment>
+                                }
+                            />
+                        </ListItem>
+                        {index < list.length - 1 && <Divider component="li" />}
+                    </React.Fragment>
+                ))}
             </List>
-            <CardActions sx={{justifyContent: 'center'}}>
-                <Button size="small">see_more</Button>
+            <CardActions sx={{ justifyContent: 'center' }}>
+                <Button
+                    size="small"
+                    linkProps={{
+                        href: {to}
+                    }}
+                    priority="tertiary no outline"
+                >
+                    {t("see_more")}
+                </Button>
             </CardActions>
         </Card>
     );

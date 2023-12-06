@@ -1,9 +1,3 @@
-import {useTranslation} from "react-i18next";
-import CardIndicator from "../../components/CardIndicator.jsx";
-import ChartIndicator from "../../components/ChartIndicator.jsx";
-import InPageAlert from "../../components/InPageAlert.jsx";
-import AlignItemsList from "../../components/CardList.jsx";
-import TableIndicator from "../../components/TableIndicator.jsx";
 import Dashboard from "../../components/Dashboard.jsx";
 
 export default function Admin() {
@@ -21,7 +15,7 @@ export default function Admin() {
         }
     ]
 
-    const tableDatas =
+    const tableData =
         {
             title: "Liste des 5 derniers rendez-vous enregistrés",
             tableColumns: ["nom", "prénom", "date", "commissariat"],
@@ -73,33 +67,71 @@ export default function Admin() {
             height: 300,
         }
 
+    const listsData = [
+        {
+            title: "Liste des 5 derniers rendez-vous enregistrés",
+            description: "description de mon indicateur blabla",
+            to: '#',
+            rows: [
+                {
+                    name: "MORIN",
+                    firstName: "Laurie",
+                    date: "15 décembre",
+                    commissariat: "Commissariat 18ème",
+                },
+                {
+                    name: "MORIN",
+                    firstName: "Laurie",
+                    date: "15 décembre",
+                    commissariat: "Commissariat 18ème",
+                },
+                {
+                    name: "MORIN",
+                    firstName: "Laurie",
+                    date: "15 décembre",
+                    commissariat: "Commissariat 18ème",
+                },
+                {
+                    name: "MORIN",
+                    firstName: "Laurie",
+                    date: "15 décembre",
+                    commissariat: "Commissariat 18ème",
+                },
+                {
+                    name: "MORIN",
+                    firstName: "Laurie",
+                    date: "15 décembre",
+                    commissariat: "Commissariat 18ème",
+                }
+            ],
+        },
+        {
+            title: "Liste des 5 derniers rendez-vous enregistrés",
+            description: "description de mon indicateur blabla",
+            to: '#',
+            rows: [
+                {
+                    name: "MORIN",
+                    firstName: "Laurie",
+                    date: "15 décembre",
+                    commissariat: "Commissariat 18ème",
+                },
+                {
+                    name: "MORIN",
+                    firstName: "Laurie",
+                    date: "15 décembre",
+                    commissariat: "Commissariat 18ème",
+                }
+            ],
+        }
+    ]
 
     return (
         <Dashboard
             cardIndicators={cardIndicators}
             barChartData={barChartData}
-            tableDatas={tableDatas}
+            tableData={tableData}
+            listsData={listsData}
         />
-        /*<>
-            <InPageAlert alert={{
-                title: "Dashboard",
-                description: "Bienvenue sur le dashboard de statistiques l'application e-commissariat.",
-                severity: 'info',
-            }} />
-            <div className="flex flex-row gap-2">
-                <div className="flex flex-column gap-2 flex-1">
-                    <div className="flex flex-row gap-2">
-                        <CardIndicator title="titre" description="description de mon indicateur blabla" to='#' />
-                        <CardIndicator title="titre" description="description de mon indicateur blabla" to='#' />
-                    </div>
-                    <ChartIndicator />
-                    <TableIndicator />
-                </div>
-                <div className="flex flex-row gap-2 flex-1 align-start">
-                    <AlignItemsList />
-                    <AlignItemsList />
-                </div>
-            </div>
-        </>*/
     )
 }
