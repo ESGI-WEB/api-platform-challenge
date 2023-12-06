@@ -54,3 +54,6 @@ fr,no_appointments_details,"Vous pouvez prendre rendez-vous en ligne en trouvant
 fr,only_future_appointments,"Rendez-vous futurs uniquement"
 fr,only_valid_appointments,"Rendez-vous valides uniquement"
 fr,select_language,"Sélectionnez une langue"
+fr,display_map,"Afficher la carte"
+fr,hide_map,"Cacher la carte"
+fr,see_police_station_details,"Voire les détails du commissariat"

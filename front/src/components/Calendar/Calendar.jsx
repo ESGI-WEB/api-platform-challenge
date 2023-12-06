@@ -1,7 +1,7 @@
 import "./calendar.css";
 import Badge from "@codegouvfr/react-dsfr/Badge.js";
 import {useEffect, useState} from "react";
-import {createModal} from "@codegouvfr/react-dsfr/Modal";
+import {useTranslation} from "react-i18next";
 
 export default function Calendar({
      component: Component = "div",
@@ -13,6 +13,7 @@ export default function Calendar({
 }) {
     const [dates, setDates] = useState([]);
     const [displayedChunk, setDisplayedChunk] = useState(0);
+    const {i18n} = useTranslation();
 
     const getDateTimeFromObject = (obj) => {
         const path = dateTimePath.split('.');
@@ -87,9 +88,9 @@ export default function Calendar({
                 }
                 {dates[displayedChunk].map(([day, calendarDates]) => (
                     <div key={day} className="text-center">
-                        <p className="margin-0">{calendarDates[0].date.toLocaleDateString(undefined, {weekday: 'long'})}</p>
+                        <p className="margin-0">{calendarDates[0].date.toLocaleDateString(i18n.language, {weekday: 'long'})}</p>
                         <p className="fr-mb-5v">
-                            <small>{calendarDates[0].date.toLocaleDateString(undefined, {
+                            <small>{calendarDates[0].date.toLocaleDateString(i18n.language, {
                                 day: 'numeric',
                                 month: 'short'
                             })}</small>
@@ -101,7 +102,7 @@ export default function Calendar({
                                        className="pointer"
                                        onClick={() => onDateClick(date.data)}
                                 >
-                                    {date.date.toLocaleTimeString(undefined, {hour: '2-digit', minute: '2-digit'})}
+                                    {date.date.toLocaleTimeString(i18n.language, {hour: '2-digit', minute: '2-digit'})}
                                 </Badge>
                             ))}
                         </div>

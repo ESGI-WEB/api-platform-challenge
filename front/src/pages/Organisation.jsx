@@ -89,7 +89,7 @@ export default function Organisation() {
         });
     }
 
-    const {t} = useTranslation();
+    const {t,i18n} = useTranslation();
 
     useEffect(() => {
         if (organisation === null || slots.length <= 0) {
@@ -169,7 +169,7 @@ export default function Organisation() {
             >
                 <div className="flex flex-column gap-2">
                     <p className="margin-0">{
-                        new Date(selectedSlot.datetime).toLocaleDateString(undefined, {
+                        new Date(selectedSlot.datetime).toLocaleDateString(i18n.language, {
                             weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'
                         })
                     }</p>

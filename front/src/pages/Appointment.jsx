@@ -19,7 +19,7 @@ export default function Appointment() {
     const [pageAlert, setPageAlert] = useState(null);
     const [appointment, setAppointment] = useState(null);
     const appointmentService = useAppointmentService();
-    const {t} = useTranslation();
+    const {t, i18n} = useTranslation();
     const successCreatedAppointementAlert = {
         title: t('appointment_success_title'),
         severity: AlertSeverity.SUCCESS,
@@ -86,7 +86,7 @@ export default function Appointment() {
                     <Badge noIcon severity="new">
                         <span>
                             {t('appointment_date', {
-                                date: new Date(appointment.datetime).toLocaleDateString(undefined, {
+                                date: new Date(appointment.datetime).toLocaleDateString(i18n.language, {
                                     day: 'numeric',
                                     month: 'long',
                                     year: 'numeric',
