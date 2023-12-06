@@ -30,44 +30,32 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-function createData(name, calories, fat, carbs) {
-  return { name, calories, fat, carbs };
-}
-
-const rows = [
-  createData("MORIN", "Laurie", "15 décembre", "Commisariat 18ème"),
-  createData("MORIN", "Laurie", "15 décembre", "Commisariat 18ème"),
-  createData("MORIN", "Laurie", "15 décembre", "Commisariat 18ème"),
-  createData("MORIN", "Laurie", "15 décembre", "Commisariat 18ème"),
-  createData("MORIN", "Laurie", "15 décembre", "Commisariat 18ème")
-];
-
-export default function TableIndicator() {
+export default function TableIndicator({
+    data = {},
+}) {
   return (
     <Card variant="outlined">
       <CardContent>
         <Typography sx={{ fontSize: 18, paddingBottom: 1 }} color="text.secondary" gutterBottom>
-          Le titre de mon graphique
+          {data.title}
         </Typography>
         <TableContainer outlined="variant" component={Paper}>
           <Table aria-label="customized table">
             <TableHead>
               <TableRow>
-                <StyledTableCell align="right">Nom</StyledTableCell>
-                <StyledTableCell align="right">Prénom</StyledTableCell>
-                <StyledTableCell align="right">Date du rendez-vous</StyledTableCell>
-                <StyledTableCell align="right">Commissariat</StyledTableCell>
+                {data.tableColumns.map((columnTitle) => (
+                    <StyledTableCell key={columnTitle} align="left">{columnTitle}</StyledTableCell>
+                ))}
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
-                  <StyledTableRow key={row.name}>
-                    <StyledTableCell component="th" scope="row">
-                      {row.name}
-                    </StyledTableCell>
-                    <StyledTableCell align="right">{row.calories}</StyledTableCell>
-                    <StyledTableCell align="right">{row.fat}</StyledTableCell>
-                    <StyledTableCell align="right">{row.carbs}</StyledTableCell>
+              {data.rows.map((line, index) => (
+                  <StyledTableRow key={index}>
+                    {Object.values(line).map((value, index) => (
+                        <StyledTableCell key={index} align="left">
+                          {value}
+                        </StyledTableCell>
+                    ))}
                   </StyledTableRow>
               ))}
             </TableBody>

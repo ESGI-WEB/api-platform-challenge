@@ -1,23 +1,20 @@
-import {LineChart} from "@mui/x-charts";
+import {BarChart} from "@mui/x-charts";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
 import CardContent from "@mui/material/CardContent";
 
-export default function ChartIndicator() {
+export default function ChartIndicator({
+    data = {},
+}) {
     return (
         <Card variant="outlined">
             <CardContent>
                 <Typography sx={{ fontSize: 18 }} color="text.secondary" gutterBottom>
-                    Le titre de mon graphique
+                    {data.title}
                 </Typography>
-                <LineChart
-                    xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]}
-                    series={[
-                        {
-                            data: [2, 5.5, 2, 8.5, 1.5, 5],
-                            color: "var(--blue-france-sun-113-625)",
-                        },
-                    ]}
+                <BarChart
+                    xAxis={[{ scaleType: 'band', data: data.xAxis }]}
+                    series={[{ data: data.series[0].data, color: data.series[0].color }]}
                     width={500}
                     height={300}
                 />

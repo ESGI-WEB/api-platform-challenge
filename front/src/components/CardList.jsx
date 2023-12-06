@@ -11,7 +11,7 @@ import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 import Button from "@mui/material/Button";
 
-export default function AlignItemsList() {
+export default function CardList() {
     return (
         <Card variant="outlined" sx={{ flexGrow: 1, flexBasis: 0 }}>
             <CardContent sx={{ minHeight: 160 }}>

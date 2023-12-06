@@ -4,6 +4,7 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import {useTranslation} from "react-i18next";
+import LinkButton from "./LinkButton/LinkButton.jsx";
 export default function CardIndicator({
     title,
     description,
@@ -22,7 +23,12 @@ export default function CardIndicator({
                 </Typography>
             </CardContent>
             <CardActions sx={{justifyContent: 'end'}}>
-                <Button size="small">{t('see_more')}</Button>
+                <LinkButton
+                    className={"fr-link--sm"}
+                    to={to}
+                >
+                    {t('see_more')}
+                </LinkButton>
             </CardActions>
         </Card>
     );
