@@ -1,5 +1,4 @@
 import Dashboard from "../../components/Dashboard.jsx";
-import useOrganisationService from "../../services/useOrganisationService.js";
 import useStatisticsService from "../../services/useStatisticsService.js";
 import {useEffect, useState} from "react";
 import InPageAlert, {AlertSeverity} from "../../components/InPageAlert.jsx";
@@ -11,7 +10,7 @@ export default function Admin() {
     const [isLoading, setIsLoading] = useState(true);
     const [isErrored, setIsErrored] = useState(false);
     const [appointmentsCount, setAppointmentsCount] = useState(null);
-    const [appointmentsCount2, setAppointmentsCount2] = useState(null);
+    const [appointmentSlot, setAppointmentSlot] = useState(null);
 
     const statisticsService = useStatisticsService();
 
@@ -19,11 +18,11 @@ export default function Admin() {
         setIsLoading(true);
 
         Promise.all([
-            statisticsService.appointments_count(),
-            statisticsService.appointments_count(),
-        ]).then(([appointmentsCount, appointmentsCount2]) => {
+            statisticsService.getAppointmentsCount(),
+            statisticsService.getMaxAppointmentSlot(),
+        ]).then(([appointmentsCount, appointmentSlot]) => {
             setAppointmentsCount(appointmentsCount);
-            setAppointmentsCount2(appointmentsCount2);
+            setAppointmentSlot(appointmentSlot);
         }).catch((e) => {
             console.error(e);
             setIsErrored(true);
@@ -46,13 +45,13 @@ export default function Admin() {
 
     const cardIndicators = [
         {
-            count: appointmentsCount.count,
+            value: appointmentsCount.count,
             description: t('appointments_count'),
             to: "#"
         },
         {
-            count: "18",
-            description: "Utilisateurs inscrits sur e-commissariat",
+            value: appointmentSlot.time,
+            description: t('max_appointment_slot'),
             to: "#"
         }
     ]
