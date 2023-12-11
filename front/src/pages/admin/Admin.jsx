@@ -11,6 +11,7 @@ export default function Admin() {
     const [isErrored, setIsErrored] = useState(false);
     const [appointmentsCount, setAppointmentsCount] = useState(null);
     const [appointmentSlot, setAppointmentSlot] = useState(null);
+    const [lastAppointments, setLastAppointments] = useState(null);
 
     const statisticsService = useStatisticsService();
 
@@ -20,9 +21,11 @@ export default function Admin() {
         Promise.all([
             statisticsService.getAppointmentsCount(),
             statisticsService.getMaxAppointmentSlot(),
-        ]).then(([appointmentsCount, appointmentSlot]) => {
+            statisticsService.getLastAppointments()
+        ]).then(([appointmentsCount, appointmentSlot, lastAppointments]) => {
             setAppointmentsCount(appointmentsCount);
             setAppointmentSlot(appointmentSlot);
+            setLastAppointments(lastAppointments);
         }).catch((e) => {
             console.error(e);
             setIsErrored(true);
@@ -110,60 +113,16 @@ export default function Admin() {
 
     const listsData = [
         {
-            title: "Liste des 5 derniers rendez-vous enregistrés",
-            description: "description de mon indicateur blabla",
+            title: t('appointments_booked_today_title'),
+            description: t('appointments_booked_today_description'),
             to: '#',
-            rows: [
-                {
-                    name: "MORIN",
-                    firstName: "Laurie",
-                    date: "15 décembre",
-                    commissariat: "Commissariat 18ème",
-                },
-                {
-                    name: "MORIN",
-                    firstName: "Laurie",
-                    date: "15 décembre",
-                    commissariat: "Commissariat 18ème",
-                },
-                {
-                    name: "MORIN",
-                    firstName: "Laurie",
-                    date: "15 décembre",
-                    commissariat: "Commissariat 18ème",
-                },
-                {
-                    name: "MORIN",
-                    firstName: "Laurie",
-                    date: "15 décembre",
-                    commissariat: "Commissariat 18ème",
-                },
-                {
-                    name: "MORIN",
-                    firstName: "Laurie",
-                    date: "15 décembre",
-                    commissariat: "Commissariat 18ème",
-                }
-            ],
+            rows: lastAppointments,
         },
         {
             title: "Liste des 5 derniers rendez-vous enregistrés",
             description: "description de mon indicateur blabla",
             to: '#',
-            rows: [
-                {
-                    name: "MORIN",
-                    firstName: "Laurie",
-                    date: "15 décembre",
-                    commissariat: "Commissariat 18ème",
-                },
-                {
-                    name: "MORIN",
-                    firstName: "Laurie",
-                    date: "15 décembre",
-                    commissariat: "Commissariat 18ème",
-                }
-            ],
+            rows: lastAppointments
         }
     ]
 

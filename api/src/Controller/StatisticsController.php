@@ -32,7 +32,7 @@ class StatisticsController extends AbstractController
             return $this->json(['count' => null]);
         }
 
-        if ($this->security->isGranted(RolesEnum::ADMIN->value)) {
+        if (!$this->security->isGranted(RolesEnum::ADMIN->value)) {
             $appointmentCount = $this->entityManager
                 ->getRepository(Appointment::class)
                 ->createQueryBuilder('appointment')
@@ -64,7 +64,7 @@ class StatisticsController extends AbstractController
             ->orderBy('COUNT(appointment.id)', 'DESC')
             ->setMaxResults(1);
 
-        if ($this->security->isGranted(RolesEnum::PROVIDER->value)) {
+        if (!$this->security->isGranted(RolesEnum::ADMIN->value)) {
             $qb->andWhere('appointment.provider = :user')
                 ->setParameter('user', $user);
         }
@@ -72,6 +72,50 @@ class StatisticsController extends AbstractController
         $result = $qb->getQuery()->getSingleResult();
 
         return $this->json(['time' => $result['appointment_time']]);
+    }
+
+    #[Route('/last_appointments', name: 'last_appointments', methods: ['GET'])]
+    #[IsGranted(RolesEnum::PROVIDER->value)]
+    public function last_appointments(): JsonResponse
+    {
+        $user = $this->security->getUser();
+
+        if ($user === null) {
+            return $this->json(null);
+        }
+
+        $today = new \DateTime();
+        $startOfDay = new \DateTime($today->format('Y-m-d 00:00:01'));
+        $endOfDay = new \DateTime($today->format('Y-m-d 23:59:59'));
+
+        $qb = $this->entityManager
+            ->getRepository(Appointment::class)
+            ->createQueryBuilder('appointment')
+            ->innerJoin('appointment.client', 'client')
+            ->innerJoin('appointment.service', 'service')
+            ->innerJoin('service.organisation', 'organisation')
+            ->where('appointment.createdAt BETWEEN :startOfDay AND :endOfDay')
+            ->setParameter('startOfDay', $startOfDay)
+            ->setParameter('endOfDay', $endOfDay)
+            ->orderBy('appointment.createdAt', 'DESC')
+            ->setMaxResults(5);
+
+        if (!$this->security->isGranted(RolesEnum::ADMIN->value)) {
+            $qb->andWhere('appointment.provider = :user')
+                ->setParameter('user', $user);
+        }
+
+        $result = $qb
+            ->select([
+                'appointment.datetime as subtitle',
+                "CONCAT(client.lastname, ' ', client.firstname) AS title",
+                'organisation.name as description',
+                "CONCAT(organisation.address, ' ', organisation.zipcode, ' ', organisation.city) AS subdescription",
+            ])
+            ->getQuery()
+            ->getResult();
+
+        return $this->json($result);
     }
 
 }
