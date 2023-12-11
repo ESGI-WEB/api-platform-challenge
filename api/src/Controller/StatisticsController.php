@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Appointment;
+use App\Entity\Organisation;
 use App\Enum\RolesEnum;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -85,7 +86,7 @@ class StatisticsController extends AbstractController
         }
 
         $today = new \DateTime();
-        $startOfDay = new \DateTime($today->format('Y-m-d 00:00:01'));
+        $startOfDay = new \DateTime($today->format('Y-m-d 00:00:00'));
         $endOfDay = new \DateTime($today->format('Y-m-d 23:59:59'));
 
         $qb = $this->entityManager
@@ -112,6 +113,50 @@ class StatisticsController extends AbstractController
                 'organisation.name as description',
                 "CONCAT(organisation.address, ' ', organisation.zipcode, ' ', organisation.city) AS subdescription",
             ])
+            ->getQuery()
+            ->getResult();
+
+        return $this->json($result);
+    }
+
+    #[Route('/max_organisations', name: 'max_organisations', methods: ['GET'])]
+    #[IsGranted(RolesEnum::PROVIDER->value)]
+    public function max_organisation(): JsonResponse
+    {
+        $user = $this->security->getUser();
+
+        if ($user === null) {
+            return $this->json(null);
+        }
+
+        $today = new \DateTime();
+        $startOfMonth = new \DateTime($today->format('Y-m-01 00:00:00'));
+        $endOfMonth = new \DateTime($today->format('Y-m-t 23:59:59'));
+
+        $qb = $this->entityManager
+            ->getRepository(Organisation::class)
+            ->createQueryBuilder('organisation')
+            ->innerJoin('organisation.services', 'services')
+            ->innerJoin('services.appointments', 'appointments')
+            ->where('appointments.createdAt BETWEEN :startOfMonth AND :endOfMonth')
+            ->setParameter('startOfMonth', $startOfMonth)
+            ->setParameter('endOfMonth', $endOfMonth);
+
+        if (!$this->security->isGranted(RolesEnum::ADMIN->value)) {
+            $qb->andWhere('appointments.provider = :user')
+                ->setParameter('user', $user);
+        }
+
+        $result = $qb
+            ->select([
+                'organisation.name as subtitle',
+                "COUNT(appointments.id) AS title",
+                'organisation.address as description',
+                "CONCAT(organisation.zipcode, ' ', organisation.city) AS subdescription",
+            ])
+            ->groupBy('organisation.id')
+            ->orderBy('title', 'DESC')
+            ->setMaxResults(5)
             ->getQuery()
             ->getResult();
 

@@ -14,7 +14,8 @@ export default function CardList({
     title,
     description,
     list = [],
-    to
+    to,
+    variant
 }) {
 
     const { t } = useTranslation();
@@ -34,7 +35,7 @@ export default function CardList({
                     <React.Fragment key={index}>
                         <ListItem alignItems="flex-start">
                             <ListItemText
-                                primary={item.title}
+                                primary={variant === 'variant1' ? item.title : item.title + ' ' + t('appointments')}
                                 secondary={
                                     <React.Fragment>
                                         <Typography
@@ -44,13 +45,14 @@ export default function CardList({
                                             color="text.primary"
                                         >
                                             {
+                                                variant === 'variant1' ?
                                                 new Date(item.subtitle).toLocaleDateString(undefined, {
                                                     day: 'numeric',
                                                     month: 'long',
                                                     year: 'numeric',
                                                     hour: '2-digit',
                                                     minute: '2-digit',
-                                                })
+                                                }) : item.subtitle
                                             }
                                         </Typography>
                                         <Typography

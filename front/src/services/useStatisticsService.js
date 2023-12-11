@@ -12,6 +12,9 @@ const useStatisticsService = () => {
         getLastAppointments: () => api(`last_appointments`, {
             method: 'GET',
         }),
+        getMaxOrganisations: () => api(`max_organisations`, {
+            method: 'GET',
+        }),
     };
 };
 

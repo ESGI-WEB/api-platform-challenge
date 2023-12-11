@@ -33,7 +33,7 @@ export default function Dashboard({
                 </div>
                 <div className="flex flex-row gap-2 flex-1 align-start">
                     {listsData.map(list =>
-                        <CardList key={list.title} title={list.title} description={list.description} list={list.rows}/>
+                        <CardList key={list.title} title={list.title} description={list.description} list={list.rows} variant={list.variant}/>
                     )}
                 </div>
             </div>

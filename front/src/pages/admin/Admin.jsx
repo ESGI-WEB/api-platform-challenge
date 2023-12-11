@@ -12,6 +12,7 @@ export default function Admin() {
     const [appointmentsCount, setAppointmentsCount] = useState(null);
     const [appointmentSlot, setAppointmentSlot] = useState(null);
     const [lastAppointments, setLastAppointments] = useState(null);
+    const [maxOrganisations, setMaxOrganisations] = useState(null);
 
     const statisticsService = useStatisticsService();
 
@@ -21,11 +22,13 @@ export default function Admin() {
         Promise.all([
             statisticsService.getAppointmentsCount(),
             statisticsService.getMaxAppointmentSlot(),
-            statisticsService.getLastAppointments()
-        ]).then(([appointmentsCount, appointmentSlot, lastAppointments]) => {
+            statisticsService.getLastAppointments(),
+            statisticsService.getMaxOrganisations()
+        ]).then(([appointmentsCount, appointmentSlot, lastAppointments, maxOrganisations]) => {
             setAppointmentsCount(appointmentsCount);
             setAppointmentSlot(appointmentSlot);
             setLastAppointments(lastAppointments);
+            setMaxOrganisations(maxOrganisations)
         }).catch((e) => {
             console.error(e);
             setIsErrored(true);
@@ -117,12 +120,14 @@ export default function Admin() {
             description: t('appointments_booked_today_description'),
             to: '#',
             rows: lastAppointments,
+            variant: 'variant1'
         },
         {
-            title: "Liste des 5 derniers rendez-vous enregistrés",
-            description: "description de mon indicateur blabla",
+            title: t('max_appointments_title'),
+            description: t('max_appointments_description'),
             to: '#',
-            rows: lastAppointments
+            rows: maxOrganisations,
+            variant: 'variant2'
         }
     ]
 
