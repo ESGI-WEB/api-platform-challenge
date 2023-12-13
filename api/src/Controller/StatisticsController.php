@@ -5,13 +5,13 @@ namespace App\Controller;
 use App\Entity\Appointment;
 use App\Entity\Organisation;
 use App\Enum\RolesEnum;
-use DateInterval;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Service\Attribute\Required;
 
 #[Route('/api')]
 class StatisticsController extends AbstractController
@@ -30,20 +30,18 @@ class StatisticsController extends AbstractController
     {
         $user = $this->security->getUser();
 
-        if ($user === null) {
+        if (!$user) {
             return $this->json(['count' => null]);
         }
 
-        if (!$this->security->isGranted(RolesEnum::ADMIN->value)) {
-            $appointmentCount = $this->entityManager
+        $appointmentCount = $this->security->isGranted(RolesEnum::ADMIN->value)
+            ? count($user->getClientAppointments())
+            : $this->entityManager
                 ->getRepository(Appointment::class)
                 ->createQueryBuilder('appointment')
                 ->select('COUNT(appointment.id)')
                 ->getQuery()
                 ->getSingleScalarResult();
-        } else {
-            $appointmentCount = count($user->getClientAppointments());
-        }
 
         return $this->json(['count' => $appointmentCount]);
     }
@@ -54,7 +52,7 @@ class StatisticsController extends AbstractController
     {
         $user = $this->security->getUser();
 
-        if ($user === null) {
+        if (!$user) {
             return $this->json(['slot' => null]);
         }
 
@@ -78,17 +76,16 @@ class StatisticsController extends AbstractController
 
     #[Route('/last_appointments', name: 'last_appointments', methods: ['GET'])]
     #[IsGranted(RolesEnum::PROVIDER->value)]
-    public function last_appointments(): JsonResponse
+    public function lastAppointments(): JsonResponse
     {
         $user = $this->security->getUser();
 
-        if ($user === null) {
+        if (!$user) {
             return $this->json(null);
         }
 
-        $today = new \DateTime();
-        $startOfDay = new \DateTime($today->format('Y-m-d 00:00:00'));
-        $endOfDay = new \DateTime($today->format('Y-m-d 23:59:59'));
+        $startOfDay = (new \DateTime())->format('Y-m-d 00:00:00');
+        $endOfDay = (new \DateTime())->format('Y-m-d 23:59:59');
 
         $qb = $this->entityManager
             ->getRepository(Appointment::class)
@@ -122,17 +119,17 @@ class StatisticsController extends AbstractController
 
     #[Route('/max_organisations', name: 'max_organisations', methods: ['GET'])]
     #[IsGranted(RolesEnum::PROVIDER->value)]
-    public function max_organisation(): JsonResponse
+    public function maxOrganisation(): JsonResponse
     {
         $user = $this->security->getUser();
 
-        if ($user === null) {
+        if (!$user) {
             return $this->json(null);
         }
 
         $today = new \DateTime();
-        $startOfMonth = new \DateTime($today->format('Y-m-01 00:00:00'));
-        $endOfMonth = new \DateTime($today->format('Y-m-t 23:59:59'));
+        $startOfMonth = \DateTime::createFromFormat('Y-m-d H:i:s', $today->format('Y-m-01 00:00:00'));
+        $endOfMonth = \DateTime::createFromFormat('Y-m-d H:i:s', $today->format('Y-m-t 23:59:59'));
 
         $qb = $this->entityManager
             ->getRepository(Organisation::class)
@@ -166,11 +163,11 @@ class StatisticsController extends AbstractController
 
     #[Route('/appointments_per_day', name: 'appointments_per_day', methods: ['GET'])]
     #[IsGranted(RolesEnum::PROVIDER->value)]
-    public function appointments_per_day(): JsonResponse
+    public function appointmentsPerDay(): JsonResponse
     {
         $user = $this->security->getUser();
 
-        if ($user === null) {
+        if (!$user) {
             return $this->json(null);
         }
 
@@ -207,5 +204,4 @@ class StatisticsController extends AbstractController
 
         return $this->json($result);
     }
-
 }

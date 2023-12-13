@@ -6,13 +6,14 @@ import PageLoader from "../../components/PageLoader/PageLoader.jsx";
 import {useTranslation} from "react-i18next";
 
 export default function Admin() {
-    const {t} = useTranslation();
+    const {t, i18n} = useTranslation();
     const [isLoading, setIsLoading] = useState(true);
     const [isErrored, setIsErrored] = useState(false);
     const [appointmentsCount, setAppointmentsCount] = useState(null);
     const [appointmentSlot, setAppointmentSlot] = useState(null);
     const [lastAppointments, setLastAppointments] = useState(null);
     const [maxOrganisations, setMaxOrganisations] = useState(null);
+    const [appointmentsPerDay, setAppointmentsPerDay] = useState(null);
 
     const statisticsService = useStatisticsService();
 
@@ -23,12 +24,14 @@ export default function Admin() {
             statisticsService.getAppointmentsCount(),
             statisticsService.getMaxAppointmentSlot(),
             statisticsService.getLastAppointments(),
-            statisticsService.getMaxOrganisations()
-        ]).then(([appointmentsCount, appointmentSlot, lastAppointments, maxOrganisations]) => {
+            statisticsService.getMaxOrganisations(),
+            statisticsService.getAppointmentsPerDay()
+        ]).then(([appointmentsCount, appointmentSlot, lastAppointments, maxOrganisations, appointmentsPerDay]) => {
             setAppointmentsCount(appointmentsCount);
             setAppointmentSlot(appointmentSlot);
             setLastAppointments(lastAppointments);
-            setMaxOrganisations(maxOrganisations)
+            setMaxOrganisations(maxOrganisations);
+            setAppointmentsPerDay(appointmentsPerDay);
         }).catch((e) => {
             console.error(e);
             setIsErrored(true);
@@ -100,13 +103,24 @@ export default function Admin() {
             ],
         }
 
+    const days = Array.from(Array(7).keys()).map((idx) => {
+        const d = new Date();
+        d.setDate(d.getDate() - (d.getDay() + 6) % 7 + idx);
+        return d;
+    });
+
     const barChartData =
         {
-            title: "Nombre de rendez-vous enregistrés par jour",
-            xAxis: ["Lundi 1", "Mardi 2", "Mercredi 3", "Jeudi 4", "Vendredi 5"],
+            title: t('appointments_per_day_title'),
+            xAxis: days.map((d) => {
+                return new Date(d).toLocaleDateString(i18n.language, {
+                    day: "numeric",
+                    month: "long",
+                })
+            }),
             series: [
                 {
-                    data: [2, 5, 2, 8, 3],
+                    data: appointmentsPerDay,
                     color: "var(--blue-france-sun-113-625)",
                 },
             ],

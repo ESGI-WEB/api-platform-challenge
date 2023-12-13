@@ -64,3 +64,4 @@ en,appointments_booked_today_description,"List of last 5 appointments booked tod
 en,appointments,"appointments"
 en,max_appointments_title,"This month's busiest police station."
 en,max_appointments_description,"List of the 5 police stations with the most appointments this month"
+en,appointments_per_day_title,"Appointments per day"

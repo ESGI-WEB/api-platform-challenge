@@ -15,6 +15,9 @@ const useStatisticsService = () => {
         getMaxOrganisations: () => api(`max_organisations`, {
             method: 'GET',
         }),
+        getAppointmentsPerDay: () => api(`appointments_per_day`, {
+            method: 'GET',
+        }),
     };
 };
 
