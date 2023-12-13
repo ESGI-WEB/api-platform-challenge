@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Appointment;
 use App\Entity\Organisation;
 use App\Enum\RolesEnum;
+use DateInterval;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -60,7 +61,7 @@ class StatisticsController extends AbstractController
         $qb = $this->entityManager
             ->getRepository(Appointment::class)
             ->createQueryBuilder('appointment')
-            ->select("date_format(appointment.datetime, 'HH:mm') AS appointment_time")
+            ->select("date_format(appointment.datetime, 'HH24:MI') AS appointment_time")
             ->groupBy('appointment_time')
             ->orderBy('COUNT(appointment.id)', 'DESC')
             ->setMaxResults(1);
@@ -159,6 +160,50 @@ class StatisticsController extends AbstractController
             ->setMaxResults(5)
             ->getQuery()
             ->getResult();
+
+        return $this->json($result);
+    }
+
+    #[Route('/appointments_per_day', name: 'appointments_per_day', methods: ['GET'])]
+    #[IsGranted(RolesEnum::PROVIDER->value)]
+    public function appointments_per_day(): JsonResponse
+    {
+        $user = $this->security->getUser();
+
+        if ($user === null) {
+            return $this->json(null);
+        }
+
+        $startOfWeek = (new \DateTime())->modify('last monday')->format('Y-m-d');
+        $endOfWeek = (new \DateTime())->modify('sunday')->format('Y-m-d');
+
+        $qb = $this->entityManager
+            ->getRepository(Appointment::class)
+            ->createQueryBuilder('appointment')
+            ->where('appointment.datetime BETWEEN :startOfWeek AND :endOfWeek')
+            ->setParameter('startOfWeek', $startOfWeek)
+            ->setParameter('endOfWeek', $endOfWeek);
+
+        if (!$this->security->isGranted(RolesEnum::ADMIN->value)) {
+            $qb->andWhere('appointment.provider = :user')
+                ->setParameter('user', $user);
+        }
+
+        $appointments = $qb
+            ->select([
+                "date_format(appointment.datetime, 'YYYY-MM-DD') AS day",
+                "COUNT(appointment.id) AS appointment_count",
+            ])
+            ->groupBy('day')
+            ->getQuery()
+            ->getResult();
+
+        $result = array_fill(0, 7, 0);
+
+        foreach ($appointments as $appointment) {
+            $dayOfWeek = (new \DateTime($appointment['day']))->format('w');
+            $result[$dayOfWeek] = $appointment['appointment_count'];
+        }
 
         return $this->json($result);
     }
