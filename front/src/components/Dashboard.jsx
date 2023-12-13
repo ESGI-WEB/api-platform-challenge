@@ -24,8 +24,8 @@ export default function Dashboard({
             <div className="flex flex-row gap-2">
                 <div className="flex flex-column gap-2 flex-1">
                     <div className="flex flex-row gap-2">
-                        {cardIndicators.map(indicator =>
-                            <CardIndicator key={indicator.to} title={indicator.value} description={indicator.description} to={indicator.to} />
+                        {cardIndicators.map((indicator, index) =>
+                            <CardIndicator key={index} title={indicator.value} description={indicator.description} to={indicator.to} />
                         )}
                     </div>
                     <ChartIndicator data={barChartData} />

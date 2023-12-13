@@ -1,91 +1,105 @@
 import Dashboard from "../../components/Dashboard.jsx";
 import useStatisticsService from "../../services/useStatisticsService.js";
-import {useEffect, useState} from "react";
-import InPageAlert, {AlertSeverity} from "../../components/InPageAlert.jsx";
+import { useEffect, useState } from "react";
+import InPageAlert, { AlertSeverity } from "../../components/InPageAlert.jsx";
 import PageLoader from "../../components/PageLoader/PageLoader.jsx";
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 export default function Admin() {
     const {t, i18n} = useTranslation();
-    const [isLoading, setIsLoading] = useState(true);
-    const [isErrored, setIsErrored] = useState(false);
-    const [appointmentsCount, setAppointmentsCount] = useState(null);
-    const [appointmentSlot, setAppointmentSlot] = useState(null);
-    const [lastAppointments, setLastAppointments] = useState(null);
-    const [maxOrganisations, setMaxOrganisations] = useState(null);
-    const [appointmentsPerDay, setAppointmentsPerDay] = useState(null);
-    const [lastFeedbacks, setLastFeedbacks] = useState(null);
+    const [stats, setStats] = useState({
+        isLoading: true,
+        isErrored: false,
+        appointmentsCount: null,
+        appointmentSlot: null,
+        lastAppointments: null,
+        maxOrganisations: null,
+        appointmentsPerDay: null,
+        lastFeedbacks: null,
+    });
 
     const statisticsService = useStatisticsService();
 
-    const loadStatistics = () => {
-        setIsLoading(true);
+    const loadStatistics = async () => {
+        setStats((prevStats) => ({...prevStats, isLoading: true}));
 
-        Promise.all([
-            statisticsService.getAppointmentsCount(),
-            statisticsService.getMaxAppointmentSlot(),
-            statisticsService.getLastAppointments(),
-            statisticsService.getMaxOrganisations(),
-            statisticsService.getAppointmentsPerDay(),
-            statisticsService.getLastFeedback(),
-        ]).then(([appointmentsCount, appointmentSlot, lastAppointments, maxOrganisations, appointmentsPerDay, lastFeedbacks]) => {
-            setAppointmentsCount(appointmentsCount);
-            setAppointmentSlot(appointmentSlot);
-            setLastAppointments(lastAppointments);
-            setMaxOrganisations(maxOrganisations);
-            setAppointmentsPerDay(appointmentsPerDay);
-            setLastFeedbacks(lastFeedbacks);
-        }).catch((e) => {
+        try {
+            const [
+                appointmentsCount,
+                appointmentSlot,
+                lastAppointments,
+                maxOrganisations,
+                appointmentsPerDay,
+                lastFeedbacks,
+            ] = await Promise.all([
+                statisticsService.getAppointmentsCount(),
+                statisticsService.getMaxAppointmentSlot(),
+                statisticsService.getLastAppointments(),
+                statisticsService.getMaxOrganisations(),
+                statisticsService.getAppointmentsPerDay(),
+                statisticsService.getLastFeedback(),
+            ]);
+
+            setStats((prevStats) => ({
+                ...prevStats,
+                appointmentsCount,
+                appointmentSlot,
+                lastAppointments,
+                maxOrganisations,
+                appointmentsPerDay,
+                lastFeedbacks,
+            }));
+        } catch (e) {
             console.error(e);
-            setIsErrored(true);
-        }).finally(() => {
-            setIsLoading(false);
-        });
-    }
+            setStats((prevStats) => ({...prevStats, isErrored: true}));
+        } finally {
+            setStats((prevStats) => ({...prevStats, isLoading: false}));
+        }
+    };
 
     useEffect(() => {
-        loadStatistics()
+        loadStatistics();
     }, []);
 
-    if (isErrored) {
+    if (stats.isErrored) {
         return <InPageAlert alert={{severity: AlertSeverity.ERROR, closable: false}}/>;
+    } else if (stats.isLoading) {
+        return <PageLoader isLoading={stats.isLoading}/>;
     }
 
-    if (isLoading) {
-        return <PageLoader isLoading={isLoading}/>;
-    }
+    const formatDate = (date) =>
+        new Date(date).toLocaleString(i18n.language, {
+            day: "numeric",
+            month: "numeric",
+            year: "numeric",
+        });
+
+    const formatTime = (time) =>
+        new Date(time).toLocaleTimeString(i18n.language, {
+            hour: "numeric",
+            minute: "numeric",
+        });
 
     const cardIndicators = [
         {
-            value: appointmentsCount.count,
-            description: t('appointments_count'),
-            to: "#"
+            value: stats.appointmentsCount.count,
+            description: t("appointments_count"),
+            to: "#",
         },
         {
-            value: new Date(appointmentSlot.time).toLocaleTimeString(i18n.language, {
-                hour: "numeric",
-                minute: "numeric",
-            }),
-            description: t('max_appointment_slot'),
-            to: "#"
-        }
-    ]
+            value: formatTime(stats.appointmentSlot.time),
+            description: t("max_appointment_slot"),
+            to: "#",
+        },
+    ];
 
     const tableData = {
-        title: t('last_feedbacks'),
-        tableColumns: Object.keys(lastFeedbacks[0]).map((key) => t(key)),
-        rows: lastFeedbacks.map((feedback) => ({
+        title: t("last_feedbacks"),
+        tableColumns: Object.keys(stats.lastFeedbacks[0]).map((key) => t(key)),
+        rows: stats.lastFeedbacks.map((feedback) => ({
             ...feedback,
-            appointment_date: new Date(feedback.appointment_date).toLocaleString(i18n.language, {
-                day: "numeric",
-                month: "numeric",
-                year: "numeric",
-            }),
-            feedback_date: new Date(feedback.feedback_date).toLocaleString(i18n.language, {
-                day: "numeric",
-                month: "numeric",
-                year: "numeric",
-            }),
+            appointment_date: formatDate(feedback.appointment_date),
+            feedback_date: formatDate(feedback.feedback_date),
         })),
     };
 
@@ -95,41 +109,40 @@ export default function Admin() {
         return d;
     });
 
-    const barChartData =
-        {
-            title: t('appointments_per_day_title'),
-            xAxis: days.map((d) => {
-                return new Date(d).toLocaleDateString(i18n.language, {
-                    day: "numeric",
-                    month: "long",
-                })
-            }),
-            series: [
-                {
-                    data: appointmentsPerDay,
-                    color: "var(--blue-france-sun-113-625)",
-                },
-            ],
-            width: 500,
-            height: 300,
-        }
+    const barChartData = {
+        title: t("appointments_per_day_title"),
+        xAxis: days.map((d) =>
+            new Date(d).toLocaleDateString(i18n.language, {
+                day: "numeric",
+                month: "long",
+            })
+        ),
+        series: [
+            {
+                data: stats.appointmentsPerDay,
+                color: "var(--blue-france-sun-113-625)",
+            },
+        ],
+        width: 500,
+        height: 300,
+    };
 
     const listsData = [
         {
-            title: t('appointments_booked_today_title'),
-            description: t('appointments_booked_today_description'),
-            to: '#',
-            rows: lastAppointments,
-            variant: 'variant1'
+            title: t("appointments_booked_today_title"),
+            description: t("appointments_booked_today_description"),
+            to: "#",
+            rows: stats.lastAppointments,
+            variant: "variant1",
         },
         {
-            title: t('max_appointments_title'),
-            description: t('max_appointments_description'),
-            to: '#',
-            rows: maxOrganisations,
-            variant: 'variant2'
-        }
-    ]
+            title: t("max_appointments_title"),
+            description: t("max_appointments_description"),
+            to: "#",
+            rows: stats.maxOrganisations,
+            variant: "variant2",
+        },
+    ];
 
     return (
         <Dashboard
@@ -138,5 +151,5 @@ export default function Admin() {
             tableData={tableData}
             listsData={listsData}
         />
-    )
+    );
 }
