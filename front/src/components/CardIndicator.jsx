@@ -13,7 +13,7 @@ export default function CardIndicator({
     const { t } = useTranslation();
 
     return (
-        <Card variant="outlined" sx={{ flexGrow: 1, flexBasis: 0, minHeight: 160 }}>
+        <Card variant="outlined" sx={{ flexGrow: 1, flexBasis: 0, minHeight: 160, display: 'flex', flexDirection: "column", justifyContent: "space-between" }}>
             <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
                     {title}

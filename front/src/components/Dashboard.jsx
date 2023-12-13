@@ -3,7 +3,7 @@ import {useTranslation} from "react-i18next";
 import CardIndicator from "./CardIndicator.jsx";
 import ChartIndicator from "./ChartIndicator.jsx";
 import TableIndicator from "./TableIndicator.jsx";
-import CardList from "./CardList.jsx";
+import CardListIndicator from "./CardListIndicator.jsx";
 
 export default function Dashboard({
     cardIndicators = [],
@@ -33,7 +33,7 @@ export default function Dashboard({
                 </div>
                 <div className="flex flex-row gap-2 flex-1 align-start">
                     {listsData.map(list =>
-                        <CardList key={list.title} title={list.title} description={list.description} list={list.rows} variant={list.variant}/>
+                        <CardListIndicator key={list.title} title={list.title} description={list.description} list={list.rows} variant={list.variant}/>
                     )}
                 </div>
             </div>

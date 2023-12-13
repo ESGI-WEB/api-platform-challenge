@@ -10,7 +10,7 @@ import CardActions from "@mui/material/CardActions";
 import {useTranslation} from "react-i18next";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 
-export default function CardList({
+export default function CardListIndicator({
     title,
     description,
     list = [],
@@ -18,10 +18,10 @@ export default function CardList({
     variant
 }) {
 
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     return (
-        <Card variant="outlined" sx={{ flexGrow: 1, flexBasis: 0 }}>
+        <Card variant="outlined" sx={{ flexGrow: 1, flexBasis: 0, display: 'flex', flexDirection: "column", justifyContent: "space-between" }}>
             <CardContent sx={{ minHeight: 160 }}>
                 <Typography gutterBottom variant="h5" component="div">
                     {title}
@@ -46,13 +46,13 @@ export default function CardList({
                                         >
                                             {
                                                 variant === 'variant1' ?
-                                                new Date(item.subtitle).toLocaleDateString(undefined, {
+                                                new Date(item.subtitle).toLocaleDateString(i18n.language, {
                                                     day: 'numeric',
                                                     month: 'long',
                                                     year: 'numeric',
-                                                    hour: '2-digit',
-                                                    minute: '2-digit',
-                                                }) : item.subtitle
+                                                    hour: "numeric",
+                                                    minute: "numeric",
+                                                }): item.subtitle
                                             }
                                         </Typography>
                                         <Typography

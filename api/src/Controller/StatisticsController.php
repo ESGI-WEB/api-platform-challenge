@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Answer;
 use App\Entity\Appointment;
 use App\Entity\Organisation;
 use App\Enum\RolesEnum;
@@ -11,7 +12,6 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Contracts\Service\Attribute\Required;
 
 #[Route('/api')]
 class StatisticsController extends AbstractController
@@ -59,7 +59,7 @@ class StatisticsController extends AbstractController
         $qb = $this->entityManager
             ->getRepository(Appointment::class)
             ->createQueryBuilder('appointment')
-            ->select("date_format(appointment.datetime, 'HH24:MI') AS appointment_time")
+            ->select("date_format(appointment.datetime, 'YYYY-MM-DD HH24:MI') AS appointment_time")
             ->groupBy('appointment_time')
             ->orderBy('COUNT(appointment.id)', 'DESC')
             ->setMaxResults(1);
@@ -201,6 +201,44 @@ class StatisticsController extends AbstractController
             $dayOfWeek = (new \DateTime($appointment['day']))->format('w');
             $result[$dayOfWeek] = $appointment['appointment_count'];
         }
+
+        return $this->json($result);
+    }
+
+    #[Route('/last_feedbacks', name: 'last_feedbacks', methods: ['GET'])]
+    #[IsGranted(RolesEnum::PROVIDER->value)]
+    public function lastFeedbacks(): JsonResponse
+    {
+        $user = $this->security->getUser();
+
+        if (!$user) {
+            return $this->json(null);
+        }
+
+        $qb = $this->entityManager
+            ->getRepository(Answer::class)
+            ->createQueryBuilder('answer')
+            ->innerJoin('answer.appointment', 'appointment')
+            ->innerJoin('appointment.client', 'client')
+            ->innerJoin('appointment.service', 'service')
+            ->innerJoin('service.organisation', 'organisation');
+
+        if (!$this->security->isGranted(RolesEnum::ADMIN->value)) {
+            $qb->andWhere('appointment.provider = :user')
+                ->setParameter('user', $user);
+        }
+
+        $result = $qb
+            ->select([
+                "CONCAT(client.lastname, ' ', client.firstname) AS full_name",
+                'appointment.datetime as appointment_date',
+                'answer.createdAt as feedback_date',
+                "CONCAT(organisation.name, ' ', organisation.address, ' ', organisation.zipcode, ' ', organisation.city) AS full_address",
+            ])
+            ->groupBy('appointment.id', 'full_name', 'full_address', 'feedback_date')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getResult();
 
         return $this->json($result);
     }

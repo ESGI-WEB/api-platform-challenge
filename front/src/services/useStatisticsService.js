@@ -18,6 +18,9 @@ const useStatisticsService = () => {
         getAppointmentsPerDay: () => api(`appointments_per_day`, {
             method: 'GET',
         }),
+        getLastFeedback: () => api(`last_feedbacks`, {
+            method: 'GET',
+        }),
     };
 };
 
