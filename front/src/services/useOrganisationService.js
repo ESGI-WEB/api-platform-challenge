@@ -5,9 +5,14 @@ const useOrganisationService = () => {
     const api = useApi();
     const {data} = useAuth();
     return {
-        organisations: (page = 1) => api(`organisations?page=${page}`, {
-            method: 'GET',
-        }, true),
+        organisations: (page = 1, filters = {}) => {
+            let url = `organisations?page=${page}`;
+            Object.keys(filters).forEach(key => url += `&${key}=${filters[key]}`);
+
+            return api(url, {
+                method: 'GET',
+            }, true)
+        },
         providersOrganisations: (page = 1) => api(`users/${data.id}/organisations?page=${page}`, {
             method: 'GET',
         }, true),

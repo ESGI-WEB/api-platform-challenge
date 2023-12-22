@@ -9,6 +9,7 @@ import OrganisationAddress from "../components/OrganisationAddress.jsx";
 import Map from "../components/Map.jsx";
 import {Button} from "@codegouvfr/react-dsfr/Button";
 import LinkButton from "../components/LinkButton/LinkButton.jsx";
+import OrganisationServicesList from "../components/OrganisationServicesList.jsx";
 
 export default function Home() {
     const {t} = useTranslation();
@@ -16,28 +17,25 @@ export default function Home() {
     const [organisations, setOrganisations] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const organisationService = useOrganisationService();
-    const [organisationPage, setOrganisationPage] = useState(1);
     const [hasNextPage, setHasNextPage] = useState(true);
-    const [mapCenter, setMapCenter] = useState([0, 0]);
+    const organisationPage = useRef(1);
     const zoom = 6;
-    const mapRef = useRef(null);
 
-    const loadOrganisations = () => {
+    const loadOrganisations = (filters) => {
         if (!hasNextPage) {
             return;
         }
 
         setIsLoading(true);
-        organisationService.organisations(organisationPage).then((response) => {
-            const allOrganisations = [...organisations, ...response['hydra:member']];
-            setOrganisations(allOrganisations);
-            setOrganisationPage(organisationPage + 1);
-            setHasNextPage(!!response['hydra:view']['hydra:next']);
 
-            const coordinates = allOrganisations.map((organisation) => [+organisation.latitude, +organisation.longitude]);
-            const averageLatitude = coordinates.reduce((sum, coordinate) => sum + coordinate[0], 0) / coordinates.length;
-            const averageLongitude = coordinates.reduce((sum, coordinate) => sum + coordinate[1], 0) / coordinates.length;
-            setMapCenter([averageLatitude, averageLongitude]);
+        organisationService.organisations(organisationPage.current, filters).then((response) => {
+            const newOrganisations = response['hydra:member'].filter((organisation) => {
+                return !organisations.find((o) => o.id === organisation.id);
+            });
+            setOrganisations([...organisations, ...newOrganisations]);
+
+            organisationPage.current++;
+            setHasNextPage(!!response['hydra:view']['hydra:next']);
         }).catch((error) => {
             console.error(error);
         }).finally(() => setIsLoading(false));
@@ -48,6 +46,17 @@ export default function Home() {
             loadOrganisations();
         }
     }, []);
+
+    const handleMapMove = (e) => {
+        const bounds = e.target.getBounds();
+        const filters = {
+            'latitude[between]': [bounds.getSouth(), bounds.getNorth()].join('..'),
+            'longitude[between]': [bounds.getWest(), bounds.getEast()].join('..'),
+        };
+        organisationPage.current = 1;
+        setHasNextPage(true);
+        loadOrganisations(filters, true);
+    };
 
     return (
         <div>
@@ -65,17 +74,20 @@ export default function Home() {
                 }
             </div>
 
-            {displayMap && organisations.length > 0 &&
+            {displayMap &&
                 <Map
-                    center={mapCenter}
-                    zoom={zoom}
-                    className="large-map fr-mt-5v"
-                    whenCreated={(map) => mapRef.current = map}
+                    locateOnUser
+                    defaultLocation={[46.227638, 2.213749]}
+                    className="large-map fr-my-5v"
+                    mapMoved={handleMapMove}
                 >
                     {organisations.map((organisation) =>
                         <Marker key={organisation.id} position={[organisation.latitude, organisation.longitude]}>
                             <Popup>
                                 <OrganisationAddress organisation={organisation}/>
+                                <p>
+                                    <OrganisationServicesList services={organisation.services}/>
+                                </p>
                                 <LinkButton
                                     to={`/station/${organisation.id}`}
                                 >
@@ -95,14 +107,13 @@ export default function Home() {
                         )}
                     </div>
 
-                    {organisations.length > 0 && hasNextPage &&
-                        <LoadableButton isLoading={isLoading} onClick={loadOrganisations}>{t('load_more')}</LoadableButton>
-                    }
+                    {organisations.length <= 0 && <PageLoader isLoading={isLoading}/>}
                 </>
             }
 
-
-            {organisations.length <= 0 && <PageLoader isLoading={isLoading}/>}
+            {organisations.length > 0 && hasNextPage &&
+                <LoadableButton isLoading={isLoading} onClick={loadOrganisations}>{t('load_more')}</LoadableButton>
+            }
 
         </div>
     )

@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use App\Enum\GroupsEnum;
@@ -46,6 +48,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     normalizationContext: ['groups' => [GroupsEnum::ORGANISATION_READ_DETAILED->value]],
 )]
 #[ORM\Entity(repositoryClass: OrganisationRepository::class)]
+#[ApiFilter(RangeFilter::class, properties: ['latitude', 'longitude'])]
 class Organisation
 {
     #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]

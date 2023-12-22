@@ -1,7 +1,7 @@
 import {Card} from "@codegouvfr/react-dsfr/Card";
-import {Tag} from "@codegouvfr/react-dsfr/Tag";
 import OrganisationAddress from "./OrganisationAddress.jsx";
 import {useTranslation} from "react-i18next";
+import OrganisationServicesList from "./OrganisationServicesList.jsx";
 
 export default function OrganisationCard({organisation, displayedServicesTags = 2}) {
     const {t} = useTranslation();
@@ -19,14 +19,7 @@ export default function OrganisationCard({organisation, displayedServicesTags = 
             endDetail={<span><OrganisationAddress organisation={organisation} withIcon/></span>}
             desc={organisation.services.length > 0 && <>
                     <span className="fr-mb-2v">{t('services_available')}</span>
-                    <span className="flex flex-wrap gap-1">
-                        {organisation.services.slice(0, displayedServicesTags).map((service) =>
-                            <Tag key={service.id}>{service.title}</Tag>
-                        )}
-                        {organisation.services.length > displayedServicesTags &&
-                            <Tag>+{organisation.services.length - displayedServicesTags}</Tag>
-                        }
-                    </span>
+                    <OrganisationServicesList services={organisation.services} displayedServicesTags={displayedServicesTags}/>
             </>}
         />
     )
