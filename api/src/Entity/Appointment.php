@@ -16,6 +16,7 @@ use ApiPlatform\Metadata\Post;
 use App\Enum\AppointmentStatusEnum;
 use App\Enum\GroupsEnum;
 use App\Enum\RolesEnum;
+use App\Provider\AppointmentListProvider;
 use App\Repository\AppointmentRepository;
 use App\Security\Voter\AppointmentVoter;
 use DateTimeImmutable;
@@ -102,7 +103,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     normalizationContext: ['groups' => [GroupsEnum::APPOINTMENT_READ->value]],
 )]
 #[ApiResource(
-    uriTemplate: '/users/{provider_id}/provider_appointments',
+    uriTemplate: '/users/{provider_id}/employee_appointments',
     operations: [
         new GetCollection(
             openapiContext: [
@@ -114,7 +115,7 @@ use Symfony\Component\Validator\Constraints as Assert;
                     GroupsEnum::APPOINTMENT_READ_DETAILED->value
                 ]
             ],
-            security: 'is_granted("' . AppointmentVoter::PROVIDER_READ_COLLECTION . '", object)',
+            security: 'is_granted("' . AppointmentVoter::EMPLOYEE_READ_COLLECTION . '", object)',
         ),
     ],
     uriVariables: [
@@ -126,13 +127,13 @@ use Symfony\Component\Validator\Constraints as Assert;
     normalizationContext: ['groups' => [GroupsEnum::APPOINTMENT_READ->value]],
 )]
 #[ApiResource(
-    uriTemplate: '/users/{provider_id}/provider_appointments/{appointment_id}',
+    uriTemplate: '/users/{provider_id}/employee_appointments/{appointment_id}',
     operations: [
         new Get(
             openapiContext: [
                 'summary' => 'Get an appointment where user is a provider',
             ],
-            security: 'is_granted("' . AppointmentVoter::PROVIDER_READ . '", object)',
+            security: 'is_granted("' . AppointmentVoter::EMPLOYEE_READ . '", object)',
         ),
     ],
     uriVariables: [
@@ -145,6 +146,18 @@ use Symfony\Component\Validator\Constraints as Assert;
         ),
     ],
     normalizationContext: ['groups' => [GroupsEnum::APPOINTMENT_READ->value]],
+)]
+#[ApiResource(
+    uriTemplate: '/appointments/organisation/{id}',
+    operations: [
+        new GetCollection(
+            openapiContext: [
+                'summary' => 'Get appointments as a superintendent for an organisation',
+            ],
+        ),
+    ],
+    normalizationContext: ['groups' => [GroupsEnum::APPOINTMENT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value]],
+    provider: AppointmentListProvider::class,
 )]
 #[ApiFilter(OrderFilter::class, properties: ['id', 'datetime'])]
 #[ApiFilter(SearchFilter::class, properties: ['status' => SearchFilterInterface::STRATEGY_EXACT])]

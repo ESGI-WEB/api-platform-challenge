@@ -23,8 +23,9 @@ class AppointmentVoter extends Voter
     public const CLIENT_READ_COLLECTION = 'CLIENT_READ_APPOINTMENT_COLLECTION';
     public const CLIENT_READ = 'CLIENT_READ_APPOINTMENT';
     public const CLIENT_UPDATE = 'CLIENT_UPDATE_APPOINTMENT';
-    public const PROVIDER_READ_COLLECTION = 'PROVIDER_READ_APPOINTMENT_COLLECTION';
-    public const PROVIDER_READ = 'PROVIDER_READ_APPOINTMENT';
+    public const EMPLOYEE_READ_COLLECTION = 'EMPLOYEE_READ_COLLECTION';
+    public const EMPLOYEE_READ = 'EMPLOYEE_READ';
+    public const PROVIDER_ORGANISATION_APPOINTMENTS_READ = 'PROVIDER_ORGANISATION_APPOINTMENTS_READ';
 
     public function __construct(
         private readonly Security $security,
@@ -35,7 +36,18 @@ class AppointmentVoter extends Voter
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        return in_array($attribute, [self::CREATE, self::CLIENT_READ_COLLECTION, self::CLIENT_READ, self::PROVIDER_READ_COLLECTION, self::PROVIDER_READ, self::CLIENT_UPDATE])
+        return in_array(
+                $attribute,
+                [
+                    self::CREATE,
+                    self::CLIENT_READ_COLLECTION,
+                    self::CLIENT_READ,
+                    self::EMPLOYEE_READ_COLLECTION,
+                    self::EMPLOYEE_READ,
+                    self::CLIENT_UPDATE,
+                    self::PROVIDER_ORGANISATION_APPOINTMENTS_READ
+                ]
+            )
             && ($subject instanceof Appointment || $subject instanceof AbstractPaginator);
     }
 
@@ -51,9 +63,10 @@ class AppointmentVoter extends Voter
             self::CREATE => $this->canCreateAppointment($user, $subject),
             self::CLIENT_READ_COLLECTION => $this->canClientReadAppointmentCollection($user),
             self::CLIENT_READ => $this->canClientReadAppointment($user, $subject),
-            self::PROVIDER_READ_COLLECTION => $this->canProviderReadAppointmentCollection($user),
-            self::PROVIDER_READ => $this->canProviderReadAppointment($user, $subject),
+            self::EMPLOYEE_READ_COLLECTION => $this->canEmployeeReadAppointmentCollection($user),
+            self::EMPLOYEE_READ => $this->canEmployeeReadAppointment($user, $subject),
             self::CLIENT_UPDATE => $this->canClientUpdateAppointment($user, $subject),
+            self::PROVIDER_ORGANISATION_APPOINTMENTS_READ => $this->canProviderReadOrgaAppointments($user),
             default => false,
         };
     }
@@ -69,21 +82,30 @@ class AppointmentVoter extends Voter
         return $user->getId() === $appointment->getClient()->getId();
     }
 
-    private function canProviderReadAppointmentCollection(User $user): bool
+    private function canEmployeeReadAppointmentCollection(User $user): bool
     {
+        if (!$this->security->isGranted(RolesEnum::EMPLOYEE->value)) {
+            return false;
+        }
+
         $userQueried = intval($this->requestStack->getCurrentRequest()->attributes->get('provider_id'));
         return $user->getId() === $userQueried;
     }
 
-    private function canProviderReadAppointment(User $user, Appointment $appointment): bool
+    private function canEmployeeReadAppointment(User $user, Appointment $appointment): bool
     {
+        if (!$this->security->isGranted(RolesEnum::EMPLOYEE->value)) {
+            return false;
+        }
+
         return $user->getId() === $appointment->getProvider()->getId();
     }
 
     private function canClientUpdateAppointment(User $user, Appointment $appointment): bool
     {
         return $appointment->getStatus() == AppointmentStatusEnum::valid->value &&
-            $appointment->getDatetime() > new \DateTimeImmutable() && // may we must prevent updating if appointment is in less than 48h ?
+            $appointment->getDatetime() > new \DateTimeImmutable(
+            ) && // may we must prevent updating if appointment is in less than 48h ?
             $user->getId() === $appointment->getClient()->getId();
     }
 
@@ -108,6 +130,24 @@ class AppointmentVoter extends Voter
         }
 
         // check que la date de rdv est bien disponible
-        return !empty($this->slotsService->getAvailableSlots($appointment->getService()->getOrganisation()->getId(), $appointment->getDatetime(), $appointment->getProvider()->getId()));
+        return !empty(
+            $this->slotsService->getAvailableSlots(
+                $appointment->getService()->getOrganisation()->getId(),
+                $appointment->getDatetime(),
+                $appointment->getProvider()->getId()
+            )
+        );
+    }
+
+    private function canProviderReadOrgaAppointments(User $user): bool
+    {
+        if (!$this->security->isGranted(RolesEnum::PROVIDER->value)) {
+            return false;
+        }
+
+        $organisationId = intval($this->requestStack->getCurrentRequest()->attributes->get('organisation_id'));
+        return $user->getOrganisations()->filter(function (Organisation $organisation) use ($organisationId) {
+                return $organisation->getId() === $organisationId;
+            }) > 0;
     }
 }

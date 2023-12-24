@@ -4,6 +4,7 @@ export const Roles = {
     ADMIN: 'ROLE_ADMIN',
     USER: 'ROLE_USER',
     PROVIDER: 'ROLE_PROVIDER',
+    EMPLOYEE: 'ROLE_EMPLOYEE',
 }
 export const AuthContext = createContext(null);
 

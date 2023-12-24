@@ -45,18 +45,19 @@ function App() {
         },
         text: t('logout')
     }
-    const adminButton = {
-        iconId: 'fr-icon-user-line',
-        linkProps: {
-            to: '/admin',
-        },
-        text: t('admin')
-    }
     const languageSelector = {
         linkProps: {},
         text: <LanguageSelector/>
     }
     const navigation = [
+        {
+            role: [Roles.ADMIN, Roles.PROVIDER, Roles.EMPLOYEE],
+            iconId: 'fr-icon-user-line',
+            linkProps: {
+                to: '/admin',
+            },
+            text: t('admin')
+        },
         {
             role: Roles.PROVIDER,
             linkProps: {
@@ -80,17 +81,26 @@ function App() {
     if (token) {
         quickAccessItems = [logoutButton]
         if (data.roles.includes(Roles.ADMIN)) {
-            quickAccessItems.push(adminButton);
             serviceTitle = <Badge as="span" noIcon severity="warning">{t('admin')}</Badge>
         } else if (data.roles.includes(Roles.PROVIDER)) {
             serviceTitle = <Badge as="span" noIcon severity="info">{t('superintendent')}</Badge>
+        } else if (data.roles.includes(Roles.EMPLOYEE)) {
+            serviceTitle = <Badge as="span" noIcon severity="info">{t('employee')}</Badge>
         }
+
 
         navigationItemsByRole = navigation.filter((item) => {
             if (location.pathname === item.linkProps.to) {
                 item.isActive = true;
             }
-            return item.role === undefined || data.roles.includes(item.role);
+
+            if (item.role === undefined) {
+                return true;
+            } else if (Array.isArray(item.role)) {
+                return item.role.some((role) => data.roles.includes(role));
+            } else {
+                return data.roles.includes(item.role);
+            }
         });
     }
 
@@ -120,7 +130,7 @@ function App() {
                                 <Route
                                     path="admin"
                                     element={
-                                        <ProtectedRoute requiredRoles={[Roles.ADMIN]}>
+                                        <ProtectedRoute requiredRoles={[Roles.ADMIN, Roles.PROVIDER, Roles.EMPLOYEE]}>
                                             <Admin/>
                                         </ProtectedRoute>
                                     }

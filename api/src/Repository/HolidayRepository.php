@@ -29,7 +29,7 @@ class HolidayRepository extends ServiceEntityRepository
         array $criteria
     ): array {
         $qb = $this->createQueryBuilder('holidays');
-        $qb->where('holidays.datetimeEnd >= :begin')
+        $qb->andWhere('holidays.datetimeEnd >= :begin')
             ->andWhere('holidays.datetimeStart <= :end')
             ->setParameter('begin', $begin)
             ->setParameter('end', $end);
