@@ -13,9 +13,7 @@ const useApi = () => {
         };
 
         if (token && !options.headers?.Authorization && withAuthToken) {
-            if (new Date(data.exp*1000) > new Date()) {
-                headers.Authorization = `Bearer ${token}`;
-            }
+            headers.Authorization = `Bearer ${token}`;
         }
 
         if (options.body && typeof options.body !== 'string') {

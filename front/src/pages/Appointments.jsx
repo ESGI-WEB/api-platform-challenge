@@ -11,7 +11,7 @@ import {ToggleButton, ToggleButtonGroup} from "@mui/material";
 import AppointmentCard from "../components/AppointmentCard.jsx";
 
 export default function Appointments() {
-    const {t} = useTranslation();
+    const {t, i18n} = useTranslation();
     const navigate = useNavigate();
     const auth = useAuth();
     const [appointments, setAppointments] = useState([]);

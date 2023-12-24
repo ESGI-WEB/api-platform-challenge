@@ -1,15 +1,14 @@
 import "./calendar.css";
-import Badge from "@codegouvfr/react-dsfr/Badge.js";
 import {useEffect, useState} from "react";
-import {createModal} from "@codegouvfr/react-dsfr/Modal";
 
 export default function Calendar({
-     component: Component = "div",
-     data = [],
-     dateTimePath = "datetime",
-     maxDisplayedColumns = 6,
-     onDateClick = () => {
-     }
+    component: Component = "div",
+    calendarItem: CalendarItemComponent,
+    calendarDateHeader: CalendarDateHeaderComponent,
+    data = [],
+    dateTimePath = "datetime",
+    maxDisplayedColumns = 6,
+    onDateClick = void 0
 }) {
     const [dates, setDates] = useState([]);
     const [displayedChunk, setDisplayedChunk] = useState(0);
@@ -87,22 +86,16 @@ export default function Calendar({
                 }
                 {dates[displayedChunk].map(([day, calendarDates]) => (
                     <div key={day} className="text-center">
-                        <p className="margin-0">{calendarDates[0].date.toLocaleDateString(undefined, {weekday: 'long'})}</p>
-                        <p className="fr-mb-5v">
-                            <small>{calendarDates[0].date.toLocaleDateString(undefined, {
-                                day: 'numeric',
-                                month: 'short'
-                            })}</small>
-                        </p>
+                        <CalendarDateHeaderComponent
+                            date={calendarDates[0].date}
+                        />
                         <div className="flex flex-column gap-2 align-center">
                             {calendarDates.map(date => (
-                                <Badge key={date.date} noIcon
-                                       severity="info"
-                                       className="pointer"
-                                       onClick={() => onDateClick(date.data)}
-                                >
-                                    {date.date.toLocaleTimeString(undefined, {hour: '2-digit', minute: '2-digit'})}
-                                </Badge>
+                                <CalendarItemComponent
+                                    key={date.date.getTime()}
+                                    date={date.date}
+                                    onClick={() => onDateClick(date.data)}
+                                />
                             ))}
                         </div>
                     </div>

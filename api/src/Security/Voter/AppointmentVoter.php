@@ -134,7 +134,7 @@ class AppointmentVoter extends Voter
             $this->slotsService->getAvailableSlots(
                 $appointment->getService()->getOrganisation()->getId(),
                 $appointment->getDatetime(),
-                $appointment->getProvider()
+                $appointment->getProvider()->getId()
             )
         );
     }

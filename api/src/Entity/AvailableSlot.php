@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use App\Enum\GroupsEnum;
+use App\Enum\RolesEnum;
 use App\Provider\AvailableSlotProvider;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -12,17 +13,26 @@ use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
-    uriTemplate: '/organisations/{organisation_id}/available-slots',
     operations: [
         new GetCollection(
+            uriTemplate: '/organisations/{organisation_id}/available-slots',
             openapiContext: [
                 'tags' => ['Organisation'],
                 'summary' => 'Retrieve available slots for appointments for an organisation',
             ],
             paginationEnabled: false,
         ),
+        new GetCollection(
+            uriTemplate: '/organisations/{organisation_id}/providers/{provider_id}/available-slots',
+            openapiContext: [
+                'tags' => ['Organisation'],
+                'summary' => 'Retrieve available slots for appointments for an provider in a specific organisation',
+            ],
+            paginationEnabled: false,
+        ),
     ],
     normalizationContext: ['groups' => [GroupsEnum::AVAILABLE_SLOT_READ->value]],
+    security: 'is_granted("' . RolesEnum::USER->value . '")',
     provider: AvailableSlotProvider::class,
 )]
 class AvailableSlot

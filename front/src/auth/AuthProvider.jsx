@@ -3,12 +3,30 @@ import {useLocation, useNavigate} from "react-router-dom";
 import {AuthContext, Roles} from "./useAuth.js";
 import {jwtDecode} from "jwt-decode";
 
-export default function AuthProvider({ children }) {
+export default function AuthProvider({children}) {
     const localKey = "token";
     const navigate = useNavigate();
     const location = useLocation();
-    const [token, setToken] = useState(JSON.parse(localStorage.getItem(localKey)));
-    const [data, setData] = useState(token ? jwtDecode(token) : null);
+    const [token, setToken] = useState(null);
+    const [data, setData] = useState(null);
+    const [isSettingToken, setIsSettingToken] = useState(true);
+
+    const setSavedToken = () => {
+        const tokenSaved = localStorage.getItem(localKey) || null;
+        const token = tokenSaved ? JSON.parse(tokenSaved) : null;
+        const data = token ? jwtDecode(token) : null
+
+        if (token && data && new Date(data.exp * 1000) > new Date()) {
+            setToken(token);
+            setData(data);
+        }
+
+        setIsSettingToken(false);
+    }
+
+    useEffect(() => {
+        setSavedToken();
+    }, []);
 
     const handleLogin = (token) => {
         setToken(token);
@@ -47,7 +65,7 @@ export default function AuthProvider({ children }) {
 
     return (
         <AuthContext.Provider value={value}>
-            {children}
+            {!isSettingToken && children}
         </AuthContext.Provider>
     );
 }

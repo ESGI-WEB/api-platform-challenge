@@ -18,19 +18,20 @@ export default function OrganisationCard({organisation, displayedServicesTags = 
             }}
             titleAs="h3"
             endDetail={
-            <div>
-                <OrganisationAddress organisation={organisation} withIcon/>
-            </div>}
+                <span>
+                    <OrganisationAddress organisation={organisation} withIcon/>
+                </span>
+            }
             desc={organisation.services.length > 0 && <>
-                    <p className="fr-mb-2v">{t('services_available')}</p>
-                    <div className="flex flex-wrap gap-1">
+                    <span className="fr-mb-2v">{t('services_available')}</span>
+                    <span className="flex flex-wrap gap-1">
                         {organisation.services.slice(0, displayedServicesTags).map((service) =>
                             <Tag key={service.id}>{service.title}</Tag>
                         )}
                         {organisation.services.length > displayedServicesTags &&
                             <Tag>+{organisation.services.length - displayedServicesTags}</Tag>
                         }
-                    </div>
+                    </span>
             </>}
         />
     )
