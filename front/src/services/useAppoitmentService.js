@@ -23,7 +23,17 @@ const useAppointmentService = () => {
             }, true)
         },
         getProviderAppointments: (page, filters = null) => {
-            let url = `users/${data.id}/provider_appointments?page=${page}`;
+            let url = `users/${data.id}/employee_appointments?page=${page}`;
+            if (filters) {
+                Object.keys(filters).forEach(key => url += `&${key}=${filters[key]}`);
+            }
+
+            return api(url, {
+                method: 'GET',
+            }, true)
+        },
+        getOrganisationAppointments: (page, organisationId, filters = null) => {
+            let url = `appointments/organisation/${organisationId}?page=${page}`;
             if (filters) {
                 Object.keys(filters).forEach(key => url += `&${key}=${filters[key]}`);
             }

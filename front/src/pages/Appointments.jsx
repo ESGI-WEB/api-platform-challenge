@@ -1,15 +1,14 @@
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
 import useAppointmentService from "../services/useAppoitmentService.js";
 import PageLoader from "../components/PageLoader/PageLoader.jsx";
 import {useTranslation} from "react-i18next";
-import Badge from "@codegouvfr/react-dsfr/Badge.js";
-import AppointmentStatusBadge, {AppointmentStatus} from "../components/AppointmentStatusBadge.jsx";
+import {AppointmentStatus} from "../components/AppointmentStatusBadge.jsx";
 import LoadableButton from "../components/LoadableButton/LoadableButton.jsx";
 import useAuth, {Roles} from "../auth/useAuth.js";
 import CallOut from "@codegouvfr/react-dsfr/CallOut.js";
-import {Card} from "@codegouvfr/react-dsfr/Card";
 import {ToggleButton, ToggleButtonGroup} from "@mui/material";
+import AppointmentCard from "../components/AppointmentCard.jsx";
 
 export default function Appointments() {
     const {t, i18n} = useTranslation();
@@ -20,8 +19,12 @@ export default function Appointments() {
     const page = useRef(1);
     const [hasNextPage, setHasNextPage] = useState(true);
     const appointmentService = useAppointmentService();
+    const isUserEmployee = auth.data.roles.includes(Roles.EMPLOYEE);
     const isUserProvider = auth.data.roles.includes(Roles.PROVIDER);
     const filters = useRef(['future']);
+    const {search} = useLocation();
+    const params = new URLSearchParams(search);
+    const organisationId = params.get('organisation') || null;
 
     const loadAppointments = () => {
         setIsLoading(true);
@@ -42,9 +45,16 @@ export default function Appointments() {
             }
         });
 
-        const promise = isUserProvider ?
-            appointmentService.getProviderAppointments(page.current, parsedFilters) :
-            appointmentService.getClientAppointments(page.current, parsedFilters)
+        let promise;
+        if (isUserEmployee) {
+            if (isUserProvider && organisationId) {
+                promise = appointmentService.getOrganisationAppointments(page.current, organisationId, parsedFilters);
+            } else {
+                promise = appointmentService.getProviderAppointments(page.current, parsedFilters);
+            }
+        } else {
+            promise = appointmentService.getClientAppointments(page.current, parsedFilters);
+        }
 
         promise.then((response) => {
             if (page.current === 1) {
@@ -65,7 +75,6 @@ export default function Appointments() {
     }
 
     const handleFilters = (event, newFilters) => {
-        console.log(newFilters)
         page.current = 1;
         filters.current = newFilters;
         setAppointments([]);
@@ -79,7 +88,7 @@ export default function Appointments() {
 
     return (
         <>
-            <h1>{t('your_appointments')}</h1>
+            <h1>{organisationId ? t('organisation_appointments') : t('your_appointments')}</h1>
             <ToggleButtonGroup
                 className="fr-mb-5v"
                 value={filters.current}
@@ -96,38 +105,7 @@ export default function Appointments() {
 
             {appointments.map((appointment) =>
                 <div key={appointment.id} className="fr-mb-5v">
-                    <Card
-                        background
-                        border
-                        enlargeLink={!isUserProvider}
-                        linkProps={{
-                            to: '/appointment/' + appointment.id,
-                        }}
-                        start={<ul className="fr-badges-group">
-                            <li><Badge>{appointment.service.title}</Badge></li>
-                            <li>
-                                <Badge severity="new">
-                                    {new Date(appointment.datetime).toLocaleDateString(i18n.language, {
-                                        weekday: 'long',
-                                        year: 'numeric',
-                                        month: 'long',
-                                        day: 'numeric',
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                    })}
-                                </Badge>
-                            </li>
-                        </ul>}
-                        desc={appointment.service.description}
-                        end={<ul className="fr-badges-group">
-                            <li><AppointmentStatusBadge status={appointment.status}/></li>
-                            {appointment.status === 'valid' && <li>
-                                {t('appointment_with', {
-                                    name: appointment.provider.firstname + ' ' + appointment.provider.lastname
-                                })}
-                            </li>}
-                        </ul>}
-                    />
+                    <AppointmentCard appointment={appointment} enlargeLink={!isUserEmployee}/>
                 </div>
             )}
 

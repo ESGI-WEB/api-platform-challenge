@@ -5,7 +5,9 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use App\Enum\GroupsEnum;
+use App\Provider\AppointmentListProvider;
 use App\Repository\OrganisationRepository;
+use App\Security\Voter\AppointmentVoter;
 use App\Security\Voter\OrganisationVoter;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -87,6 +89,9 @@ class Organisation
     #[ORM\Column(type: Types::DECIMAL, precision: 20, scale: 16)]
     private ?string $longitude = null;
 
+    #[Groups([
+        GroupsEnum::ORGANISATION_READ_DETAILED_LOGGED->value,
+    ])]
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'organisations')]
     private Collection $users;
 

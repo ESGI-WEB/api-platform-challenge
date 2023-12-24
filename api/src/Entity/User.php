@@ -48,7 +48,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::AVAILABLE_SLOT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
+    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED_LOGGED->value, GroupsEnum::AVAILABLE_SLOT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
     #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 
@@ -134,6 +134,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $roles = $this->roles;
         $roles[] = RolesEnum::USER->value; // guarantee every user at least has ROLE_USER
+
+        if (in_array(RolesEnum::ADMIN->value, $roles)) {
+            $roles[] = RolesEnum::PROVIDER->value;
+            $roles[] = RolesEnum::EMPLOYEE->value;
+        } else if (in_array(RolesEnum::PROVIDER->value, $roles)) {
+            $roles[] = RolesEnum::EMPLOYEE->value;
+        }
 
         return array_unique($roles);
     }
