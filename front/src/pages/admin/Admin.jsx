@@ -87,7 +87,7 @@ export default function Admin() {
             to: "#",
         },
         {
-            value: formatTime(stats.appointmentSlot.time),
+            value: stats.appointmentSlot?.time ? formatTime(stats.appointmentSlot.time) : t('no_result'),
             description: t("max_appointment_slot"),
             to: "#",
         },
@@ -95,7 +95,7 @@ export default function Admin() {
 
     const tableData = {
         title: t("last_feedbacks"),
-        tableColumns: Object.keys(stats.lastFeedbacks[0]).map((key) => t(key)),
+        tableColumns: Object.keys(stats.lastFeedbacks[0] ?? {}).map((key) => t(key)),
         rows: stats.lastFeedbacks.map((feedback) => ({
             ...feedback,
             appointment_date: formatDate(feedback.appointment_date),

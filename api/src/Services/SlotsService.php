@@ -13,12 +13,12 @@ use DateInterval;
 use DateTime;
 use DateTimeImmutable;
 
-class SlotsService
+readonly class SlotsService
 {
     public function __construct(
-        private readonly ScheduleRepository $scheduleRepository,
-        private readonly HolidayRepository $holidayRepository,
-        private readonly AppointmentRepository $appointmentRepository,
+        private ScheduleRepository $scheduleRepository,
+        private HolidayRepository $holidayRepository,
+        private AppointmentRepository $appointmentRepository,
     ) {
     }
 

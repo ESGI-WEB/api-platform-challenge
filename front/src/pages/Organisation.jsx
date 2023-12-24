@@ -14,11 +14,13 @@ import Modal from "../components/Modal/Modal.jsx";
 import LoadableButton from "../components/LoadableButton/LoadableButton.jsx";
 import {useTranslation} from "react-i18next";
 import OrganisationLocation from "../components/OrganisationLocation.jsx";
+import useAuth, {Roles} from "../auth/useAuth.js";
 
 export default function Organisation() {
     const {organisationId} = useParams();
     const organisationSrv = useOrganisationService();
     const appointmentService = useAppointmentService();
+    const [isUserProvider, setIsUserProvider] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [isErrored, setIsErrored] = useState(false);
@@ -39,6 +41,7 @@ export default function Organisation() {
         ]).then(([organisation, slots]) => {
             setOrganisation(organisation);
             setSlots(slots);
+            setIsUserProvider(auth.data.roles.includes(Roles.PROVIDER) && organisation.users.some((provider) => provider.id === auth.data.id));
         }).catch((e) => {
             console.error(e);
             setIsErrored(true);
@@ -89,6 +92,7 @@ export default function Organisation() {
     }
 
     const {t} = useTranslation();
+    const auth = useAuth();
 
     useEffect(() => {
         if (organisation === null || slots.length <= 0) {
@@ -107,6 +111,17 @@ export default function Organisation() {
     return (
         <div className="flex flex-column gap-2">
             <h1>{organisation.name}</h1>
+
+            {isUserProvider &&
+                <div>
+                    <Button
+                        iconId="ri-calendar-line"
+                        onClick={() => navigate(`/appointments?organisation=${organisationId}`)}
+                    >
+                        Voir les rendez-vous de ce commissariat
+                    </Button>
+                </div>
+            }
 
             {(organisation.services.length <= 0 || slots.length <= 0) &&
                 <CallOut

@@ -5,6 +5,7 @@ import {useTranslation} from "react-i18next";
 
 export default function OrganisationCard({organisation, displayedServicesTags = 2}) {
     const {t} = useTranslation();
+
     return (
         <Card
             className={"fr-col-6 fr-col-md-6 fr-col-lg-3"}
@@ -16,7 +17,10 @@ export default function OrganisationCard({organisation, displayedServicesTags = 
                 to: `/station/${organisation.id}`,
             }}
             titleAs="h3"
-            endDetail={<div><OrganisationAddress organisation={organisation} withIcon/></div>}
+            endDetail={
+            <div>
+                <OrganisationAddress organisation={organisation} withIcon/>
+            </div>}
             desc={organisation.services.length > 0 && <>
                     <p className="fr-mb-2v">{t('services_available')}</p>
                     <div className="flex flex-wrap gap-1">
