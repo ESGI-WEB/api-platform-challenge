@@ -7,7 +7,7 @@ export default function AppointmentCard({
     enlargeLink = false,
     appointment,
 }) {
-    const {t} = useTranslation();
+    const {t, i18n} = useTranslation();
 
     return (
         <Card
@@ -21,7 +21,7 @@ export default function AppointmentCard({
                 <li><Badge>{appointment.service.title}</Badge></li>
                 <li>
                     <Badge severity="new">
-                        {new Date(appointment.datetime).toLocaleDateString(undefined, {
+                        {new Date(appointment.datetime).toLocaleDateString(i18n.language, {
                             weekday: 'long',
                             year: 'numeric',
                             month: 'long',
