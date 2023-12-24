@@ -1,15 +1,15 @@
 import InPageAlert from "./InPageAlert.jsx";
 import {useTranslation} from "react-i18next";
-import CardIndicator from "./CardIndicator.jsx";
-import ChartIndicator from "./ChartIndicator.jsx";
-import TableIndicator from "./TableIndicator.jsx";
-import CardListIndicator from "./CardListIndicator.jsx";
 
 export default function Dashboard({
     cardIndicators = [],
     barChartData = {},
     tableData = {},
     listsData = [],
+    cardIndicatorComponent: CardIndicator,
+    chartIndicatorComponent: ChartIndicator,
+    tableIndicatorComponent: TableIndicator,
+    cardListIndicatorComponent: CardListIndicator,
 }) {
 
     const {t} = useTranslation();

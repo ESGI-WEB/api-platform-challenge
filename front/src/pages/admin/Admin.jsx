@@ -4,6 +4,10 @@ import { useEffect, useState } from "react";
 import InPageAlert, { AlertSeverity } from "../../components/InPageAlert.jsx";
 import PageLoader from "../../components/PageLoader/PageLoader.jsx";
 import { useTranslation } from "react-i18next";
+import CardIndicator from "../../components/CardIndicator.jsx";
+import ChartIndicator from "../../components/ChartIndicator.jsx";
+import CardListIndicator from "../../components/CardListIndicator.jsx";
+import TableIndicator from "../../components/TableIndicator.jsx";
 
 export default function Admin() {
     const {t, i18n} = useTranslation();
@@ -150,6 +154,10 @@ export default function Admin() {
             barChartData={barChartData}
             tableData={tableData}
             listsData={listsData}
+            cardIndicatorComponent={CardIndicator}
+            chartIndicatorComponent={ChartIndicator}
+            tableIndicatorComponent={TableIndicator}
+            cardListIndicatorComponent={CardListIndicator}
         />
     );
 }
