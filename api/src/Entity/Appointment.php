@@ -43,6 +43,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     uriTemplate: '/users/{user_id}/client_appointments',
     operations: [
         new GetCollection(
+            formats: ['jsonld', 'json', 'html', 'csv' => ['text/csv']],
             openapiContext: [
                 'summary' => 'Get all appointments where user is a client',
             ],
@@ -106,6 +107,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     uriTemplate: '/users/{provider_id}/employee_appointments',
     operations: [
         new GetCollection(
+            formats: ['jsonld', 'json', 'html', 'csv' => ['text/csv']],
             openapiContext: [
                 'summary' => 'Get all appointments where user is a provider',
             ],
@@ -151,6 +153,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     uriTemplate: '/appointments/organisation/{id}',
     operations: [
         new GetCollection(
+            formats: ['jsonld', 'json', 'html', 'csv' => ['text/csv']],
             openapiContext: [
                 'summary' => 'Get appointments as a superintendent for an organisation',
             ],

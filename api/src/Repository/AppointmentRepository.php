@@ -175,7 +175,7 @@ class AppointmentRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findAppointmentsByOrganisation($organisationId, $userId = null, $filters, $page, $limit)
+    public function findAppointmentsByOrganisationQuery($organisationId, $userId = null, $filters)
     {
         $qb = $this->createQueryBuilder('appointment')
             ->innerJoin('appointment.service', 'service')
@@ -225,9 +225,16 @@ class AppointmentRepository extends ServiceEntityRepository
             }
         }
 
+        return $qb->getQuery();
+    }
+
+    public function findAppointmentsByOrganisationPaginated($organisationId, $userId = null, $filters, $page, $limit)
+    {
+        $qb = $this->findAppointmentsByOrganisationQuery($organisationId, $userId, $filters);
+
         $qb->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit);
 
-        return new Paginator($qb->getQuery());
+        return new Paginator($qb);
     }
 }

@@ -5,12 +5,21 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
+import {useNavigate} from "react-router-dom";
 
 export default function OrganisationCard({organisation, displayedServicesTags = 2, style = {}}) {
     const {t} = useTranslation();
+    const navigate = useNavigate();
+
+    const goToStation = () => {
+        navigate(`/station/${organisation.id}`);
+    }
 
     return (
-        <Card variant="outlined" sx={style}>
+        <Card variant="outlined" sx={{
+            cursor: 'pointer',
+            ...style
+        }} onClick={goToStation}>
             <CardContent>
                 <div className="flex flex-column gap-2">
                     <Typography variant="h3" color="text.secondary">

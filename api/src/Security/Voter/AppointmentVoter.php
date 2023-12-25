@@ -48,7 +48,7 @@ class AppointmentVoter extends Voter
                     self::PROVIDER_ORGANISATION_APPOINTMENTS_READ
                 ]
             )
-            && ($subject instanceof Appointment || $subject instanceof AbstractPaginator);
+            && ($subject instanceof Appointment || $subject instanceof AbstractPaginator || is_array($subject));
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
