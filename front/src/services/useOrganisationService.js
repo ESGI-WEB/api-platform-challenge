@@ -7,7 +7,15 @@ const useOrganisationService = () => {
     return {
         organisations: (page = 1, filters = {}) => {
             let url = `organisations?page=${page}`;
-            Object.keys(filters).forEach(key => url += `&${key}=${filters[key]}`);
+            Object.keys(filters).forEach(key => {
+                if (Array.isArray(filters[key])) {
+                    filters[key].forEach(value => {
+                        url += `&${key}[]=${value}`
+                    })
+                } else {
+                    url += `&${key}=${filters[key]}`
+                }
+            });
 
             return api(url, {
                 method: 'GET',

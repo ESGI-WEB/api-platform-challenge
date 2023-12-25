@@ -82,3 +82,7 @@ en,reschedule_appointment_details,"Take a new appointment with {{ name }} for {{
 en,on_date,"On {{ date }}"
 en,shift_appointment,"Shift appointment"
 en,your_location,"Your location"
+en,search_a_police_station,"Search a police station"
+en,choose_a_service,"Choose a service"
+en,all_services,"All services"
+en,no_services_available,"No services available"

@@ -19,14 +19,15 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/api')]
+#[Route('/api/statistics')]
 #[AsController]
 #[ApiResource]
 #[Get(
-    routePrefix: '/statistics',
+    routePrefix: '/appointments_count',
     routeName: 'appointments_count',
     openapiContext: [
         'summary' => 'Get the number of appointments',
+        'tags' => ['Statistics'],
         'parameters' => [],
         'responses' => [
             '200' => [
@@ -50,10 +51,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
     description: 'Get the number of appointments',
 )]
 #[Get(
-    routePrefix: '/statistics',
+    routePrefix: '/max_appointment_slot',
     routeName: 'max_appointment_slot',
     openapiContext: [
         'summary' => 'Get the most popular appointment slot',
+        'tags' => ['Statistics'],
         'parameters' => [],
         'responses' => [
             '200' => [
@@ -77,10 +79,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
     description: 'Get the most popular appointment slot',
 )]
 #[Get(
-    routePrefix: '/statistics',
+    routePrefix: '/last_appointments',
     routeName: 'last_appointments',
     openapiContext: [
         'summary' => 'Get the last appointments',
+        'tags' => ['Statistics'],
         'parameters' => [],
         'responses' => [
             '200' => [
@@ -119,10 +122,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
     description: 'Get the last appointments',
 )]
 #[Get(
-    routePrefix: '/statistics',
+    routePrefix: '/max_organisations',
     routeName: 'max_organisations',
     openapiContext: [
         'summary' => 'Get the most popular organisations',
+        'tags' => ['Statistics'],
         'parameters' => [],
         'responses' => [
             '200' => [
@@ -161,10 +165,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
     description: 'Get the most popular organisations',
 )]
 #[Get(
-    routePrefix: '/statistics',
+    routePrefix: '/appointments_per_day',
     routeName: 'appointments_per_day',
     openapiContext: [
         'summary' => 'Get the number of appointments per day',
+        'tags' => ['Statistics'],
         'parameters' => [],
         'responses' => [
             '200' => [
@@ -186,10 +191,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
     description: 'Get the number of appointments per day (starting on monday)',
 )]
 #[Get(
-    routePrefix: '/statistics',
+    routePrefix: '/last_feedbacks',
     routeName: 'last_feedbacks',
     openapiContext: [
         'summary' => 'Get the last feedbacks',
+        'tags' => ['Statistics'],
         'parameters' => [],
         'responses' => [
             '200' => [

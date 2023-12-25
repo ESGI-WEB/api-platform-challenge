@@ -82,3 +82,7 @@ fr,reschedule_appointment_details,"Prenez un nouveau rendez-vous avec {{ name }}
 fr,on_date,"Le {{ date }}"
 fr,shift_appointment,"Décaler le rendez-vous"
 fr,your_location,"Votre position"
+fr,search_a_police_station,"Rechercher un commissariat"
+fr,choose_a_service,"Choisissez un service"
+fr,all_services,"Tous les services"
+fr,no_services_available,"Aucun service disponible"

@@ -62,6 +62,26 @@
     gap: 1.2rem;
 }
 
+.column-gap-1 {
+    column-gap: 0.4rem;
+}
+
+.column-gap-2 {
+    column-gap: 1.2rem;
+}
+
+.row-gap-1 {
+    row-gap: 0.4rem;
+}
+
+.row-gap-2 {
+    row-gap: 1.2rem;
+}
+
+.column-gap-2-percent {
+    column-gap: 2%;
+}
+
 .centered {
     margin: 0 auto;
 }
@@ -106,4 +126,8 @@ h4 {
 
 .align-start {
     align-items: flex-start;
+}
+
+.force-input-hidden input, input.force-input-hidden {
+    opacity: 0;
 }

@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use App\Enum\GroupsEnum;
+use App\Provider\ServicesNamesProvider;
 use App\Repository\ServiceRepository;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -21,15 +22,6 @@ use ApiPlatform\Metadata\Post;
     operations: [
         new Get(),
         new GetCollection(),
-//        new Post(
-//             uriTemplate: '/organisations/{id}/services',
-//             uriVariables: [
-//                 'id' => new Link(
-//                     fromClass: Organisation::class,
-//                     fromProperty: 'id',
-//                 )
-//             ],
-//        )
     ],
     normalizationContext: ['groups' => [GroupsEnum::SERVICE_READ->value]],
 )]

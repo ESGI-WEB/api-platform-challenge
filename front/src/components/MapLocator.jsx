@@ -2,27 +2,21 @@ import {Circle, FeatureGroup, Popup, useMapEvents} from "react-leaflet";
 import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 
-export default function MapLocator({useFlyTo = false}) {
+export default function MapLocator() {
     const [position, setPosition] = useState(null)
     const map = useMapEvents({
         locationfound(e) {
             setPosition(e.latlng)
-            map.flyTo(e.latlng, map.getZoom())
         },
     });
     const {t} = useTranslation();
 
     useEffect(() => {
-        if (!useFlyTo) {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition((position) => {
-                    setPosition([position.coords.latitude, position.coords.longitude]);
-                    map.setView([position.coords.latitude, position.coords.longitude], map.getZoom());
-                })
-            }
-        } else {
-            map.locate()
-        }
+        map.locate({
+            setView: true,
+            enableHighAccuracy: true,
+            maxZoom: 16,
+        })
     }, []);
 
     return position === null ? null : (

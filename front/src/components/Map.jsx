@@ -11,7 +11,6 @@ export default function Map({
     whenCreated = void 0,
     mapMoved = void 0,
     locateOnUser = false,
-    useFlyTo = false,
 }) {
     return (
         <MapContainer
@@ -20,7 +19,7 @@ export default function Map({
             className={className}
             whenCreated={whenCreated}
         >
-            {locateOnUser && <MapLocator useFlyTo={useFlyTo}/>}
+            {locateOnUser && <MapLocator/>}
             <MapEvents mapMoved={mapMoved}/>
             <TileLayer
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
