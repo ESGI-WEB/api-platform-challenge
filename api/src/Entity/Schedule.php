@@ -86,7 +86,6 @@ class Schedule
 
     #[ORM\ManyToOne(inversedBy: 'schedules')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups([GroupsEnum::SCHEDULE_READ->value])]
     private ?Organisation $organisation = null;
 
     public function __construct()

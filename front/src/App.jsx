@@ -20,6 +20,8 @@ import MuiDsfrThemeProvider from "@codegouvfr/react-dsfr/mui.js";
 import LanguageSelector from "./components/LanguageSelector/LanguageSelector.jsx";
 import Appointments from "./pages/Appointments.jsx";
 import {headerFooterDisplayItem} from "@codegouvfr/react-dsfr/Display";
+import Employees from "./pages/Employees.jsx";
+import Employee from "./pages/Employee.jsx";
 
 function App() {
     const {t} = useTranslation();
@@ -71,6 +73,13 @@ function App() {
                 to: '/appointments',
             },
             text: t('your_appointments'),
+        },
+        {
+            role: Roles.PROVIDER,
+            linkProps: {
+                to: '/employees',
+            },
+            text: t('employees'),
         },
     ];
     let quickAccessItems = [loginButton];
@@ -163,6 +172,16 @@ function App() {
                                 <Route path="appointments" element={
                                     <ProtectedRoute requiredRole={Roles.USER}>
                                         <Appointments/>
+                                    </ProtectedRoute>
+                                }/>
+                                <Route path="employees" element={
+                                    <ProtectedRoute requiredRole={Roles.EMPLOYEE}>
+                                        <Employees/>
+                                    </ProtectedRoute>
+                                }/>
+                                <Route path="employees/:employeeId" element={
+                                    <ProtectedRoute requiredRole={Roles.EMPLOYEE}>
+                                        <Employee/>
                                     </ProtectedRoute>
                                 }/>
                                 <Route path="*" element={<Navigate to="/" replace/>}/>

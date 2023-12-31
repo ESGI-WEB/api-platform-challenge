@@ -10,6 +10,8 @@ enum GroupsEnum: string
     case USER_WRITE = 'user:write';
     case USER_WRITE_ADMIN = 'user:write:admin';
     case USER_READ = 'user:read';
+    case USER_READ_DETAILED = 'user:read:detailed';
+    case ORGANISATION_READ = 'organisation:read';
     case ORGANISATION_READ_DETAILED = 'organisation:read:detailed';
     case ORGANISATION_READ_DETAILED_LOGGED = 'organisation:read:detailed:logged';
     case ORGANISATION_UPDATE = 'organisation:update';

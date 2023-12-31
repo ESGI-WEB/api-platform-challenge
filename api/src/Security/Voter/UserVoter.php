@@ -57,7 +57,16 @@ class UserVoter extends Voter
 
     private function canView(User $subject, UserInterface $user): bool
     {
-        return $user === $subject;
+        if ($user === $subject) {
+            return true;
+        }
+
+        if (!$this->security->isGranted(RolesEnum::PROVIDER->value) || !$this->security->isGranted(RolesEnum::EMPLOYEE->value, $subject)) {
+            return false;
+        }
+
+        // at this point user is a provider and subject is an employee
+        return $user->getOrganisations()->exists(fn ($key, $organisation) => $subject->getOrganisations()->contains($organisation));
     }
 
     private function canDelete(User $subject, UserInterface $user): bool

@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Enum\GroupsEnum;
 use App\Enum\RolesEnum;
+use App\Provider\ProviderEmployeesProvider;
 use App\Repository\UserRepository;
 use App\Security\Voter\UserVoter;
 use DateTimeImmutable;
@@ -25,7 +26,16 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
     operations: [
-        new Get(security: "is_granted('" . UserVoter::VIEW . "', object)"),
+        new Get(
+            normalizationContext: ['groups' => [
+                GroupsEnum::USER_READ->value,
+                GroupsEnum::USER_READ_DETAILED->value,
+                GroupsEnum::HOLIDAY_READ->value,
+                GroupsEnum::SCHEDULE_READ->value,
+                GroupsEnum::ORGANISATION_READ->value
+            ]],
+            security: "is_granted('" . UserVoter::VIEW . "', object)",
+        ),
         new GetCollection(security: "is_granted('" . RolesEnum::ADMIN->value . "')"),
         new Post(
             denormalizationContext: ['groups' => [GroupsEnum::USER_WRITE->value, GroupsEnum::USER_CREATE->value]],
@@ -42,6 +52,16 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Delete(security: "is_granted('" . UserVoter::DELETE . "', object)"),
     ],
     normalizationContext: ['groups' => [GroupsEnum::USER_READ->value]],
+)]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            uriTemplate: "/users/{id}/employees",
+            provider: ProviderEmployeesProvider::class,
+        ),
+    ],
+    normalizationContext: ['groups' => [GroupsEnum::USER_READ->value]],
+    security: "is_granted('" . RolesEnum::PROVIDER->value . "')",
 )]
 #[UniqueEntity(fields: ['email'])]
 #[ORM\Table(name: '`user`')]
@@ -83,12 +103,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $lastname = null;
 
+    #[Groups([GroupsEnum::USER_READ_DETAILED->value])]
     #[ORM\OneToMany(mappedBy: 'provider', targetEntity: Schedule::class, orphanRemoval: true)]
     private Collection $schedules;
 
+    #[Groups([GroupsEnum::USER_READ_DETAILED->value])]
     #[ORM\OneToMany(mappedBy: 'provider', targetEntity: Holiday::class, orphanRemoval: true)]
     private Collection $holidays;
 
+    #[Groups([GroupsEnum::USER_READ_DETAILED->value])]
     #[ORM\ManyToMany(targetEntity: Organisation::class, mappedBy: 'users')]
     private Collection $organisations;
 
@@ -97,6 +120,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(mappedBy: 'provider', targetEntity: Appointment::class, orphanRemoval: true)]
     private Collection $providerAppointments;
+
+    #[Groups([GroupsEnum::USER_READ->value])]
+    private int $countOrganisations = 0;
 
     public function __construct()
     {
@@ -356,5 +382,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    public function getCountOrganisations(): int
+    {
+        return $this->organisations->count();
     }
 }

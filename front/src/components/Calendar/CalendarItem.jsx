@@ -10,7 +10,7 @@ export default function CalendarItem({
     return (
         <Badge noIcon
                severity="info"
-               className="pointer"
+               className={onClick ? 'pointer' : ''}
                onClick={onClick}
         >
             {date.toLocaleTimeString(i18n.language, {hour: '2-digit', minute: '2-digit'})}

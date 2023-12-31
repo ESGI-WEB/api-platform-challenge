@@ -8,7 +8,8 @@ export default function Calendar({
     data = [],
     dateTimePath = "datetime",
     maxDisplayedColumns = 6,
-    onDateClick = void 0
+    onDateClick = void 0,
+    displayAllDaysBetweenDates = [],
 }) {
     const [dates, setDates] = useState([]);
     const [displayedChunk, setDisplayedChunk] = useState(0);
@@ -28,6 +29,23 @@ export default function Calendar({
 
     const groupDatetimesByDay = () => {
         const grouped = {};
+
+        // check if startDate and endDate are set, if so, display also columns between those dates
+        if (displayAllDaysBetweenDates.length) {
+            if (displayAllDaysBetweenDates.length !== 2) {
+                throw new Error('displayAllDaysBetweenDays must be an array of two dates');
+            }
+            const [startDate, endDate] = displayAllDaysBetweenDates;
+            // for each day between startDate and endDate, check if it's already in the calendar otherwise add it
+            const currentDate = new Date(startDate);
+            while (currentDate <= endDate) {
+                const dayStr = currentDate.toDateString();
+                if (!(dayStr in grouped)) {
+                    grouped[dayStr] = [];
+                }
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+        }
 
         // group datetimes by day
         data.forEach((obj) => {
@@ -62,8 +80,8 @@ export default function Calendar({
 
     useEffect(() => {
         const dates = groupDatetimesByDay();
-        // chunk dates by 6 days
-        const chunkedDates = Object.entries(dates).reduce((acc, [dayStr, calendarDates]) => {
+        // chunk dates by maxDisplayedColumns days
+        let chunkedDates = Object.entries(dates).reduce((acc, [dayStr, calendarDates]) => {
             const lastChunk = acc[acc.length - 1];
 
             if (lastChunk.length < maxDisplayedColumns) {
@@ -73,7 +91,8 @@ export default function Calendar({
             }
             return acc;
         }, [[]]);
-        setDates(chunkedDates);
+
+        setDates([...chunkedDates]);
     }, [data]);
 
     return (
@@ -87,14 +106,14 @@ export default function Calendar({
                 {dates[displayedChunk].map(([day, calendarDates]) => (
                     <div key={day} className="text-center">
                         <CalendarDateHeaderComponent
-                            date={calendarDates[0].date}
+                            date={new Date(day)}
                         />
                         <div className="flex flex-column gap-2 align-center">
                             {calendarDates.map(date => (
                                 <CalendarItemComponent
                                     key={date.date.getTime()}
                                     date={date.date}
-                                    onClick={() => onDateClick(date.data)}
+                                    onClick={onDateClick ? () => onDateClick(date.data) : undefined}
                                 />
                             ))}
                         </div>

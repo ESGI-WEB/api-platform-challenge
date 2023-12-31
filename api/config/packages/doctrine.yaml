@@ -17,6 +17,8 @@ doctrine:
         dql:
             datetime_functions:
                 date_format: DoctrineExtensions\Query\Postgresql\DateFormat
+            string_functions:
+                cast: Oro\ORM\Query\AST\Functions\Cast
         mappings:
             App:
                 is_bundle: false
