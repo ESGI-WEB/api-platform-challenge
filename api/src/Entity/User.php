@@ -31,7 +31,9 @@ use Symfony\Component\Validator\Constraints as Assert;
                 GroupsEnum::USER_READ->value,
                 GroupsEnum::USER_READ_DETAILED->value,
                 GroupsEnum::HOLIDAY_READ->value,
+                GroupsEnum::HOLIDAY_READ_DETAILED->value,
                 GroupsEnum::SCHEDULE_READ->value,
+                GroupsEnum::SCHEDULE_READ_DETAILED->value,
                 GroupsEnum::ORGANISATION_READ->value
             ]],
             security: "is_granted('" . UserVoter::VIEW . "', object)",

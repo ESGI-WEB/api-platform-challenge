@@ -8,7 +8,7 @@ export default function CalendarHeaderDate({
     return (
         <>
             <p className="margin-0">{date.toLocaleDateString(i18n.language, {weekday: 'long'})}</p>
-            <p className="fr-mb-5v">
+            <p className="fr-mb-0">
                 <small>
                     {date.toLocaleDateString(i18n.language, {
                         day: 'numeric',

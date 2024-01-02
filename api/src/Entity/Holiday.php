@@ -3,8 +3,10 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Enum\GroupsEnum;
@@ -33,11 +35,30 @@ use Symfony\Component\Validator\Constraints as Assert;
     uriTemplate: '/users/{user_id}/holidays',
     operations: [
         new GetCollection(security: "is_granted('" . ScheduleHolidayVoter::VIEW_FOR_USER . "', object)"),
-        new Post(denormalizationContext: ['groups' => [GroupsEnum::HOLIDAY_WRITE->value]],
+        new Post(
+            denormalizationContext: ['groups' => [GroupsEnum::HOLIDAY_WRITE->value]],
             security: "is_granted('" . ScheduleHolidayVoter::CREATE . "', object)"
         ),
-        new Put(denormalizationContext: ['groups' => [GroupsEnum::HOLIDAY_WRITE->value]],
+        new Patch(
+            uriTemplate: '/users/{user_id}/holidays/{id}',
+            uriVariables: [
+                'user_id' => new Link(
+                    toProperty: 'provider',
+                    fromClass: User::class,
+                ),
+            ],
+            denormalizationContext: ['groups' => [GroupsEnum::HOLIDAY_WRITE->value]],
             security: "is_granted('" . ScheduleHolidayVoter::EDIT . "', object)"
+        ),
+        new Delete(
+            uriTemplate: '/users/{user_id}/holidays/{id}',
+            uriVariables: [
+                'user_id' => new Link(
+                    toProperty: 'provider',
+                    fromClass: User::class,
+                ),
+            ],
+            security: "is_granted('" . ScheduleHolidayVoter::DELETE . "', object)"
         ),
     ],
     uriVariables: [
@@ -81,10 +102,12 @@ class Holiday
     private ?User $provider = null;
 
     #[ORM\Column]
+    #[Groups([GroupsEnum::HOLIDAY_READ->value])]
     private DateTimeImmutable $createdAt;
 
     #[ORM\ManyToOne(inversedBy: 'holidays')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups([GroupsEnum::HOLIDAY_READ_DETAILED->value])]
     private ?Organisation $organisation = null;
 
     public function __construct()

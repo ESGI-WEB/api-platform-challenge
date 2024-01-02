@@ -1,91 +1,135 @@
 import Typography from "@mui/material/Typography";
-import {useTranslation} from "react-i18next";
 import {useEffect, useState} from "react";
 import PageLoader from "../components/PageLoader/PageLoader.jsx";
 import useUserService from "../services/useUserService.js";
-import useAuth from "../auth/useAuth.js";
 import EmployeeCard from "../components/EmployeeCard.jsx";
 import {useParams} from "react-router-dom";
-import Calendar from "../components/Calendar/Calendar.jsx";
-import CalendarHeaderDate from "../components/Calendar/CalendarHeaderDate.jsx";
-import CalendarItem from "../components/Calendar/CalendarItem.jsx";
-import PlanningHeaderDate from "../components/Calendar/PlanningHeaderDate.jsx";
+import EmployeePlanning from "../components/Calendar/EmployeePlanning.jsx";
+import {useTranslation} from "react-i18next";
+import useAuth from "../auth/useAuth.js";
+import EmployeeHolidays from "../components/EmployeeHolidays.jsx";
+import Modal from "../components/Modal/Modal.jsx";
+import SchedulesForm from "../components/SchedulesForm.jsx";
+import useScheduleService from "../services/useScheduleService.js";
+import {Alert, Snackbar} from "@mui/material";
 
 export default function Employee() {
+    const {data} = useAuth();
     const {employeeId} = useParams();
     const [loading, setLoading] = useState(true);
     const [employee, setEmployee] = useState(null);
-    const {t} = useTranslation();
-    const {data} = useAuth();
+    const [currentProvider, setCurrentProvider] = useState(null);
+    const [schedules, setSchedules] = useState([]);
     const userService = useUserService();
-    const [slots, setSlots] = useState([]);
-    const [displayAllDaysBetweenDates, setDisplayAllDaysBetweenDates] = useState([]);
+    const {t} = useTranslation();
+    const [editSchedulesForDay, setEditSchedulesForDay] = useState(null);
+    const scheduleService = useScheduleService();
+    const [openSnackBar, setOpenSnackBar] = useState(false);
 
     useEffect(() => {
-        userService.getUser(employeeId).then((res) => {
-            setLoading(false);
-            setEmployee(res)
-            setSlots(generateSlotsFromSchedules(res.schedules));
-        });
+        loadPage();
     }, []);
 
-    const generateSlotsFromSchedules = (schedules) => {
-        const slots = [];
-        const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-        const today = new Date();
-        const displayAllDaysBetweenDates = [];
-        days.forEach((day, dayIndex) => {
-            const daySchedule = schedules.find((schedule) => schedule.day === day);
+    const loadPage = () => {
+        setLoading(true);
+        const promises = Promise.all([
+            userService.getUser(employeeId),
+            currentProvider ? Promise.resolve(currentProvider) : userService.getUser(data.id)
+        ]);
 
-            // Calculate the difference in days between the current day and the target day
-            const dayDifference = (dayIndex - today.getDay() + 7) % 7 + 1;
-            // Calculate the date for the target day
-            const targetDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + dayDifference);
-
-            for (const hourDotsMinutes of daySchedule?.hours ?? []) {
-                const hourParts = hourDotsMinutes.split(':');
-                const hours = parseInt(hourParts[0]);
-                const minutes = parseInt(hourParts[1]);
-
-                slots.push({
-                    datetime: new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate(), hours, minutes, 0),
-                });
-            }
-
-            // Add the day to the list of days to display
-            if (dayIndex === 0 || dayIndex === 6) {
-                // If the day is a weekend, add it to the list of days to display
-                displayAllDaysBetweenDates.push(targetDate);
-            }
+        promises.then(([employee, currentProvider]) => {
+            setEmployee(employee);
+            setCurrentProvider(currentProvider);
+            fillSchedulesWithRights(currentProvider, employee.schedules ?? []);
+            setLoading(false);
         });
-        setDisplayAllDaysBetweenDates(displayAllDaysBetweenDates);
-
-        return slots;
     }
 
+    const fillSchedulesWithRights = (currentProvider, schedules) => {
+        // we have to check if current provider also has organisation rights belonging to the schedule, otherwise he can't edit it
+        const schedulesWithRights = schedules.map((schedule) => {
+            schedule.isEditable = currentProvider.organisations.some((organisation) => organisation.id === schedule.organisation.id);
+            schedule.severity = schedule.isEditable ? 'info' : 'warning';
+            return schedule;
+        });
+
+        setSchedules(schedulesWithRights);
+    }
+
+    const handleSaveHours = (day, hours, organisation) => {
+        const schedule = schedules.find((schedule) =>
+            schedule.day === day &&
+            schedule.organisation.id === organisation.id
+        );
+
+        let promise;
+        if (schedule) {
+            // merge if schedule already exists
+            promise = scheduleService.patch(schedule.id, {
+                hours: [...new Set([...schedule.hours, ...hours])]
+            });
+        } else {
+            // create if no schedule for this day and organisation exists
+            promise = scheduleService.post({
+                day,
+                hours,
+                provider: `/api/users/${employeeId}`,
+                organisation: `/api/organisations/${organisation.id}`
+            });
+        }
+
+        return promise.then(() => {
+            setEditSchedulesForDay(null);
+            loadPage();
+        }).catch(() => {
+            setOpenSnackBar(true);
+        });
+    }
 
     if (loading) {
         return <PageLoader isLoading={loading}/>
     }
 
     return (
-        <div className="flex flex-column gap-2">
+        <div className="flex flex-column gap-3">
             <EmployeeCard employee={employee} clickable={false}/>
 
-            <Typography variant="h2" gutterBottom>
-                Planning
-            </Typography>
+            <div>
+                <Typography variant="h2" gutterBottom>
+                    {t('default_planning')}
+                </Typography>
 
+                <EmployeePlanning schedules={schedules} onAddClick={(day) => setEditSchedulesForDay(day)}/>
+            </div>
+            <div>
+                <Typography variant="h2" gutterBottom>
+                    {t('holidays')}
+                </Typography>
 
-            <Calendar
-                maxDisplayedColumns={7}
-                calendarDateHeader={CalendarHeaderDate}
-                calendarItem={CalendarItem}
-                data={slots}
-                displayAllDaysBetweenDates={displayAllDaysBetweenDates}
-            ></Calendar>
+                <EmployeeHolidays holidays={employee.holidays}/>
+            </div>
 
+            {editSchedulesForDay !== null &&
+                <Modal
+                    onClose={() => setEditSchedulesForDay(null)}
+                    title={t('add_hours_for_day', {day: t(editSchedulesForDay)})}
+                >
+                    <SchedulesForm
+                        onSubmit={({hours, organisation}) => handleSaveHours(editSchedulesForDay, hours, organisation)}
+                        organisations={currentProvider.organisations}
+                        day={editSchedulesForDay}
+                        unavailabilities={schedules.flatMap((schedule) => !schedule.isEditable && schedule.day === editSchedulesForDay ? schedule.hours : [])}
+                    />
+                </Modal>
+            }
 
+            <Snackbar
+                open={openSnackBar}
+                autoHideDuration={5 * 1000}
+                onClose={() => setOpenSnackBar(false)}
+            >
+                <Alert severity="error">{t('error_occurred')}</Alert>
+            </Snackbar>
         </div>
     )
 }

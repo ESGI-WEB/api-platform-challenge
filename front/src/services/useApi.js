@@ -23,7 +23,11 @@ const useApi = () => {
         const type = hydra ? 'application/ld+json' : 'application/json';
 
         if (!headers['Content-Type']) {
-            headers['Content-Type'] = type;
+            if (options?.method === 'PATCH') {
+                headers['Content-Type'] = 'application/merge-patch+json';
+            } else {
+                headers['Content-Type'] = type;
+            }
         }
 
         if (!headers['Accept']) {
@@ -32,6 +36,11 @@ const useApi = () => {
 
         return fetch(`${baseUrl}/${url}`, {...options, headers}).then(response => {
             if (response.ok) {
+                // check if it's a 204 response
+                if (response.status === 204) {
+                    return;
+                }
+
                 // check if content is a csv file
                 if (response.headers.get('Content-Type').includes('text/csv')) {
                     // download file to user
@@ -44,6 +53,7 @@ const useApi = () => {
                         a.remove();
                     });
                 }
+
                 return response.json();
             }
 

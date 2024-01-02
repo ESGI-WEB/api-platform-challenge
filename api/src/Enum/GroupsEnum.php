@@ -15,11 +15,15 @@ enum GroupsEnum: string
     case ORGANISATION_READ_DETAILED = 'organisation:read:detailed';
     case ORGANISATION_READ_DETAILED_LOGGED = 'organisation:read:detailed:logged';
     case ORGANISATION_UPDATE = 'organisation:update';
+    case ORGANISATION_READ_SCHEDULES = 'organisation:read:schedules';
+    case ORGANISATION_READ_HOLIDAYS = 'organisation:read:holidays';
     case SERVICE_READ = 'service:read';
     case SCHEDULE_WRITE = 'schedule:write';
     case SCHEDULE_READ = 'schedule:read';
+    case SCHEDULE_READ_DETAILED = 'schedule:read:detailed';
     case HOLIDAY_WRITE = 'holiday:write';
     case HOLIDAY_READ = 'holiday:read';
+    case HOLIDAY_READ_DETAILED = 'holiday:read:detailed';
     case AVAILABLE_SLOT_READ = 'available_slot:read';
     case TRANSLATION_READ = 'translation:read';
     case TRANSLATION_WRITE = 'translation:write';

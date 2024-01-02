@@ -1,14 +1,19 @@
 import "./calendar.css";
 import {useEffect, useState} from "react";
+import CalendarColumn from "./CalendarColumn.jsx";
+import CalendarHeaderDate from "./CalendarHeaderDate.jsx";
+import CalendarItem from "./CalendarItem.jsx";
 
 export default function Calendar({
     component: Component = "div",
-    calendarItem: CalendarItemComponent,
-    calendarDateHeader: CalendarDateHeaderComponent,
+    calendarItem: CalendarItemComponent = CalendarItem,
+    calendarDateHeader: CalendarDateHeaderComponent = CalendarHeaderDate,
+    calendarColumnComponent: CalendarColumnComponent = CalendarColumn,
     data = [],
     dateTimePath = "datetime",
     maxDisplayedColumns = 6,
     onDateClick = void 0,
+    onAddClick = void 0,
     displayAllDaysBetweenDates = [],
 }) {
     const [dates, setDates] = useState([]);
@@ -104,20 +109,15 @@ export default function Calendar({
                     ></i>
                 }
                 {dates[displayedChunk].map(([day, calendarDates]) => (
-                    <div key={day} className="text-center">
-                        <CalendarDateHeaderComponent
-                            date={new Date(day)}
-                        />
-                        <div className="flex flex-column gap-2 align-center">
-                            {calendarDates.map(date => (
-                                <CalendarItemComponent
-                                    key={date.date.getTime()}
-                                    date={date.date}
-                                    onClick={onDateClick ? () => onDateClick(date.data) : undefined}
-                                />
-                            ))}
-                        </div>
-                    </div>
+                    <CalendarColumnComponent
+                        key={day}
+                        calendarDateHeader={CalendarDateHeaderComponent}
+                        calendarItem={CalendarItemComponent}
+                        onDateClick={onDateClick ? onDateClick : undefined}
+                        onAddClick={onAddClick ? onAddClick : undefined}
+                        day={day}
+                        calendarDates={calendarDates}
+                    />
                 ))}
                 {displayedChunk < dates.length - 1 &&
                     <i className="ri-arrow-right-circle-line right-calendar-arrow pointer"
