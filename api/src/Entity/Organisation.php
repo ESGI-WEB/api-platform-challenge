@@ -2,9 +2,13 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use App\Enum\GroupsEnum;
+use App\Filter\SearchMultiFieldsFilter;
 use App\Provider\AppointmentListProvider;
 use App\Repository\OrganisationRepository;
 use App\Security\Voter\AppointmentVoter;
@@ -48,6 +52,17 @@ use Symfony\Component\Validator\Constraints as Assert;
     normalizationContext: ['groups' => [GroupsEnum::ORGANISATION_READ_DETAILED->value]],
 )]
 #[ORM\Entity(repositoryClass: OrganisationRepository::class)]
+#[ApiFilter(RangeFilter::class, properties: ['latitude', 'longitude'])]
+#[ApiFilter(SearchFilter::class, properties: ['services.title' => 'exact'])]
+#[ApiFilter(SearchMultiFieldsFilter::class,
+    properties: [
+        'name',
+        'services.title',
+        'address',
+        'zipcode',
+        'city',
+    ],
+)]
 class Organisation
 {
     #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]

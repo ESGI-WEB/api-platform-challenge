@@ -32,6 +32,18 @@ const useApi = () => {
 
         return fetch(`${baseUrl}/${url}`, {...options, headers}).then(response => {
             if (response.ok) {
+                // check if content is a csv file
+                if (response.headers.get('Content-Type').includes('text/csv')) {
+                    // download file to user
+                    return response.blob().then(blob => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'export.csv';
+                        a.click();
+                        a.remove();
+                    });
+                }
                 return response.json();
             }
 

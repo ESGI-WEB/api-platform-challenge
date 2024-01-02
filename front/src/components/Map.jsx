@@ -1,21 +1,26 @@
-import ChangeView from "./ChangeView.jsx";
+import MapEvents from "./MapEvents.jsx";
 import {MapContainer, TileLayer} from "react-leaflet";
+import MapLocator from "./MapLocator.jsx";
 
 export default function Map({
     center,
+    children,
+    defaultLocation = [0, 0],
     className = "medium-map",
     zoom = 17,
     whenCreated = void 0,
-    children,
+    mapMoved = void 0,
+    locateOnUser = false,
 }) {
     return (
         <MapContainer
-            center={center}
+            center={center ?? defaultLocation}
             zoom={zoom}
             className={className}
             whenCreated={whenCreated}
         >
-            <ChangeView center={center} zoom={zoom}/>
+            {locateOnUser && <MapLocator/>}
+            <MapEvents mapMoved={mapMoved}/>
             <TileLayer
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

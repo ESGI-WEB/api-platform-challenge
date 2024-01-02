@@ -5,7 +5,10 @@ const useServiceService = () => {
     return {
         get: (id) => api(`services/${id}`, {
             method: 'GET',
-        })
+        }),
+        getServicesNames: () => api('names/services', {
+            method: 'GET',
+        }),
     };
 };
 

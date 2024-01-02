@@ -9,6 +9,7 @@ import useAuth, {Roles} from "../auth/useAuth.js";
 import CallOut from "@codegouvfr/react-dsfr/CallOut.js";
 import {ToggleButton, ToggleButtonGroup} from "@mui/material";
 import AppointmentCard from "../components/AppointmentCard.jsx";
+import Download from "@codegouvfr/react-dsfr/Download.js";
 
 export default function Appointments() {
     const {t, i18n} = useTranslation();
@@ -16,6 +17,7 @@ export default function Appointments() {
     const auth = useAuth();
     const [appointments, setAppointments] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isExporting, setIsExporting] = useState(false);
     const page = useRef(1);
     const [hasNextPage, setHasNextPage] = useState(true);
     const appointmentService = useAppointmentService();
@@ -26,8 +28,7 @@ export default function Appointments() {
     const params = new URLSearchParams(search);
     const organisationId = params.get('organisation') || null;
 
-    const loadAppointments = () => {
-        setIsLoading(true);
+    const getParsedFilters = () => {
         const parsedFilters = {
             'order[datetime]': 'asc',
         };
@@ -44,16 +45,20 @@ export default function Appointments() {
                     break;
             }
         });
+        return parsedFilters;
+    }
+    const loadAppointments = () => {
+        setIsLoading(true);
 
         let promise;
         if (isUserEmployee) {
             if (isUserProvider && organisationId) {
-                promise = appointmentService.getOrganisationAppointments(page.current, organisationId, parsedFilters);
+                promise = appointmentService.getOrganisationAppointments(page.current, organisationId, getParsedFilters());
             } else {
-                promise = appointmentService.getProviderAppointments(page.current, parsedFilters);
+                promise = appointmentService.getProviderAppointments(page.current, getParsedFilters());
             }
         } else {
-            promise = appointmentService.getClientAppointments(page.current, parsedFilters);
+            promise = appointmentService.getClientAppointments(page.current, getParsedFilters());
         }
 
         promise.then((response) => {
@@ -74,6 +79,23 @@ export default function Appointments() {
             });
     }
 
+    const exportAppointments = () => {
+        setIsExporting(true);
+        let promise;
+        if (isUserEmployee) {
+            if (isUserProvider && organisationId) {
+                promise = appointmentService.exportOrganisationAppointments(organisationId, getParsedFilters());
+            } else {
+                promise = appointmentService.exportProviderAppointments(getParsedFilters());
+            }
+        } else {
+            promise = appointmentService.exportClientAppointments(getParsedFilters());
+        }
+        promise.finally(() => {
+            setIsExporting(false);
+        });
+    }
+
     const handleFilters = (event, newFilters) => {
         page.current = 1;
         filters.current = newFilters;
@@ -88,7 +110,16 @@ export default function Appointments() {
 
     return (
         <>
-            <h1>{organisationId ? t('organisation_appointments') : t('your_appointments')}</h1>
+            <div className="flex gap-2 space-between">
+                <h1>{organisationId ? t('organisation_appointments') : t('your_appointments')}</h1>
+
+                {appointments.length > 0 &&
+                    <LoadableButton isLoading={isExporting} onClick={exportAppointments} className="height-fit-content">
+                        <i className="fr-icon-download-line"></i>
+                    </LoadableButton>
+                }
+            </div>
+
             <ToggleButtonGroup
                 className="fr-mb-5v"
                 value={filters.current}

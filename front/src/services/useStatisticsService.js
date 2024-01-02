@@ -3,22 +3,22 @@ import useApi from './useApi';
 const useStatisticsService = () => {
     const api = useApi();
     return {
-        getAppointmentsCount: () => api(`appointments_count`, {
+        getAppointmentsCount: () => api(`statistics/appointments_count`, {
             method: 'GET',
         }),
-        getMaxAppointmentSlot: () => api(`max_appointment_slot`, {
+        getMaxAppointmentSlot: () => api(`statistics/max_appointment_slot`, {
             method: 'GET',
         }),
-        getLastAppointments: () => api(`last_appointments`, {
+        getLastAppointments: () => api(`statistics/last_appointments`, {
             method: 'GET',
         }),
-        getMaxOrganisations: () => api(`max_organisations`, {
+        getMaxOrganisations: () => api(`statistics/max_organisations`, {
             method: 'GET',
         }),
-        getAppointmentsPerDay: () => api(`appointments_per_day`, {
+        getAppointmentsPerDay: () => api(`statistics/appointments_per_day`, {
             method: 'GET',
         }),
-        getLastFeedback: () => api(`last_feedbacks`, {
+        getLastFeedback: () => api(`statistics/last_feedbacks`, {
             method: 'GET',
         }),
     };
