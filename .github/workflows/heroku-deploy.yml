@@ -17,4 +17,4 @@ jobs:
           heroku_email: "nicolas.wadoux@yahoo.fr"
           appdir: "api"
         env:
-          APP_ENV: "prod"
+          HD_APP_ENV: "prod"
