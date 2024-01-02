@@ -87,7 +87,7 @@ export default function SchedulesPeriodicForm({
                         <input type="time" value={exception.start} onChange={(e) => handleExceptionChange(exception, 'start', e.target.value)}/>
                         <p>{t('to')}</p>
                         <input type="time" value={exception.end} onChange={(e) => handleExceptionChange(exception, 'end', e.target.value)}/>
-                        <Button type="button" onClick={() => handleRemoveException(index)}>-</Button>
+                        <Button type="button" priority="secondary" onClick={() => handleRemoveException(index)}>-</Button>
                     </div>
                 ))}
             </div>

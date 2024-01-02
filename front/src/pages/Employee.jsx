@@ -20,6 +20,7 @@ export default function Employee() {
     const [employee, setEmployee] = useState(null);
     const [currentProvider, setCurrentProvider] = useState(null);
     const [schedules, setSchedules] = useState([]);
+    const [holidays, setHolidays] = useState([]);
     const userService = useUserService();
     const {t} = useTranslation();
     const [editSchedulesForDay, setEditSchedulesForDay] = useState(null);
@@ -41,6 +42,7 @@ export default function Employee() {
             setEmployee(employee);
             setCurrentProvider(currentProvider);
             fillSchedulesWithRights(currentProvider, employee.schedules ?? []);
+            fillHolidayWithRights(currentProvider, employee.holidays ?? []);
             setLoading(false);
         });
     }
@@ -54,6 +56,15 @@ export default function Employee() {
         });
 
         setSchedules(schedulesWithRights);
+    }
+
+    const fillHolidayWithRights = (currentProvider, holidays) => {
+        const holidaysWithRights = holidays.map((holiday) => {
+            holiday.isEditable = currentProvider.organisations.some((organisation) => organisation.id === holiday.organisation.id);
+            return holiday;
+        });
+
+        setHolidays(holidaysWithRights);
     }
 
     const handleSaveHours = (day, hours, organisation) => {
@@ -106,7 +117,14 @@ export default function Employee() {
                     {t('holidays')}
                 </Typography>
 
-                <EmployeeHolidays holidays={employee.holidays}/>
+                <EmployeeHolidays
+                    holidays={holidays}
+                    withForm
+                    organisations={currentProvider.organisations}
+                    onNewHoliday={loadPage}
+                    onDeletedHoliday={(holiday) => fillHolidayWithRights(currentProvider, holidays.filter((h) => h.id !== holiday.id))}
+                    employeeId={employeeId}
+                />
             </div>
 
             {editSchedulesForDay !== null &&

@@ -3,15 +3,21 @@ import {useTranslation} from "react-i18next";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Divider from "@mui/material/Divider";
+import LoadableButton from "./LoadableButton/LoadableButton.jsx";
+import useHolidayService from "../services/useHolidayService.js";
+import {useState} from "react";
 
 export default function HolidayCard({
-    holiday,
-    style = {},
-}) {
+                                        holiday,
+                                        style = {},
+                                        onDeletedHoliday = void 0,
+                                    }) {
     const {t, i18n} = useTranslation();
     style = {
         ...style,
     }
+    const holidayService = useHolidayService();
+    const [loading, setLoading] = useState(false);
 
     const formatDate = (date) => {
         return new Date(date).toLocaleDateString(i18n.language, {
@@ -35,13 +41,20 @@ export default function HolidayCard({
 
         if (days >= 2) {
             return `${days}${dayShort}`;
-        }
-
-        else if (days === 1) {
+        } else if (days === 1) {
             return `${days}${dayShort} ${hours}${hourShort} ${minutes}${minuteShort}`;
         }
 
         return `${hours}${hourShort} ${minutes}${minuteShort}`;
+    }
+
+    const deleteHoliday = () => {
+        setLoading(true);
+        holidayService.delete(holiday.id).then(() => {
+            onDeletedHoliday(holiday);
+        }).finally(() => {
+            setLoading(false);
+        });
     }
 
     return (
@@ -67,6 +80,9 @@ export default function HolidayCard({
                 <Typography gutterBottom>
                     <small>{t('asked_on', {date: formatDate(holiday.createdAt)})}</small>
                 </Typography>
+                {holiday.isEditable &&
+                    <LoadableButton isLoading={loading} onClick={deleteHoliday}>{t('delete')}</LoadableButton>
+                }
             </CardContent>
         </Card>
     )

@@ -1,4 +1,4 @@
-import {FormControl, InputLabel, MenuItem, Select, Tab, Tabs} from "@mui/material";
+import {Tab, Tabs} from "@mui/material";
 import {useState} from "react";
 import SchedulesPeriodicForm from "./SchedulesPeriodicForm.jsx";
 import SchedulesManualForm from "./SchedulesManualForm.jsx";
@@ -8,6 +8,7 @@ import PlanningItem from "./Calendar/PlanningItem.jsx";
 import CalendarItem from "./Calendar/CalendarItem.jsx";
 import Typography from "@mui/material/Typography";
 import LoadableButton from "./LoadableButton/LoadableButton.jsx";
+import OrganisationSelect from "./OrganisationSelect.jsx";
 
 export default function SchedulesForm({
     organisations,
@@ -50,18 +51,7 @@ export default function SchedulesForm({
 
     return (
         <form onSubmit={handleSubmit}>
-            <InputLabel>{t('choose_a_police_station')}</InputLabel>
-            <FormControl fullWidth>
-                <Select
-                    value={station}
-                    onChange={handleSelectStation}
-                    renderValue={(value) => value.name}
-                >
-                    {organisations.map((organisation) => (
-                        <MenuItem value={organisation} key={organisation.id}>{organisation.name}</MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
+            <OrganisationSelect organisations={organisations} onChange={handleSelectStation} value={station}/>
 
             <Tabs value={tabSelected} onChange={(e, value) => setTabSelected(value)}>
                 <Tab label={t('periodic_add')}/>
