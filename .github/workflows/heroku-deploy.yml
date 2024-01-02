@@ -18,3 +18,6 @@ jobs:
           appdir: "api"
         env:
           HD_APP_ENV: "prod"
+          HD_JWT_PASSPHRASE: ${{secrets.HEROKU_API_KEY}}
+          HD_JWT_SECRET_KEY: "%kernel.project_dir%/config/jwt/private.pem"
+          HD_JWT_PUBLIC_KEY: "%kernel.project_dir%/config/jwt/public.pem"
