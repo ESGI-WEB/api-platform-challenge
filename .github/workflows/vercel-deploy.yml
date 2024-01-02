@@ -80,6 +80,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
+      - name: Remove .env file
+        run: rm -f .env
+
       - name: Install Vercel cli
         run: npm i -g vercel@latest
 
@@ -90,4 +93,4 @@ jobs:
         run: vercel build --token=${{ secrets.VERCEL_GITHUB_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_GITHUB_TOKEN }}
+        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_GITHUB_TOKEN }} --prod
