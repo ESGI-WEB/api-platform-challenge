@@ -39,7 +39,7 @@ class TranslationStateProvider implements ProviderInterface
             return $this->findTranslationByKeyAndLanguage($key, $language);
         }
 
-        $language = $this->requestStack->getCurrentRequest()->query->get('language');
+        $language = $this->requestStack->getCurrentRequest()->query->get('language') ?? LanguageHelper::FR_LANGUAGE;
 
         if (!LanguageHelper::validateLanguage($language)) {
             throw new \Exception('Invalid language.', self::INVALID_PARAMETERS_ERROR);
