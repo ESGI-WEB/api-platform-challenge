@@ -79,7 +79,7 @@ jobs:
       - name: Install Vercel cli
         run: npm i -g vercel@latest
 
-      - name: Get vercel env
+      - name: Get vercel environment
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_GITHUB_TOKEN }}
 
       - name: Build Project Artifacts
