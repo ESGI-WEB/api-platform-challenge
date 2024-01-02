@@ -79,7 +79,7 @@
         ],
         "compile": [
             "php bin/console doctrine:migrations:migrate --no-interaction",
-            "php bin/console lexik:jwt:generate-keypair --overwrite --no-interaction"
+            "php bin/console lexik:jwt:generate-keypair --overwrite --quiet --env prod"
         ]
     },
     "conflict": {
