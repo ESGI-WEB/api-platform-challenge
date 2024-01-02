@@ -16,6 +16,5 @@ jobs:
           heroku_app_name: "ecommissariat-back"
           heroku_email: "nicolas.wadoux@yahoo.fr"
           appdir: "api"
-          environment: "production"
-          env: |
-            APP_ENV=prod
+        env: |
+          APP_ENV=prod
