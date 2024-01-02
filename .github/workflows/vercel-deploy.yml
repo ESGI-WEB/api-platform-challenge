@@ -11,7 +11,9 @@ on:
 jobs:
   build-test:
     runs-on: ubuntu-latest
-    working-directory: ./front
+    defaults:
+      run:
+        working-directory: ./front
     steps:
       - uses: actions/checkout@v4
 
@@ -47,7 +49,9 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    working-directory: ./front
+    defaults:
+      run:
+        working-directory: ./front
     needs:
       - build-test
 
