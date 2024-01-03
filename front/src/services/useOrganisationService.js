@@ -38,7 +38,7 @@ const useOrganisationService = () => {
             method: 'GET',
         }),
         getCoordinatesFromAddress: (address, limit = 5) => fetch(
-            `http://api-adresse.data.gouv.fr/search/?q=${address}&limit=${limit}`
+            import.meta.env.VITE_API_ADDRESS_ENDPOINT + `/search/?q=${address}&limit=${limit}`
         ).then(response => response.json()),
     };
 };
