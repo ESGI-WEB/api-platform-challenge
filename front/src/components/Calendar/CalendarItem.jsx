@@ -4,14 +4,15 @@ export default function CalendarItem({
     text,
     onClick = void 0,
     severity = undefined,
-    noIcon = true
+    noIcon = true,
+    disabled = false,
 }) {
     return (
         <Badge
             noIcon={noIcon}
             severity={severity}
-            className={onClick ? 'pointer' : ''}
-            onClick={onClick}
+            className={!disabled && onClick ? 'pointer' : ''}
+            onClick={!disabled && onClick ? onClick : undefined}
         >
             {text}
         </Badge>

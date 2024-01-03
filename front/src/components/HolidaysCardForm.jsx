@@ -7,6 +7,7 @@ import {useState} from "react";
 import LoadableButton from "./LoadableButton/LoadableButton.jsx";
 import useHolidayService from "../services/useHolidayService.js";
 import useAuth from "../auth/useAuth.js";
+import Typography from "@mui/material/Typography";
 
 export default function HolidaysCardForm({
     employeeId,
@@ -19,11 +20,13 @@ export default function HolidaysCardForm({
     const [from, setFrom] = useState('');
     const [to, setTo] = useState('');
     const [loading, setLoading] = useState(false);
+    const [errored, setErrored] = useState(false);
     const holidayService = useHolidayService();
 
     const onSubmitForm = (e) => {
         e.preventDefault();
         setLoading(true);
+        setErrored(false);
         holidayService.post({
             organisation: `/api/organisations/${station.id}`,
             provider: `/api/users/${employeeId}`,
@@ -33,6 +36,8 @@ export default function HolidaysCardForm({
             setFrom('');
             setTo('');
             onNewHoliday();
+        }).catch(() => {
+            setErrored(true);
         }).finally(() => {
             setLoading(false);
         });
@@ -59,6 +64,7 @@ export default function HolidaysCardForm({
                     <LoadableButton isLoading={loading} type="submit" disabled={!station || !from || !to}>
                         {t('add')}
                     </LoadableButton>
+                    {errored && <Typography>{t('invalid_form')}</Typography>}
                 </form>
             </CardContent>
         </Card>

@@ -11,7 +11,7 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use Symfony\Bundle\SecurityBundle\Security;
 
-readonly class ProviderEmployeesProvider implements ProviderInterface
+readonly class EmployeesProvider implements ProviderInterface
 {
     public function __construct(
         private UserRepository $userRepository,

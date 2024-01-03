@@ -15,6 +15,7 @@ export default function Calendar({
     onDateClick = void 0,
     onAddClick = void 0,
     displayAllDaysBetweenDates = [],
+    disabled = false,
 }) {
     const [dates, setDates] = useState([]);
     const [displayedChunk, setDisplayedChunk] = useState(0);
@@ -113,10 +114,11 @@ export default function Calendar({
                         key={day}
                         calendarDateHeader={CalendarDateHeaderComponent}
                         calendarItem={CalendarItemComponent}
-                        onDateClick={onDateClick ? onDateClick : undefined}
-                        onAddClick={onAddClick ? onAddClick : undefined}
+                        onDateClick={onDateClick && !disabled ? onDateClick : undefined}
+                        onAddClick={onAddClick && !disabled ? onAddClick : undefined}
                         day={day}
                         calendarDates={calendarDates}
+                        disabled={disabled}
                     />
                 ))}
                 {displayedChunk < dates.length - 1 &&

@@ -11,6 +11,7 @@ import useScheduleService from "../../services/useScheduleService.js";
 export default function EmployeePlanning({
     schedules = [],
     onAddClick = void 0,
+    disabled = false,
     calendarComponent : CalendarComponent = Calendar,
     calendarDateHeader : CalendarDateHeader = PlanningHeaderDate,
     calendarItem : CalendarItemComponent = PlanningItem,
@@ -130,6 +131,7 @@ export default function EmployeePlanning({
                 displayAllDaysBetweenDates={displayAllDaysBetweenDates}
                 onDateClick={handleDateClick}
                 onAddClick={handleAddClick}
+                disabled={disabled}
             ></CalendarComponent>
             <div className="flex flex-row flex-wrap gap-2">
                 <LegendItemComponent

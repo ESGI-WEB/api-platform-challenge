@@ -5,7 +5,8 @@ export default function PlanningItem({
     text,
     onClick = void 0,
     severity = undefined,
-    noIcon = true
+    noIcon = true,
+    disabled = false,
 }) {
     const [isHovered, setIsHovered] = useState(false);
 
@@ -13,10 +14,10 @@ export default function PlanningItem({
         <Badge
             noIcon={noIcon}
             severity={severity}
-            className={onClick ? 'pointer' : ''}
-            onClick={onClick}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+            className={!disabled && onClick ? 'pointer' : ''}
+            onClick={!disabled && onClick ? onClick : undefined}
+            onMouseEnter={() => !disabled && setIsHovered(true)}
+            onMouseLeave={() => !disabled && setIsHovered(false)}
         >
             {!isHovered ? text : <i className="fr-icon-delete-bin-line"/>}
         </Badge>

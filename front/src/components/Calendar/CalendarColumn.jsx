@@ -7,6 +7,7 @@ export default function CalendarColumn({
     day,
     calendarDates,
     onDateClick = void 0,
+    disabled = false,
 }) {
     const {i18n} = useTranslation();
 
@@ -24,6 +25,7 @@ export default function CalendarColumn({
                         text={date.date.toLocaleTimeString(i18n.language, {hour: '2-digit', minute: '2-digit'})}
                         onClick={onDateClick ? () => onDateClick(date.data) : undefined}
                         severity={date.data.severity ?? 'info'}
+                        disabled={disabled}
                     />
                 ))}
             </div>

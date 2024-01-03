@@ -11,7 +11,7 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Enum\GroupsEnum;
 use App\Enum\RolesEnum;
-use App\Provider\ProviderEmployeesProvider;
+use App\Provider\EmployeesProvider;
 use App\Repository\UserRepository;
 use App\Security\Voter\UserVoter;
 use DateTimeImmutable;
@@ -59,7 +59,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new GetCollection(
             uriTemplate: "/users/{id}/employees",
-            provider: ProviderEmployeesProvider::class,
+            provider: EmployeesProvider::class,
         ),
     ],
     normalizationContext: ['groups' => [GroupsEnum::USER_READ->value]],

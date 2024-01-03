@@ -96,10 +96,8 @@ export default function Organisation() {
     }
 
     useEffect(() => {
-        if (organisation === null || slots.length <= 0) {
-            loadService();
-        }
-    }, []);
+        loadService();
+    }, [organisationId]);
 
     if (isErrored) {
         return <InPageAlert alert={{severity: AlertSeverity.ERROR, closable: false}}/>;

@@ -1,5 +1,7 @@
 import HolidayCard from "./HolidayCard.jsx";
 import HolidaysCardForm from "./HolidaysCardForm.jsx";
+import Typography from "@mui/material/Typography";
+import {useTranslation} from "react-i18next";
 
 export default function EmployeeHolidays({
     employeeId,
@@ -15,6 +17,7 @@ export default function EmployeeHolidays({
         width: '32%',
         minWidth: '240px',
     }
+    const {t} = useTranslation();
 
     return (
         <div className="flex flex-wrap row-gap-2 column-gap-2-percent fr-my-5v">
@@ -22,6 +25,7 @@ export default function EmployeeHolidays({
             {holidays.map((holiday) => (
                 <HolidayComponent key={holiday.id} holiday={holiday} style={cardStyle} onDeletedHoliday={onDeletedHoliday}/>
             ))}
+            {holidays.length === 0 && <Typography variant="body1">{t('no_holiday')}</Typography>}
         </div>
     )
 }

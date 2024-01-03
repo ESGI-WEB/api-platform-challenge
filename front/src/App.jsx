@@ -26,6 +26,7 @@ import Employee from "./pages/Employee.jsx";
 function App() {
     const {t} = useTranslation();
     const [translationsLoaded, setTranslationsLoaded] = useState(true);
+    const {onLogin, onLogout, token, data} = useAuth();
 
     useEffect(() => {
         if (i18n.failedLoadings.length > 0) {
@@ -81,11 +82,17 @@ function App() {
             },
             text: t('employees'),
         },
+        {
+            role: Roles.EMPLOYEE,
+            linkProps: {
+                to: '/employees/' + data?.id,
+            },
+            text: t('profile'),
+        },
     ];
     let quickAccessItems = [loginButton];
     let navigationItemsByRole = [];
     let serviceTitle = '';
-    const {onLogin, onLogout, token, data} = useAuth();
 
     if (token) {
         quickAccessItems = [logoutButton]
@@ -184,6 +191,7 @@ function App() {
                                         <Employee/>
                                     </ProtectedRoute>
                                 }/>
+                                <Route path="403" element={<NoTranslations/>}/>
                                 <Route path="*" element={<Navigate to="/" replace/>}/>
                             </Routes>
                             :

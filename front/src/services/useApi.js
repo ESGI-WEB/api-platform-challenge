@@ -62,6 +62,10 @@ const useApi = () => {
                 navigate('/login', {state: {from: location}});
             }
 
+            if (response.status === 403) {
+                navigate('/403');
+            }
+
             return response.json().then(error => {
                 const e = new Error(response.statusText);
                 e.data = error;

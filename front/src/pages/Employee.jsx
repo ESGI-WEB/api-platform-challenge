@@ -6,7 +6,7 @@ import EmployeeCard from "../components/EmployeeCard.jsx";
 import {useParams} from "react-router-dom";
 import EmployeePlanning from "../components/Calendar/EmployeePlanning.jsx";
 import {useTranslation} from "react-i18next";
-import useAuth from "../auth/useAuth.js";
+import useAuth, {Roles} from "../auth/useAuth.js";
 import EmployeeHolidays from "../components/EmployeeHolidays.jsx";
 import Modal from "../components/Modal/Modal.jsx";
 import SchedulesForm from "../components/SchedulesForm.jsx";
@@ -15,6 +15,7 @@ import {Alert, Snackbar} from "@mui/material";
 
 export default function Employee() {
     const {data} = useAuth();
+    const isPageReadOnly = !data.roles.includes(Roles.PROVIDER);
     const {employeeId} = useParams();
     const [loading, setLoading] = useState(true);
     const [employee, setEmployee] = useState(null);
@@ -29,16 +30,19 @@ export default function Employee() {
 
     useEffect(() => {
         loadPage();
-    }, []);
+    }, [employeeId]);
 
     const loadPage = () => {
         setLoading(true);
-        const promises = Promise.all([
-            userService.getUser(employeeId),
-            currentProvider ? Promise.resolve(currentProvider) : userService.getUser(data.id)
-        ]);
 
-        promises.then(([employee, currentProvider]) => {
+        const allPromises = [userService.getUser(employeeId)];
+        if (+employeeId !== data.id) {
+            allPromises.push(userService.getUser(data.id));
+        }
+
+        Promise.all(allPromises).then((data) => {
+            let [employee, currentProvider = null] = data; // get employee and provider datas to generate schedules rights
+            currentProvider = currentProvider ?? employee; // if employee is checking its own page, currentProvider is the employee
             setEmployee(employee);
             setCurrentProvider(currentProvider);
             fillSchedulesWithRights(currentProvider, employee.schedules ?? []);
@@ -50,8 +54,9 @@ export default function Employee() {
     const fillSchedulesWithRights = (currentProvider, schedules) => {
         // we have to check if current provider also has organisation rights belonging to the schedule, otherwise he can't edit it
         const schedulesWithRights = schedules.map((schedule) => {
-            schedule.isEditable = currentProvider.organisations.some((organisation) => organisation.id === schedule.organisation.id);
-            schedule.severity = schedule.isEditable ? 'info' : 'warning';
+            const providerHasRights = currentProvider.organisations.some((organisation) => organisation.id === schedule.organisation.id);
+            schedule.isEditable = !isPageReadOnly && providerHasRights;
+            schedule.severity = providerHasRights ? 'info' : 'warning';
             return schedule;
         });
 
@@ -60,7 +65,7 @@ export default function Employee() {
 
     const fillHolidayWithRights = (currentProvider, holidays) => {
         const holidaysWithRights = holidays.map((holiday) => {
-            holiday.isEditable = currentProvider.organisations.some((organisation) => organisation.id === holiday.organisation.id);
+            holiday.isEditable = !isPageReadOnly && currentProvider.organisations.some((organisation) => organisation.id === holiday.organisation.id);
             return holiday;
         });
 
@@ -68,6 +73,10 @@ export default function Employee() {
     }
 
     const handleSaveHours = (day, hours, organisation) => {
+        if (isPageReadOnly) {
+            return;
+        }
+
         const schedule = schedules.find((schedule) =>
             schedule.day === day &&
             schedule.organisation.id === organisation.id
@@ -110,7 +119,7 @@ export default function Employee() {
                     {t('default_planning')}
                 </Typography>
 
-                <EmployeePlanning schedules={schedules} onAddClick={(day) => setEditSchedulesForDay(day)}/>
+                <EmployeePlanning schedules={schedules} onAddClick={(day) => setEditSchedulesForDay(day)} disabled={isPageReadOnly}/>
             </div>
             <div>
                 <Typography variant="h2" gutterBottom>
@@ -119,7 +128,7 @@ export default function Employee() {
 
                 <EmployeeHolidays
                     holidays={holidays}
-                    withForm
+                    withForm={!isPageReadOnly}
                     organisations={currentProvider.organisations}
                     onNewHoliday={loadPage}
                     onDeletedHoliday={(holiday) => fillHolidayWithRights(currentProvider, holidays.filter((h) => h.id !== holiday.id))}
