@@ -1,6 +1,6 @@
 import OrganisationAddress from "./OrganisationAddress.jsx";
 import Map from "./Map.jsx";
-import {Marker} from "react-leaflet";
+import PinMarker from "./PinMarker.jsx";
 
 export default function OrganisationLocation({
     organisation,
@@ -21,7 +21,7 @@ export default function OrganisationLocation({
                 zoom={zoom}
                 className={className}
             >
-                <Marker position={[organisation.latitude, organisation.longitude]}/>
+                <PinMarker position={[organisation.latitude, organisation.longitude]}/>
             </Map>
             <div>
                 <OrganisationAddress organisation={organisation}/>

@@ -4,7 +4,7 @@ import PageLoader from "../components/PageLoader/PageLoader.jsx";
 import OrganisationCard from "../components/OrganisationCard.jsx";
 import useOrganisationService from "../services/useOrganisationService.js";
 import LoadableButton from "../components/LoadableButton/LoadableButton.jsx";
-import {Marker, Popup} from "react-leaflet";
+import {Popup} from "react-leaflet";
 import OrganisationAddress from "../components/OrganisationAddress.jsx";
 import Map from "../components/Map.jsx";
 import {Button} from "@codegouvfr/react-dsfr/Button";
@@ -13,6 +13,7 @@ import OrganisationServicesList from "../components/OrganisationServicesList.jsx
 import StationsFilters from "../components/StationsFilters.jsx";
 import Search from "../components/Search.jsx";
 import ServicesSelect from "../components/ServicesSelect.jsx";
+import PinMarker from "../components/PinMarker.jsx";
 
 export default function Home() {
     const {t} = useTranslation();
@@ -145,7 +146,7 @@ export default function Home() {
 
                 >
                     {organisations.map((organisation) =>
-                        <Marker key={organisation.id} position={[organisation.latitude, organisation.longitude]}>
+                        <PinMarker key={organisation.id} position={[organisation.latitude, organisation.longitude]}>
                             <Popup>
                                 <OrganisationAddress organisation={organisation}/>
                                 <p>
@@ -157,7 +158,7 @@ export default function Home() {
                                     {t('see_police_station_details')}
                                 </LinkButton>
                             </Popup>
-                        </Marker>
+                        </PinMarker>
                     )}
                 </Map>
             </>
