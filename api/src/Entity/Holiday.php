@@ -3,8 +3,10 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Enum\GroupsEnum;
@@ -33,12 +35,6 @@ use Symfony\Component\Validator\Constraints as Assert;
     uriTemplate: '/users/{user_id}/holidays',
     operations: [
         new GetCollection(security: "is_granted('" . ScheduleHolidayVoter::VIEW_FOR_USER . "', object)"),
-        new Post(denormalizationContext: ['groups' => [GroupsEnum::HOLIDAY_WRITE->value]],
-            security: "is_granted('" . ScheduleHolidayVoter::CREATE . "', object)"
-        ),
-        new Put(denormalizationContext: ['groups' => [GroupsEnum::HOLIDAY_WRITE->value]],
-            security: "is_granted('" . ScheduleHolidayVoter::EDIT . "', object)"
-        ),
     ],
     uriVariables: [
         'user_id' => new Link(
@@ -48,6 +44,17 @@ use Symfony\Component\Validator\Constraints as Assert;
     ],
     normalizationContext: ['groups' => [GroupsEnum::HOLIDAY_READ->value]],
     paginationEnabled: false,
+)]
+#[ApiResource(
+    operations: [
+        new Post(
+            denormalizationContext: ['groups' => [GroupsEnum::HOLIDAY_WRITE->value]],
+            securityPostDenormalize: "is_granted('" . ScheduleHolidayVoter::CREATE . "', object)"
+        ),
+        new Delete(
+            security: "is_granted('" . ScheduleHolidayVoter::DELETE . "', object)"
+        ),
+    ]
 )]
 #[ORM\Entity(repositoryClass: HolidayRepository::class)]
 class Holiday
@@ -61,12 +68,10 @@ class Holiday
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups([GroupsEnum::HOLIDAY_WRITE->value, GroupsEnum::HOLIDAY_READ->value])]
     #[Assert\NotBlank]
-    #[Assert\DateTime]
     private ?\DateTimeInterface $datetimeStart = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Assert\NotBlank]
-    #[Assert\DateTime]
     #[Assert\Expression(
         expression: "this.getDatetimeEnd() > this.getDatetimeStart()",
         message: "End date must be after the start date."
@@ -81,10 +86,13 @@ class Holiday
     private ?User $provider = null;
 
     #[ORM\Column]
+    #[Groups([GroupsEnum::HOLIDAY_READ->value])]
     private DateTimeImmutable $createdAt;
 
     #[ORM\ManyToOne(inversedBy: 'holidays')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups([GroupsEnum::HOLIDAY_READ_DETAILED->value, GroupsEnum::HOLIDAY_WRITE->value])]
+    #[Assert\NotNull]
     private ?Organisation $organisation = null;
 
     public function __construct()

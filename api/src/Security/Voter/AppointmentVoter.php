@@ -121,10 +121,6 @@ class AppointmentVoter extends Voter
             return false;
         }
 
-        if (!in_array(RolesEnum::PROVIDER->value, $appointment->getProvider()->getRoles())) {
-            return false;
-        }
-
         if (!$appointment->getService()->getOrganisation()->getUsers()->contains($appointment->getProvider())) {
             return false;
         }

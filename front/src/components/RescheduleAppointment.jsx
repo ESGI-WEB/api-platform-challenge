@@ -11,6 +11,7 @@ import Calendar from "./Calendar/Calendar.jsx";
 import ActionTile from "./ActionTile/ActionTile.jsx";
 import useAppointmentService from "../services/useAppoitmentService.js";
 import {AppointmentStatus} from "./AppointmentStatusBadge.jsx";
+import InPageAlert from "./InPageAlert.jsx";
 
 export default function RescheduleAppointment({
                                                   organisation,
@@ -25,7 +26,7 @@ export default function RescheduleAppointment({
                                               }) {
     const {t, i18n} = useTranslation();
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [slots, setSlots] = useState([]);
     const [selectedSlot, setSelectedSlot] = useState(null);
@@ -124,6 +125,14 @@ export default function RescheduleAppointment({
                                     </ActionTile>
                                 }
                             </>
+                        }
+                        {!isLoading && slots.length === 0 &&
+                            <InPageAlert alert={{
+                                closable: false,
+                                title: t('no_available_slot'),
+                                description: t('no_available_slot_description'),
+                                severity: 'warning',
+                            }}/>
                         }
 
                         <div className="flex space-between">

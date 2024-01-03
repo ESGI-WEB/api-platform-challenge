@@ -3,10 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
 use App\Enum\DaysEnum;
 use App\Enum\GroupsEnum;
 use App\Repository\ScheduleRepository;
@@ -34,12 +35,6 @@ use Symfony\Component\Validator\Constraints as Assert;
     uriTemplate: '/users/{user_id}/schedules',
     operations: [
         new GetCollection(security: "is_granted('" . ScheduleHolidayVoter::VIEW_FOR_USER . "', object)"),
-        new Post(denormalizationContext: ['groups' => [GroupsEnum::SCHEDULE_WRITE->value]],
-            security: "is_granted('" . ScheduleHolidayVoter::CREATE . "', object)"
-        ),
-        new Put(denormalizationContext: ['groups' => [GroupsEnum::SCHEDULE_WRITE->value]],
-            security: "is_granted('" . ScheduleHolidayVoter::EDIT . "', object)"
-        ),
     ],
     uriVariables: [
         'user_id' => new Link(
@@ -49,6 +44,21 @@ use Symfony\Component\Validator\Constraints as Assert;
     ],
     normalizationContext: ['groups' => [GroupsEnum::SCHEDULE_READ->value]],
     paginationEnabled: false,
+)]
+#[ApiResource(
+    operations: [
+        new Patch(
+            denormalizationContext: ['groups' => [GroupsEnum::SCHEDULE_WRITE->value]],
+            securityPostDenormalize: "is_granted('" . ScheduleHolidayVoter::EDIT . "', object)"
+        ),
+        new Post(
+            denormalizationContext: ['groups' => [GroupsEnum::SCHEDULE_WRITE->value]],
+            securityPostDenormalize: "is_granted('" . ScheduleHolidayVoter::CREATE . "', object)"
+        ),
+        new Delete(
+            securityPostDenormalize: "is_granted('" . ScheduleHolidayVoter::DELETE . "', object)"
+        ),
+    ]
 )]
 #[UniqueEntity(fields: ['day', 'provider', 'organisation'])]
 #[ORM\Entity(repositoryClass: ScheduleRepository::class)]
@@ -86,7 +96,7 @@ class Schedule
 
     #[ORM\ManyToOne(inversedBy: 'schedules')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups([GroupsEnum::SCHEDULE_READ->value])]
+    #[Groups([GroupsEnum::SCHEDULE_READ_DETAILED->value, GroupsEnum::SCHEDULE_WRITE->value])]
     private ?Organisation $organisation = null;
 
     public function __construct()

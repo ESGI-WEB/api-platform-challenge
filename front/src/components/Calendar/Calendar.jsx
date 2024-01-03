@@ -1,14 +1,21 @@
 import "./calendar.css";
 import {useEffect, useState} from "react";
+import CalendarColumn from "./CalendarColumn.jsx";
+import CalendarHeaderDate from "./CalendarHeaderDate.jsx";
+import CalendarItem from "./CalendarItem.jsx";
 
 export default function Calendar({
     component: Component = "div",
-    calendarItem: CalendarItemComponent,
-    calendarDateHeader: CalendarDateHeaderComponent,
+    calendarItem: CalendarItemComponent = CalendarItem,
+    calendarDateHeader: CalendarDateHeaderComponent = CalendarHeaderDate,
+    calendarColumnComponent: CalendarColumnComponent = CalendarColumn,
     data = [],
     dateTimePath = "datetime",
     maxDisplayedColumns = 6,
-    onDateClick = void 0
+    onDateClick = void 0,
+    onAddClick = void 0,
+    displayAllDaysBetweenDates = [],
+    disabled = false,
 }) {
     const [dates, setDates] = useState([]);
     const [displayedChunk, setDisplayedChunk] = useState(0);
@@ -28,6 +35,23 @@ export default function Calendar({
 
     const groupDatetimesByDay = () => {
         const grouped = {};
+
+        // check if startDate and endDate are set, if so, display also columns between those dates
+        if (displayAllDaysBetweenDates.length) {
+            if (displayAllDaysBetweenDates.length !== 2) {
+                throw new Error('displayAllDaysBetweenDays must be an array of two dates');
+            }
+            const [startDate, endDate] = displayAllDaysBetweenDates;
+            // for each day between startDate and endDate, check if it's already in the calendar otherwise add it
+            const currentDate = new Date(startDate);
+            while (currentDate <= endDate) {
+                const dayStr = currentDate.toDateString();
+                if (!(dayStr in grouped)) {
+                    grouped[dayStr] = [];
+                }
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+        }
 
         // group datetimes by day
         data.forEach((obj) => {
@@ -62,8 +86,8 @@ export default function Calendar({
 
     useEffect(() => {
         const dates = groupDatetimesByDay();
-        // chunk dates by 6 days
-        const chunkedDates = Object.entries(dates).reduce((acc, [dayStr, calendarDates]) => {
+        // chunk dates by maxDisplayedColumns days
+        let chunkedDates = Object.entries(dates).reduce((acc, [dayStr, calendarDates]) => {
             const lastChunk = acc[acc.length - 1];
 
             if (lastChunk.length < maxDisplayedColumns) {
@@ -73,7 +97,8 @@ export default function Calendar({
             }
             return acc;
         }, [[]]);
-        setDates(chunkedDates);
+
+        setDates([...chunkedDates]);
     }, [data]);
 
     return (
@@ -85,20 +110,16 @@ export default function Calendar({
                     ></i>
                 }
                 {dates[displayedChunk].map(([day, calendarDates]) => (
-                    <div key={day} className="text-center">
-                        <CalendarDateHeaderComponent
-                            date={calendarDates[0].date}
-                        />
-                        <div className="flex flex-column gap-2 align-center">
-                            {calendarDates.map(date => (
-                                <CalendarItemComponent
-                                    key={date.date.getTime()}
-                                    date={date.date}
-                                    onClick={() => onDateClick(date.data)}
-                                />
-                            ))}
-                        </div>
-                    </div>
+                    <CalendarColumnComponent
+                        key={day}
+                        calendarDateHeader={CalendarDateHeaderComponent}
+                        calendarItem={CalendarItemComponent}
+                        onDateClick={onDateClick && !disabled ? onDateClick : undefined}
+                        onAddClick={onAddClick && !disabled ? onAddClick : undefined}
+                        day={day}
+                        calendarDates={calendarDates}
+                        disabled={disabled}
+                    />
                 ))}
                 {displayedChunk < dates.length - 1 &&
                     <i className="ri-arrow-right-circle-line right-calendar-arrow pointer"

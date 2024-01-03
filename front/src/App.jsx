@@ -20,10 +20,13 @@ import MuiDsfrThemeProvider from "@codegouvfr/react-dsfr/mui.js";
 import LanguageSelector from "./components/LanguageSelector/LanguageSelector.jsx";
 import Appointments from "./pages/Appointments.jsx";
 import {headerFooterDisplayItem} from "@codegouvfr/react-dsfr/Display";
+import Employees from "./pages/Employees.jsx";
+import Employee from "./pages/Employee.jsx";
 
 function App() {
     const {t} = useTranslation();
     const [translationsLoaded, setTranslationsLoaded] = useState(true);
+    const {onLogin, onLogout, token, data} = useAuth();
 
     useEffect(() => {
         if (i18n.failedLoadings.length > 0) {
@@ -72,11 +75,24 @@ function App() {
             },
             text: t('your_appointments'),
         },
+        {
+            role: Roles.PROVIDER,
+            linkProps: {
+                to: '/employees',
+            },
+            text: t('employees'),
+        },
+        {
+            role: Roles.EMPLOYEE,
+            linkProps: {
+                to: '/employees/' + data?.id,
+            },
+            text: t('profile'),
+        },
     ];
     let quickAccessItems = [loginButton];
     let navigationItemsByRole = [];
     let serviceTitle = '';
-    const {onLogin, onLogout, token, data} = useAuth();
 
     if (token) {
         quickAccessItems = [logoutButton]
@@ -165,6 +181,17 @@ function App() {
                                         <Appointments/>
                                     </ProtectedRoute>
                                 }/>
+                                <Route path="employees" element={
+                                    <ProtectedRoute requiredRole={Roles.EMPLOYEE}>
+                                        <Employees/>
+                                    </ProtectedRoute>
+                                }/>
+                                <Route path="employees/:employeeId" element={
+                                    <ProtectedRoute requiredRole={Roles.EMPLOYEE}>
+                                        <Employee/>
+                                    </ProtectedRoute>
+                                }/>
+                                <Route path="403" element={<NoTranslations/>}/>
                                 <Route path="*" element={<Navigate to="/" replace/>}/>
                             </Routes>
                             :

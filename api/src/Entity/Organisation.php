@@ -65,7 +65,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 class Organisation
 {
-    #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
+    #[Groups([GroupsEnum::ORGANISATION_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -75,7 +75,7 @@ class Organisation
     private ?string $uuid = null;
 
     #[Groups([
-        GroupsEnum::ORGANISATION_READ_DETAILED->value,
+        GroupsEnum::ORGANISATION_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value,
         GroupsEnum::APPOINTMENT_READ_DETAILED->value,
         GroupsEnum::ORGANISATION_UPDATE->value
     ])]
@@ -85,7 +85,7 @@ class Organisation
     private ?string $name = null;
 
     #[Groups([
-        GroupsEnum::ORGANISATION_READ_DETAILED->value,
+        GroupsEnum::ORGANISATION_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value,
         GroupsEnum::APPOINTMENT_READ_DETAILED->value,
         GroupsEnum::ORGANISATION_UPDATE->value
     ])]
@@ -95,7 +95,7 @@ class Organisation
     private ?string $latitude = null;
 
     #[Groups([
-        GroupsEnum::ORGANISATION_READ_DETAILED->value,
+        GroupsEnum::ORGANISATION_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value,
         GroupsEnum::APPOINTMENT_READ_DETAILED->value,
         GroupsEnum::ORGANISATION_UPDATE->value
     ])]
@@ -124,7 +124,7 @@ class Organisation
     private Collection $holidays;
 
     #[Groups([
-        GroupsEnum::ORGANISATION_READ_DETAILED->value,
+        GroupsEnum::ORGANISATION_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value,
         GroupsEnum::APPOINTMENT_READ_DETAILED->value,
         GroupsEnum::ORGANISATION_UPDATE->value
     ])]
@@ -134,7 +134,7 @@ class Organisation
     private ?string $address = null;
 
     #[Groups([
-        GroupsEnum::ORGANISATION_READ_DETAILED->value,
+        GroupsEnum::ORGANISATION_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value,
         GroupsEnum::APPOINTMENT_READ_DETAILED->value,
         GroupsEnum::ORGANISATION_UPDATE->value
     ])]
@@ -144,7 +144,7 @@ class Organisation
     private ?string $zipcode = null;
 
     #[Groups([
-        GroupsEnum::ORGANISATION_READ_DETAILED->value,
+        GroupsEnum::ORGANISATION_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value,
         GroupsEnum::APPOINTMENT_READ_DETAILED->value,
         GroupsEnum::ORGANISATION_UPDATE->value
     ])]
