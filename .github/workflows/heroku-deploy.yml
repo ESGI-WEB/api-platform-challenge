@@ -1,0 +1,26 @@
+name: Deploy To Heroku
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'api/**'
+      - '.github/workflows/heroku-deploy.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: akhileshns/heroku-deploy@v3.12.14
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "ecommissariat-back"
+          heroku_email: "nicolas.wadoux@yahoo.fr"
+          appdir: "api"
+        env:
+          HD_APP_ENV: "prod"
+          HD_JWT_PASSPHRASE: ${{secrets.JWT_PASSPHRASE}}
+          HD_JWT_SECRET_KEY: "%kernel.project_dir%/config/jwt/private.pem"
+          HD_JWT_PUBLIC_KEY: "%kernel.project_dir%/config/jwt/public.pem"
