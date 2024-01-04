@@ -82,7 +82,7 @@ class AppointmentRepository extends ServiceEntityRepository
     public function getMostPopularSlot($limit = 1)
     {
         $qb = $this->createQueryBuilder('appointment')
-            ->select("date_format(appointment.datetime, 'YYYY-MM-DD HH24:MI') AS appointment_time")
+            ->select("date_format(appointment.datetime, 'YYYY-MM-DD HH24:MI TZH:TZM') AS appointment_time")
             ->andWhere("appointment.status = 'valid'")
             ->groupBy('appointment_time')
             ->orderBy('COUNT(appointment.id)', 'DESC')
