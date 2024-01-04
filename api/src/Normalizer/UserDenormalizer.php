@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Normalizer;
 
 use App\Entity\User;
+use App\Enum\RolesEnum;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -35,6 +36,11 @@ class UserDenormalizer implements DenormalizerInterface
 
         $user->setPassword($hashedPassword);
         $user->eraseCredentials();
+
+
+        if ($user->file !== null) {
+            $user->setRoles([RolesEnum::PROVIDER_TO_VALIDATE]);
+        }
 
         return $user;
     }

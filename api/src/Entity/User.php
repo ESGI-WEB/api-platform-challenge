@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -19,11 +20,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
+#[Vich\Uploadable]
 #[ApiResource(
     operations: [
         new Get(
@@ -42,6 +46,11 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Post(
             denormalizationContext: ['groups' => [GroupsEnum::USER_WRITE->value, GroupsEnum::USER_CREATE->value]],
             validationContext: ['groups' => [GroupsEnum::USER_CREATE->value]],
+        ),
+        new Post(
+            uriTemplate: "/users/provider",
+            inputFormats: ['multipart' => ['multipart/form-data']],
+            denormalizationContext: ['groups' => [GroupsEnum::USER_WRITE->value, GroupsEnum::USER_CREATE->value, GroupsEnum::USER_CREATE_PROVIDER->value]],
         ),
         new Put(
             denormalizationContext: ['groups' => [GroupsEnum::USER_WRITE->value]],
@@ -125,6 +134,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[Groups([GroupsEnum::USER_READ->value])]
     private int $countOrganisations = 0;
+
+    #[Vich\UploadableField(mapping: 'kbis', fileNameProperty: 'filePath')]
+    #[Groups([GroupsEnum::USER_CREATE_PROVIDER->value])]
+    public ?File $file = null;
+
+    #[ORM\Column(nullable: true)]
+    public ?string $filePath = null;
+
+    #[ApiProperty(types: ['https://schema.org/contentUrl'])]
+    #[Groups([GroupsEnum::USER_READ->value])]
+    public ?string $contentUrl = null;
 
     public function __construct()
     {
