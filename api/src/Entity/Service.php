@@ -22,9 +22,12 @@ use ApiPlatform\Metadata\Post;
     operations: [
         new Get(),
         new GetCollection(),
+        new Post()
     ],
     normalizationContext: ['groups' => [GroupsEnum::SERVICE_READ->value]],
+    denormalizationContext: ['groups' => [GroupsEnum::SERVICE_WRITE->value]]
 )]
+
 #[ORM\Entity(repositoryClass: ServiceRepository::class)]
 class Service
 {
@@ -34,15 +37,15 @@ class Service
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups([GroupsEnum::SERVICE_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
+    #[Groups([GroupsEnum::SERVICE_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value, GroupsEnum::SERVICE_WRITE->value])]
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
-    #[Groups([GroupsEnum::SERVICE_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
+    #[Groups([GroupsEnum::SERVICE_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value, GroupsEnum::SERVICE_WRITE->value])]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
-    #[Groups([GroupsEnum::SERVICE_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
+    #[Groups([GroupsEnum::SERVICE_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value, GroupsEnum::SERVICE_WRITE->value])]
     #[ORM\ManyToOne(inversedBy: 'services')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Organisation $organisation = null;

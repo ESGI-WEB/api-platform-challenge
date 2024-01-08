@@ -124,6 +124,11 @@ h4 {
     width: 100%;
 }
 
+.space-between {
+    justify-content: space-between;
+
+}
+
 .flex-1 {
     flex: 1;
 }
