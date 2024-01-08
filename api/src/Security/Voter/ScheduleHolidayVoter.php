@@ -20,6 +20,7 @@ class ScheduleHolidayVoter extends Voter
     public const VIEW_FOR_USER = 'VIEW_FOR_USER';
     public const CREATE = 'CREATE';
     public const EDIT = 'EDIT';
+    public const DELETE = 'DELETE';
 
     private Security $security;
     private RequestStack $requestStack;
@@ -32,7 +33,7 @@ class ScheduleHolidayVoter extends Voter
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        return in_array($attribute, [self::VIEW_FOR_ORGANISATION, self::VIEW_FOR_USER, self::CREATE, self::EDIT])
+        return in_array($attribute, [self::VIEW_FOR_ORGANISATION, self::VIEW_FOR_USER, self::CREATE, self::EDIT, self::DELETE])
             && ($subject instanceof Schedule || $subject instanceof Holiday || $subject instanceof AbstractPaginator);
     }
 
@@ -51,7 +52,7 @@ class ScheduleHolidayVoter extends Voter
         return match ($attribute) {
             self::VIEW_FOR_ORGANISATION => $this->canViewOrganisationSchedules($user),
             self::VIEW_FOR_USER => $this->canViewUserSchedules($user),
-            self::CREATE, self::EDIT => $this->canCreateOrEditSchedule($subject, $user),
+            self::CREATE, self::EDIT, self::DELETE => $this->canCreateOrEditOrDeleteSchedule($subject, $user),
             default => false,
         };
     }
@@ -72,7 +73,7 @@ class ScheduleHolidayVoter extends Voter
         return $isQueryingForHimself || $this->security->isGranted(RolesEnum::PROVIDER->value, $user);
     }
 
-    private function canCreateOrEditSchedule($subject, User $user): bool
+    private function canCreateOrEditOrDeleteSchedule($subject, User $user): bool
     {
         if (!$subject instanceof Schedule && !$subject instanceof Holiday) {
             return false;

@@ -10,6 +10,9 @@ const useServiceService = () => {
             method: 'POST',
             body: body,
         }),
+        getServicesNames: () => api('names/services', {
+            method: 'GET',
+        }),
     };
 };
 

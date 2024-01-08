@@ -14,14 +14,17 @@ import Modal from "../components/Modal/Modal.jsx";
 import LoadableButton from "../components/LoadableButton/LoadableButton.jsx";
 import {useTranslation} from "react-i18next";
 import OrganisationLocation from "../components/OrganisationLocation.jsx";
-import useAuth, {Roles} from "../auth/useAuth.js";
 import CreateServiceModal from "../components/CreateServiceModal.jsx";
 import {Tag} from "@codegouvfr/react-dsfr/Tag.js";
+import useAuth, {Roles} from "../auth/useAuth.js";
+import CalendarItem from "../components/Calendar/CalendarItem.jsx";
+import CalendarHeaderDate from "../components/Calendar/CalendarHeaderDate.jsx";
 
 export default function Organisation() {
     const {organisationId} = useParams();
     const organisationSrv = useOrganisationService();
     const appointmentService = useAppointmentService();
+    const [isUserProvider, setIsUserProvider] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [isErrored, setIsErrored] = useState(false);
@@ -33,6 +36,7 @@ export default function Organisation() {
     const [selectedSlotProvider, setSelectedSlotProvider] = useState(null);
     const navigate = useNavigate();
     const {data} = useAuth();
+    const {t,i18n} = useTranslation();
 
     const loadService = () => {
         setIsLoading(true);
@@ -43,6 +47,7 @@ export default function Organisation() {
         ]).then(([organisation, slots]) => {
             setOrganisation(organisation);
             setSlots(slots);
+            setIsUserProvider(data.roles.includes(Roles.PROVIDER) && organisation.users.some((provider) => provider.id === data.id));
         }).catch((e) => {
             console.error(e);
             setIsErrored(true);
@@ -106,13 +111,9 @@ export default function Organisation() {
         return data.roles.includes(Roles.PROVIDER) && userIds.includes(data.id);
     };
 
-    const {t} = useTranslation();
-
     useEffect(() => {
-        if (organisation === null || slots.length <= 0) {
-            loadService();
-        }
-    }, []);
+        loadService();
+    }, [organisationId]);
 
     if (isErrored) {
         return <InPageAlert alert={{severity: AlertSeverity.ERROR, closable: false}}/>;
@@ -128,7 +129,18 @@ export default function Organisation() {
                 <h1>{organisation.name}</h1>
                 {isUserAuthorized() && <CreateServiceModal onServiceCreated={handleOnServiceCreated} organisationId={organisation.id}></CreateServiceModal>}
             </div>
-                {(organisation.services.length <= 0 || slots.length <= 0) &&
+                {isUserProvider &&
+                <div>
+                    <Button
+                        iconId="ri-calendar-line"
+                        onClick={() => navigate(`/appointments?organisation=${organisationId}`)}
+                    >
+                        Voir les rendez-vous de ce commissariat
+                    </Button>
+                </div>
+            }
+
+            {(organisation.services.length <= 0 || slots.length <= 0) &&
                   <>
                       <div className="flex flex-wrap gap-1">
                           {organisation.services.length > 0 && organisation.services.map((service) =>
@@ -181,6 +193,8 @@ export default function Organisation() {
                         <>
                             <p className="margin-0">{selectedService.description}</p>
                             <Calendar
+                                calendarDateHeader={CalendarHeaderDate}
+                                calendarItem={CalendarItem}
                                 data={slots}
                                 onDateClick={(slot) => handleSlotSelection(slot)}
                             ></Calendar>
@@ -198,7 +212,7 @@ export default function Organisation() {
             >
                 <div className="flex flex-column gap-2">
                     <p className="margin-0">{
-                        new Date(selectedSlot.datetime).toLocaleDateString(undefined, {
+                        new Date(selectedSlot.datetime).toLocaleDateString(i18n.language, {
                             weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'
                         })
                     }</p>

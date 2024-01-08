@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use App\Enum\GroupsEnum;
+use App\Provider\ServicesNamesProvider;
 use App\Repository\ServiceRepository;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;

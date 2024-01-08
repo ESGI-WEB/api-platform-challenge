@@ -2,8 +2,11 @@
 
 namespace App\Repository;
 
+use App\Enum\RolesEnum;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -21,28 +24,33 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
-    //    /**
-    //     * @return User[] Returns an array of User objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('h')
-    //            ->andWhere('h.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('h.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    private function findEmployeesQuery(User $provider, array $order = ['by' => 'id', 'order' => 'ASC']): Query
+    {
+        $providerOrganisationIds = $provider->getOrganisations()->map(fn ($organisation) => $organisation->getId())->toArray();
+        return $this->createQueryBuilder('user')
+            ->join('user.organisations', 'organisation')
+            ->andWhere('user.id != :id')
+            ->setParameter('id', $provider->getId())
+            ->andWhere('organisation.id IN (:organisations)')
+            ->setParameter('organisations', $providerOrganisationIds)
+            ->andWhere('CAST(user.roles AS string) LIKE :role_employee')
+            ->setParameter('role_employee', '%' . RolesEnum::EMPLOYEE->value . '%')
+            ->andWhere('CAST(user.roles AS string) NOT LIKE :role_provider')
+            ->setParameter('role_provider', '%' . RolesEnum::PROVIDER->value . '%')
+            ->orderBy('user.' . $order['by'], $order['order'])
+            ->getQuery();
+    }
 
-    //    public function findOneBySomeField($value): ?User
-    //    {
-    //        return $this->createQueryBuilder('h')
-    //            ->andWhere('h.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function findEmployees(User $provider, array $order = ['by' => 'id', 'order' => 'ASC']): array
+    {
+        return $this->findEmployeesQuery($provider, $order)->getResult();
+    }
+
+    public function findEmployeesPaginated(User $provider, int $page = 1, int $limit = 10, array $order = ['by' => 'id', 'order' => 'ASC']): Paginator
+    {
+        $query = $this->findEmployeesQuery($provider, $order);
+        $query->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit);
+        return new Paginator($query);
+    }
 }

@@ -54,6 +54,6 @@ class OrganisationVoter extends Voter
     private function canUserReadOrganisations(User $user): bool
     {
         $userQueried = intval($this->requestStack->getCurrentRequest()->attributes->get('user_id'));
-        return $this->security->isGranted(RolesEnum::PROVIDER->value) && $user->getId() === $userQueried;
+        return $this->security->isGranted(RolesEnum::EMPLOYEE->value) && $user->getId() === $userQueried;
     }
 }

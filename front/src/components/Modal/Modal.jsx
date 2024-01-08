@@ -2,8 +2,7 @@ import Button from "@codegouvfr/react-dsfr/Button.js";
 import './modal.css';
 
 const Modal = ({
-                   onClose = () => {
-                   },
+                   onClose = void 0,
                    title = '',
                    children,
                }) => {

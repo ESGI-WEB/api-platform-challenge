@@ -1,30 +1,34 @@
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
 import useAppointmentService from "../services/useAppoitmentService.js";
 import PageLoader from "../components/PageLoader/PageLoader.jsx";
 import {useTranslation} from "react-i18next";
-import Badge from "@codegouvfr/react-dsfr/Badge.js";
-import AppointmentStatusBadge, {AppointmentStatus} from "../components/AppointmentStatusBadge.jsx";
+import {AppointmentStatus} from "../components/AppointmentStatusBadge.jsx";
 import LoadableButton from "../components/LoadableButton/LoadableButton.jsx";
 import useAuth, {Roles} from "../auth/useAuth.js";
 import CallOut from "@codegouvfr/react-dsfr/CallOut.js";
-import {Card} from "@codegouvfr/react-dsfr/Card";
 import {ToggleButton, ToggleButtonGroup} from "@mui/material";
+import AppointmentCard from "../components/AppointmentCard.jsx";
+import Download from "@codegouvfr/react-dsfr/Download.js";
 
 export default function Appointments() {
-    const {t} = useTranslation();
+    const {t, i18n} = useTranslation();
     const navigate = useNavigate();
     const auth = useAuth();
     const [appointments, setAppointments] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isExporting, setIsExporting] = useState(false);
     const page = useRef(1);
     const [hasNextPage, setHasNextPage] = useState(true);
     const appointmentService = useAppointmentService();
+    const isUserEmployee = auth.data.roles.includes(Roles.EMPLOYEE);
     const isUserProvider = auth.data.roles.includes(Roles.PROVIDER);
     const filters = useRef(['future']);
+    const {search} = useLocation();
+    const params = new URLSearchParams(search);
+    const organisationId = params.get('organisation') || null;
 
-    const loadAppointments = () => {
-        setIsLoading(true);
+    const getParsedFilters = () => {
         const parsedFilters = {
             'order[datetime]': 'asc',
         };
@@ -41,10 +45,21 @@ export default function Appointments() {
                     break;
             }
         });
+        return parsedFilters;
+    }
+    const loadAppointments = () => {
+        setIsLoading(true);
 
-        const promise = isUserProvider ?
-            appointmentService.getProviderAppointments(page.current, parsedFilters) :
-            appointmentService.getClientAppointments(page.current, parsedFilters)
+        let promise;
+        if (isUserEmployee) {
+            if (isUserProvider && organisationId) {
+                promise = appointmentService.getOrganisationAppointments(page.current, organisationId, getParsedFilters());
+            } else {
+                promise = appointmentService.getProviderAppointments(page.current, getParsedFilters());
+            }
+        } else {
+            promise = appointmentService.getClientAppointments(page.current, getParsedFilters());
+        }
 
         promise.then((response) => {
             if (page.current === 1) {
@@ -64,8 +79,24 @@ export default function Appointments() {
             });
     }
 
+    const exportAppointments = () => {
+        setIsExporting(true);
+        let promise;
+        if (isUserEmployee) {
+            if (isUserProvider && organisationId) {
+                promise = appointmentService.exportOrganisationAppointments(organisationId, getParsedFilters());
+            } else {
+                promise = appointmentService.exportProviderAppointments(getParsedFilters());
+            }
+        } else {
+            promise = appointmentService.exportClientAppointments(getParsedFilters());
+        }
+        promise.finally(() => {
+            setIsExporting(false);
+        });
+    }
+
     const handleFilters = (event, newFilters) => {
-        console.log(newFilters)
         page.current = 1;
         filters.current = newFilters;
         setAppointments([]);
@@ -79,7 +110,16 @@ export default function Appointments() {
 
     return (
         <>
-            <h1>{t('your_appointments')}</h1>
+            <div className="flex gap-2 space-between">
+                <h1>{organisationId ? t('organisation_appointments') : t('your_appointments')}</h1>
+
+                {appointments.length > 0 &&
+                    <LoadableButton isLoading={isExporting} onClick={exportAppointments} className="height-fit-content">
+                        <i className="fr-icon-download-line"></i>
+                    </LoadableButton>
+                }
+            </div>
+
             <ToggleButtonGroup
                 className="fr-mb-5v"
                 value={filters.current}
@@ -96,38 +136,7 @@ export default function Appointments() {
 
             {appointments.map((appointment) =>
                 <div key={appointment.id} className="fr-mb-5v">
-                    <Card
-                        background
-                        border
-                        enlargeLink={!isUserProvider}
-                        linkProps={{
-                            to: '/appointment/' + appointment.id,
-                        }}
-                        start={<ul className="fr-badges-group">
-                            <li><Badge>{appointment.service.title}</Badge></li>
-                            <li>
-                                <Badge severity="new">
-                                    {new Date(appointment.datetime).toLocaleDateString(undefined, {
-                                        weekday: 'long',
-                                        year: 'numeric',
-                                        month: 'long',
-                                        day: 'numeric',
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                    })}
-                                </Badge>
-                            </li>
-                        </ul>}
-                        desc={appointment.service.description}
-                        end={<ul className="fr-badges-group">
-                            <li><AppointmentStatusBadge status={appointment.status}/></li>
-                            {appointment.status === 'valid' && <li>
-                                {t('appointment_with', {
-                                    name: appointment.provider.firstname + ' ' + appointment.provider.lastname
-                                })}
-                            </li>}
-                        </ul>}
-                    />
+                    <AppointmentCard appointment={appointment} enlargeLink={!isUserEmployee}/>
                 </div>
             )}
 

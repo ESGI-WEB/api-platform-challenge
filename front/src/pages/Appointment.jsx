@@ -1,4 +1,4 @@
-import {useLocation, useParams} from "react-router-dom";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 import InPageAlert, {AlertSeverity} from "../components/InPageAlert.jsx";
 import {useEffect, useState} from "react";
 import useAppointmentService from "../services/useAppoitmentService.js";
@@ -8,6 +8,7 @@ import Badge from "@codegouvfr/react-dsfr/Badge.js";
 import OrganisationLocation from "../components/OrganisationLocation.jsx";
 import AppointmentStatusBadge, {AppointmentStatus} from "../components/AppointmentStatusBadge.jsx";
 import LoadableButton from "../components/LoadableButton/LoadableButton.jsx";
+import RescheduleAppointment from "../components/RescheduleAppointment.jsx";
 
 export default function Appointment() {
     const {appointmentId} = useParams();
@@ -19,7 +20,9 @@ export default function Appointment() {
     const [pageAlert, setPageAlert] = useState(null);
     const [appointment, setAppointment] = useState(null);
     const appointmentService = useAppointmentService();
-    const {t} = useTranslation();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const {t, i18n} = useTranslation();
     const successCreatedAppointementAlert = {
         title: t('appointment_success_title'),
         severity: AlertSeverity.SUCCESS,
@@ -63,12 +66,16 @@ export default function Appointment() {
             });
     }
 
+    const onNewAppointmentSaved = (appointment) => {
+        navigate(`/appointment/${appointment.id}?display=success`);
+    }
+
     useEffect(() => {
         if (display === 'success') {
             setPageAlert(successCreatedAppointementAlert);
         }
-        !appointment && loadAppointment();
-    }, []);
+        loadAppointment();
+    }, [location]);
 
     return (
         <>
@@ -79,14 +86,14 @@ export default function Appointment() {
             />}
             <PageLoader isLoading={isLoading}/>
 
-            {appointment && <>
+            {appointment && !isLoading && <>
                 <h4><i className="ri-chat-3-line"></i> {t('your_asked_service')}</h4>
                 <div className="flex flex-wrap-reverse gap-1 fr-mb-5v">
                     <Badge>{appointment.service.title}</Badge>
                     <Badge noIcon severity="new">
                         <span>
                             {t('appointment_date', {
-                                date: new Date(appointment.datetime).toLocaleDateString(undefined, {
+                                date: new Date(appointment.datetime).toLocaleDateString(i18n.language, {
                                     day: 'numeric',
                                     month: 'long',
                                     year: 'numeric',
@@ -122,14 +129,34 @@ export default function Appointment() {
                 <h4><i className="ri-map-pin-2-line"></i> {t('police_station_address')}</h4>
                 <OrganisationLocation organisation={appointment.service.organisation}/>
 
-                <div className="fr-mt-5v">
-                    {appointment.status === 'valid' &&
+                <div className="fr-mt-5v flex flex-wrap gap-2">
+                    {appointment.status === 'valid' && new Date(appointment.datetime) > new Date() && <>
+                        <RescheduleAppointment
+                            title={t('shift_appointment')}
+                            organisation={appointment.service.organisation}
+                            service={appointment.service}
+                            provider={appointment.provider}
+                            onSaved={(appointment) => onNewAppointmentSaved(appointment)}
+                            cancelBaseAppointment={true}
+                            baseAppointmentId={appointment.id}
+                        />
                         <LoadableButton isLoading={isCancelling} onClick={cancelAppointment} priority="secondary">
                             {t('cancel_appointment')}
                         </LoadableButton>
+                    </>}
+                    {(new Date(appointment.datetime) < new Date() || appointment.status !== AppointmentStatus.VALID) &&
+                        <RescheduleAppointment
+                            priority="secondary"
+                            organisation={appointment.service.organisation}
+                            service={appointment.service}
+                            provider={appointment.provider}
+                            onSaved={(appointment) => onNewAppointmentSaved(appointment)}
+                        />
                     }
                 </div>
             </>}
+
+
         </>
     );
 };

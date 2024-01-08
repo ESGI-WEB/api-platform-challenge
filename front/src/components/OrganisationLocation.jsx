@@ -1,6 +1,6 @@
-import {MapContainer, Marker, TileLayer} from "react-leaflet";
-import ChangeView from "./ChangeView.jsx";
 import OrganisationAddress from "./OrganisationAddress.jsx";
+import Map from "./Map.jsx";
+import PinMarker from "./PinMarker.jsx";
 
 export default function OrganisationLocation({
     organisation,
@@ -16,16 +16,13 @@ export default function OrganisationLocation({
 
     return (
         <div className="flex flex-wrap gap-2">
-            <MapContainer center={[organisation.latitude, organisation.longitude]} zoom={zoom}
-                          className={className}
+            <Map
+                center={[organisation.latitude, organisation.longitude]}
+                zoom={zoom}
+                className={className}
             >
-                <ChangeView center={[organisation.latitude, organisation.longitude]} zoom={zoom}/>
-                <TileLayer
-                    attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                <Marker position={[organisation.latitude, organisation.longitude]}/>
-            </MapContainer>
+                <PinMarker position={[organisation.latitude, organisation.longitude]}/>
+            </Map>
             <div>
                 <OrganisationAddress organisation={organisation}/>
             </div>

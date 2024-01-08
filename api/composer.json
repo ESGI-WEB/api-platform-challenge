@@ -8,15 +8,18 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "api-platform/core": "^3.1",
+        "beberlei/doctrineextensions": "dev-master",
         "doctrine/doctrine-bundle": "^2.10",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.16",
         "hautelook/alice-bundle": "^2.12",
         "lexik/jwt-authentication-bundle": "^2.19",
         "nelmio/cors-bundle": "^2.3",
+        "oro/doctrine-extensions": "^2.0",
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpstan/phpdoc-parser": "^1.24",
         "ramsey/uuid-doctrine": "^2.0",
+        "symfony/apache-pack": "^1.0",
         "symfony/asset": "6.3.*",
         "symfony/console": "6.3.*",
         "symfony/dotenv": "6.3.*",
@@ -74,6 +77,10 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "compile": [
+            "php bin/console doctrine:migrations:migrate --no-interaction",
+            "php bin/console lexik:jwt:generate-keypair --overwrite --quiet --env prod"
         ]
     },
     "conflict": {

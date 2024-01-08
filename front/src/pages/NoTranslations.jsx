@@ -1,9 +1,12 @@
 import Button from "@codegouvfr/react-dsfr/Button.js";
+import {useNavigate} from "react-router-dom";
 
 export default function NoTranslations() {
-    const refreshPage = () => {
-        window.location.reload();
-    };
+    const navigate = useNavigate();
+
+    const goHome = () => {
+        navigate('/');
+    }
 
     return (
         <div className="no-translations">
@@ -14,7 +17,7 @@ export default function NoTranslations() {
             <p className='margin-0'><strong>An error occurred !</strong> Try refreshing the page or come back later.</p>
             <p>If the issue persists, please contact us or visit the nearest police station. <strong>In case of emergency, call
                 17 (police number) or 112 (European emergency number).</strong></p>
-            <Button onClick={refreshPage}>Rafraîchir la page / Refresh page</Button>
+            <Button onClick={goHome}>Retour à l'accueil / Back to home</Button>
         </div>
     );
 };

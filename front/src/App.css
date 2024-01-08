@@ -50,12 +50,40 @@
     justify-content: space-between;
 }
 
+.height-fit-content {
+    height: fit-content;
+}
+
 .gap-1 {
     gap: 0.4rem;
 }
 
 .gap-2 {
     gap: 1.2rem;
+}
+
+.gap-3 {
+    gap: 1.6rem;
+}
+
+.column-gap-1 {
+    column-gap: 0.4rem;
+}
+
+.column-gap-2 {
+    column-gap: 1.2rem;
+}
+
+.row-gap-1 {
+    row-gap: 0.4rem;
+}
+
+.row-gap-2 {
+    row-gap: 1.2rem;
+}
+
+.column-gap-2-percent {
+    column-gap: 2%;
 }
 
 .centered {
@@ -74,8 +102,8 @@
 }
 
 .large-map {
-    width: 500px;
-    height: 300px;
+    width: 100%;
+    height: 70vh;
     z-index: 1;
     --underline-img: none;
 }
@@ -99,4 +127,16 @@ h4 {
 .space-between {
     justify-content: space-between;
 
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+.align-start {
+    align-items: flex-start;
+}
+
+.force-input-hidden input, input.force-input-hidden {
+    opacity: 0;
 }

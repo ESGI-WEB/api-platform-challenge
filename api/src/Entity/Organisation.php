@@ -2,10 +2,16 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use App\Enum\GroupsEnum;
+use App\Filter\SearchMultiFieldsFilter;
+use App\Provider\AppointmentListProvider;
 use App\Repository\OrganisationRepository;
+use App\Security\Voter\AppointmentVoter;
 use App\Security\Voter\OrganisationVoter;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -46,9 +52,20 @@ use Symfony\Component\Validator\Constraints as Assert;
     normalizationContext: ['groups' => [GroupsEnum::ORGANISATION_READ_DETAILED->value]],
 )]
 #[ORM\Entity(repositoryClass: OrganisationRepository::class)]
+#[ApiFilter(RangeFilter::class, properties: ['latitude', 'longitude'])]
+#[ApiFilter(SearchFilter::class, properties: ['services.title' => 'exact'])]
+#[ApiFilter(SearchMultiFieldsFilter::class,
+    properties: [
+        'name',
+        'services.title',
+        'address',
+        'zipcode',
+        'city',
+    ],
+)]
 class Organisation
 {
-    #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
+    #[Groups([GroupsEnum::ORGANISATION_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -58,7 +75,7 @@ class Organisation
     private ?string $uuid = null;
 
     #[Groups([
-        GroupsEnum::ORGANISATION_READ_DETAILED->value,
+        GroupsEnum::ORGANISATION_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value,
         GroupsEnum::APPOINTMENT_READ_DETAILED->value,
         GroupsEnum::ORGANISATION_UPDATE->value
     ])]
@@ -68,7 +85,7 @@ class Organisation
     private ?string $name = null;
 
     #[Groups([
-        GroupsEnum::ORGANISATION_READ_DETAILED->value,
+        GroupsEnum::ORGANISATION_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value,
         GroupsEnum::APPOINTMENT_READ_DETAILED->value,
         GroupsEnum::ORGANISATION_UPDATE->value
     ])]
@@ -78,7 +95,7 @@ class Organisation
     private ?string $latitude = null;
 
     #[Groups([
-        GroupsEnum::ORGANISATION_READ_DETAILED->value,
+        GroupsEnum::ORGANISATION_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value,
         GroupsEnum::APPOINTMENT_READ_DETAILED->value,
         GroupsEnum::ORGANISATION_UPDATE->value
     ])]
@@ -87,7 +104,9 @@ class Organisation
     #[ORM\Column(type: Types::DECIMAL, precision: 20, scale: 16)]
     private ?string $longitude = null;
 
-    #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value])]
+    #[Groups([
+        GroupsEnum::ORGANISATION_READ_DETAILED_LOGGED->value,
+    ])]
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'organisations')]
     private Collection $users;
 
@@ -105,7 +124,7 @@ class Organisation
     private Collection $holidays;
 
     #[Groups([
-        GroupsEnum::ORGANISATION_READ_DETAILED->value,
+        GroupsEnum::ORGANISATION_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value,
         GroupsEnum::APPOINTMENT_READ_DETAILED->value,
         GroupsEnum::ORGANISATION_UPDATE->value
     ])]
@@ -115,7 +134,7 @@ class Organisation
     private ?string $address = null;
 
     #[Groups([
-        GroupsEnum::ORGANISATION_READ_DETAILED->value,
+        GroupsEnum::ORGANISATION_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value,
         GroupsEnum::APPOINTMENT_READ_DETAILED->value,
         GroupsEnum::ORGANISATION_UPDATE->value
     ])]
@@ -125,7 +144,7 @@ class Organisation
     private ?string $zipcode = null;
 
     #[Groups([
-        GroupsEnum::ORGANISATION_READ_DETAILED->value,
+        GroupsEnum::ORGANISATION_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value,
         GroupsEnum::APPOINTMENT_READ_DETAILED->value,
         GroupsEnum::ORGANISATION_UPDATE->value
     ])]
