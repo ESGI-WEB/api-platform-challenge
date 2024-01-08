@@ -13,6 +13,7 @@ enum GroupsEnum: string
     case ORGANISATION_READ_DETAILED = 'organisation:read:detailed';
     case ORGANISATION_UPDATE = 'organisation:update';
     case SERVICE_READ = 'service:read';
+    case SERVICE_WRITE = 'service:write';
     case SCHEDULE_WRITE = 'schedule:write';
     case SCHEDULE_READ = 'schedule:read';
     case HOLIDAY_WRITE = 'holiday:write';

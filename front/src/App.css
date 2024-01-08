@@ -95,3 +95,8 @@ h4 {
 .full-width {
     width: 100%;
 }
+
+.space-between {
+    justify-content: space-between;
+
+}

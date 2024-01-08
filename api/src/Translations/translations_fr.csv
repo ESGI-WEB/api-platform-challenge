@@ -39,6 +39,7 @@ fr,dont_hestitate_to_contact_us,"Nous vous prions de respecter ces consignes pou
 fr,appointment_with,"Vous aurez rendez-vous avec {{ name }}"
 fr,cancel_appointment,"Annuler le rendez-vous"
 fr,appointment_cancelled,"Rendez-vous annulé"
+fr,service_creation,"Créer un service"
 fr,service_created,"Service créé"
 fr,title,"Titre"
 fr,description,"Description"
@@ -54,3 +55,4 @@ fr,no_appointments_details,"Vous pouvez prendre rendez-vous en ligne en trouvant
 fr,only_future_appointments,"Rendez-vous futurs uniquement"
 fr,only_valid_appointments,"Rendez-vous valides uniquement"
 fr,select_language,"Sélectionnez une langue"
+fr,add_service,"Ajouter un service"

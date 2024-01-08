@@ -87,6 +87,7 @@ class Organisation
     #[ORM\Column(type: Types::DECIMAL, precision: 20, scale: 16)]
     private ?string $longitude = null;
 
+    #[Groups([GroupsEnum::ORGANISATION_READ_DETAILED->value])]
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'organisations')]
     private Collection $users;
 

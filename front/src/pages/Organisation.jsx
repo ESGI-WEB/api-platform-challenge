@@ -2,7 +2,6 @@ import {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import InPageAlert, {AlertSeverity} from "../components/InPageAlert.jsx";
 import useOrganisationService from "../services/useOrganisationService.js";
-import {MapContainer, Marker, TileLayer} from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
 import PageLoader from "../components/PageLoader/PageLoader.jsx";
 import Calendar from "../components/Calendar/Calendar.jsx";
@@ -15,6 +14,9 @@ import Modal from "../components/Modal/Modal.jsx";
 import LoadableButton from "../components/LoadableButton/LoadableButton.jsx";
 import {useTranslation} from "react-i18next";
 import OrganisationLocation from "../components/OrganisationLocation.jsx";
+import useAuth, {Roles} from "../auth/useAuth.js";
+import CreateServiceModal from "../components/CreateServiceModal.jsx";
+import {Tag} from "@codegouvfr/react-dsfr/Tag.js";
 
 export default function Organisation() {
     const {organisationId} = useParams();
@@ -30,6 +32,7 @@ export default function Organisation() {
     const [selectedSlot, setSelectedSlot] = useState(null);
     const [selectedSlotProvider, setSelectedSlotProvider] = useState(null);
     const navigate = useNavigate();
+    const {data} = useAuth();
 
     const loadService = () => {
         setIsLoading(true);
@@ -89,6 +92,20 @@ export default function Organisation() {
         });
     }
 
+    const handleOnServiceCreated = (service) => {
+        organisation.services.push(service)
+        setOrganisation({...organisation})
+    }
+
+    const isUserAuthorized = () => {
+        const userIds = [];
+
+        for (const user of organisation.users) {
+            userIds.push(user.id);
+        }
+        return data.roles.includes(Roles.PROVIDER) && userIds.includes(data.id);
+    };
+
     const {t} = useTranslation();
 
     useEffect(() => {
@@ -107,20 +124,32 @@ export default function Organisation() {
 
     return (
         <div className="flex flex-column gap-2">
-            <h1>{organisation.name}</h1>
+            <div className="flex space-between">
+                <h1>{organisation.name}</h1>
+                {isUserAuthorized() && <CreateServiceModal onServiceCreated={handleOnServiceCreated} organisationId={organisation.id}></CreateServiceModal>}
+            </div>
+                {(organisation.services.length <= 0 || slots.length <= 0) &&
+                  <>
+                      <div className="flex flex-wrap gap-1">
+                          {organisation.services.length > 0 && organisation.services.map((service) =>
+                            <Tag key={service.id}>{service.title}</Tag>
+                          )}
+                      </div>
 
-            {(organisation.services.length <= 0 || slots.length <= 0) &&
-                <CallOut
-                    buttonProps={{
-                        children: t('back'),
-                        onClick: () => navigate(-1),
-                    }}
-                    iconId="ri-calendar-close-fill"
-                    title={t('this_station_has_no_appointment')}
 
-                >
-                    {t('this_station_has_no_appointment_details')}
-                </CallOut>
+                        <CallOut
+                            buttonProps={{
+                                children: t('back'),
+                                onClick: () => navigate(-1),
+                            }}
+                            iconId="ri-calendar-close-fill"
+                            title={t('this_station_has_no_appointment')}
+
+                        >
+                            {t('this_station_has_no_appointment_details')}
+                        </CallOut>
+
+                  </>
             }
 
             {organisation.services.length > 0 && slots.length > 0 &&

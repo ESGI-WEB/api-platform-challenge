@@ -24,6 +24,9 @@ const useOrganisationService = () => {
         getCoordinatesFromAddress: (address, limit = 5) => fetch(
             `http://api-adresse.data.gouv.fr/search/?q=${address}&limit=${limit}`
         ).then(response => response.json()),
+        getURI(organisationId) {
+            return `api/organisations/${organisationId}`
+        }
     };
 };
 
