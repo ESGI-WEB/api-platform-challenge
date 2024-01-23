@@ -71,7 +71,9 @@ export default function CreateServiceModal({
               fullWidth
             />
             <LoadableButton type="submit" isLoading={isLoading}>{t('create_service')}</LoadableButton>
+            { message &&
             <div className="message">{message ? <p>{message}</p> : null}</div>
+            }
           </form>
         </Modal>
       }

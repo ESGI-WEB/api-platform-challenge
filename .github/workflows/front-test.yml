@@ -1,28 +1,24 @@
 name: Deploy Front To Vercel
 
-env:
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-
 on:
   push:
-    branches:
-      - main
     paths:
       - 'front/**'
-      - '.github/workflows/vercel-deploy.yml'
+      - '.github/workflows/front-test.yml'
 
 jobs:
-  deploy:
+  build-test:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./front
-    needs:
-      - build-test
-
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install Node.js # for cache
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
       - uses: pnpm/action-setup@v2
         with:
@@ -42,17 +38,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - name: Remove .env file
-        run: rm -f .env
-
-      - name: Install Vercel cli
-        run: npm i -g vercel@latest
-
-      - name: Get vercel environment
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_GITHUB_TOKEN }}
-
-      - name: Build Project Artifacts
-        run: vercel build --token=${{ secrets.VERCEL_GITHUB_TOKEN }} --prod
-
-      - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_GITHUB_TOKEN }} --prod
+      - run: pnpm install
+      - run: pnpm run build
+      - run: pnpm run preview &
+      - run: sleep 5
+      - name: Curl the server to test if everything is ok
+        run: curl -I http://localhost:4173
+      - run: pnpm cypress run --component
