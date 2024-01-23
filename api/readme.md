@@ -63,6 +63,14 @@ If make is not enabled :
 
 # create entity
 
+From your container run:
 ```shell
   php bin/console make:entity
+```
+
+# Testing
+
+From your container run:
+```shell
+  php bin/phpunit
 ```
