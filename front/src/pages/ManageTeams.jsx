@@ -12,6 +12,14 @@ export default function ManageTeams() {
     const [loading, setLoading] = useState(true);
     const [organisationPage, setOrganisationPage] = useState(1);
     const [hasNextPage, setHasNextPage] = useState(true);
+    const [employeeToAdd, setEmployeeToAdd] = useState("");
+
+    useEffect(() => {
+        if (employeeToAdd) {
+            //TODO check if employeeToAdd exists and if already in this organisation
+            console.log(employeeToAdd);
+        }
+    },[employeeToAdd]);
 
     const fetchOrganisations = () => {
         if (!hasNextPage) {
@@ -38,7 +46,7 @@ export default function ManageTeams() {
           <h1>{t('manage_teams')}</h1>
            <div className="my-1">
                {organisations.map(organisation =>
-                   <AccordionElement key={organisation.id} organisation={organisation}/>
+                   <AccordionElement key={organisation.id} organisation={organisation} employeeToAdd={setEmployeeToAdd}/>
                )}
            </div>
            {organisations.length > 0 && hasNextPage &&

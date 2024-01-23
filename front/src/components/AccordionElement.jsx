@@ -1,10 +1,10 @@
-import {useTranslation} from "react-i18next";
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import EmployeeList from "./EmployeeList.jsx";
-export default function AccordionElement({organisation}) {
+import AddEmployee from "./AddEmployee.jsx";
+export default function AccordionElement({organisation, employeeToAdd}) {
 
     return (
         <Accordion>
@@ -20,6 +20,7 @@ export default function AccordionElement({organisation}) {
             </AccordionSummary>
             <AccordionDetails>
                 <EmployeeList users={organisation.users}/>
+                <AddEmployee organisation={organisation} employeeToAdd={(email) => employeeToAdd(email)}/>
             </AccordionDetails>
         </Accordion>
     );
