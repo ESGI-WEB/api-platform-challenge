@@ -5,7 +5,7 @@ import {useTranslation} from "react-i18next";
 import {useState} from "react";
 import InPageAlert, {AlertSeverity} from "./InPageAlert.jsx";
 import Input from "@codegouvfr/react-dsfr/Input.js";
-import useServiceService from "../services/useServiceService.js";
+import useAppointmentReasonService from "../services/useAppointmentReasonService.js";
 import useOrganisationService from "../services/useOrganisationService.js";
 
 
@@ -17,7 +17,7 @@ export default function CreateServiceModal({
   const [description, setDescription] = useState("");
   const {t} = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const serviceService = useServiceService();
+  const appointmentReasonService = useAppointmentReasonService();
   const organisationService = useOrganisationService();
   const [message, setMessage] = useState("");
   const [alert, setAlert] = useState(null);
@@ -28,7 +28,7 @@ export default function CreateServiceModal({
     setIsLoading(true);
     setAlert(null);
 
-    serviceService.post({title, description, organisation:organisationService.getURI(organisationId)} ).then((response) => {
+    appointmentReasonService.post({title, description, organisation:organisationService.getURI(organisationId)} ).then((response) => {
       if (response) {
         onServiceCreated(response)
         setMessage(t('service_created'));
@@ -72,7 +72,7 @@ export default function CreateServiceModal({
             />
             <LoadableButton type="submit" isLoading={isLoading}>{t('create_service')}</LoadableButton>
             { message &&
-            <div className="message">{message ? <p>{message}</p> : null}</div>
+              <div className="message">{message ? <p>{message}</p> : null}</div>
             }
           </form>
         </Modal>

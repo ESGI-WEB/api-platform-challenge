@@ -103,12 +103,8 @@ export default function Organisation() {
     }
 
     const isUserAuthorized = () => {
-        const userIds = [];
-
-        for (const user of organisation.users) {
-            userIds.push(user.id);
-        }
-        return data.roles.includes(Roles.PROVIDER) && userIds.includes(data.id);
+        return data.roles.includes(Roles.PROVIDER) &&
+          organisation.users.some(user => user.id === data.id);
     };
 
     useEffect(() => {

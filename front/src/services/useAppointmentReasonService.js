@@ -1,6 +1,6 @@
 import useApi from './useApi';
 
-const useServiceService = () => {
+const useAppointmentReasonService = () => {
     const api = useApi();
     return {
         get: (id) => api(`services/${id}`, {
@@ -16,4 +16,4 @@ const useServiceService = () => {
     };
 };
 
-export default useServiceService;
+export default useAppointmentReasonService;
