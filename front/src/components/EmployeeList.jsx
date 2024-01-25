@@ -14,7 +14,7 @@ export default function EmployeeList({users}) {
                     key={user.id}
                     secondaryAction={
                         <IconButton edge="end" aria-label="delete">
-                            supprimer
+                            <span className="fr-icon-delete-fill" aria-hidden="true"></span>
                         </IconButton>
                     }
                 >

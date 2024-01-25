@@ -7,26 +7,28 @@ import AccordionElement from "../components/AccordionElement.jsx";
 
 export default function ManageTeams() {
     const {t} = useTranslation();
-    const OrganisationService = useOrganisationService();
+    const organisationService = useOrganisationService();
     const [organisations, setOrganisations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [organisationPage, setOrganisationPage] = useState(1);
     const [hasNextPage, setHasNextPage] = useState(true);
-    const [employeeToAdd, setEmployeeToAdd] = useState("");
 
-    useEffect(() => {
-        if (employeeToAdd) {
-            //TODO check if employeeToAdd exists and if already in this organisation
-            console.log(employeeToAdd);
+    const handleClickAddEmployee = (employeeEmail, organisationId) => {
+        const emailUser = {
+            email : employeeEmail
         }
-    },[employeeToAdd]);
+        organisationService.addUserToOrganisation(organisationId, emailUser)
+            .then((response) => {
+            console.log(response);
+        })
+    }
 
     const fetchOrganisations = () => {
         if (!hasNextPage) {
             return;
         }
         setLoading(true);
-        OrganisationService.providersOrganisations(organisationPage).then((response) => {
+        organisationService.providersOrganisations(organisationPage).then((response) => {
             setOrganisations([...organisations, ...response['hydra:member']]);
             setOrganisationPage(organisationPage + 1);
             setHasNextPage(!!response['hydra:view']['hydra:next']);
@@ -46,7 +48,7 @@ export default function ManageTeams() {
           <h1>{t('manage_teams')}</h1>
            <div className="my-1">
                {organisations.map(organisation =>
-                   <AccordionElement key={organisation.id} organisation={organisation} employeeToAdd={setEmployeeToAdd}/>
+                   <AccordionElement key={organisation.id} organisation={organisation} handleClickAddEmployee={handleClickAddEmployee}/>
                )}
            </div>
            {organisations.length > 0 && hasNextPage &&

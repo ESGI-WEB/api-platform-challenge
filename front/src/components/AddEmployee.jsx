@@ -1,21 +1,21 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Divider from "@mui/material/Divider";
 
-export default function AddEmployee({ organisation, employeeToAdd }) {
+export default function AddEmployee({ organisation, handleClickAddEmployee }) {
     const { t } = useTranslation();
     const [employeeEmail, setEmployeeEmail] = useState("");
 
-    const handleAddEmployee = () => {
+    const handleClickButton = () => {
         if (!employeeEmail) {
             return;
         }
-        employeeToAdd(employeeEmail);
+        handleClickAddEmployee(employeeEmail, organisation.id);
         setEmployeeEmail("");
-    }
+    };
 
     return (
         <div className="p-1">
@@ -30,7 +30,7 @@ export default function AddEmployee({ organisation, employeeToAdd }) {
                     value={employeeEmail}
                     onChange={(e) => setEmployeeEmail(e.target.value)}
                 />
-                <Button color="primary" onClick={handleAddEmployee}>
+                <Button color="primary" onClick={() => handleClickButton(employeeEmail, organisation.id)}>
                     {t("add")}
                 </Button>
             </div>

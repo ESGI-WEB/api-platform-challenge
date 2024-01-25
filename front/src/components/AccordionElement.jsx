@@ -4,12 +4,12 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import EmployeeList from "./EmployeeList.jsx";
 import AddEmployee from "./AddEmployee.jsx";
-export default function AccordionElement({organisation, employeeToAdd}) {
+export default function AccordionElement({organisation, handleClickAddEmployee}) {
 
     return (
         <Accordion>
             <AccordionSummary
-                expandIcon={<span className="fr-fi-arrow-right-line"/>}
+                expandIcon={<span className="fr-icon-arrow-down-s-line" aria-hidden="true"></span>}
                 aria-controls="panel1bh-content"
                 id="panel1bh-header"
             >
@@ -20,7 +20,7 @@ export default function AccordionElement({organisation, employeeToAdd}) {
             </AccordionSummary>
             <AccordionDetails>
                 <EmployeeList users={organisation.users}/>
-                <AddEmployee organisation={organisation} employeeToAdd={(email) => employeeToAdd(email)}/>
+                <AddEmployee organisation={organisation} handleClickAddEmployee={handleClickAddEmployee}/>
             </AccordionDetails>
         </Accordion>
     );

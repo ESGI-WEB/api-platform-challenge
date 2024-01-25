@@ -100,7 +100,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 class TeamsController extends AbstractController
 {
     public function __construct(
-        private readonly UserRepository      $userRepository,
+        private readonly UserRepository $userRepository,
         private readonly SerializerInterface $serializer,
     ) {}
 
