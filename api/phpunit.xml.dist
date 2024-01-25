@@ -12,6 +12,7 @@
   <testsuites>
     <testsuite name="Project Test Suite">
       <directory>tests</directory>
+      <exclude>tests/AbstractTest.php</exclude>
     </testsuite>
   </testsuites>
   <coverage/>

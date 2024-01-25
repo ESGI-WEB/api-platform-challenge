@@ -9,6 +9,6 @@ final class DefaultOrganisationsStory extends Story
 {
     public function build(): void
     {
-        OrganisationFactory::createMany(10);
+        OrganisationFactory::createMany(100);
     }
 }
