@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Post;
 use App\Entity\Organisation;
 use App\Entity\User;
@@ -27,7 +28,7 @@ use Symfony\Component\Serializer\SerializerInterface;
     openapiContext: [
         'denormalization_context' => ['groups' => GroupsEnum::TEAMS_READ_USER_DETAILED->value],
         'summary' => 'Add user to an organisation',
-        'tags' => ['Teams'],
+        'tags' => ['Organisation'],
         'parameters' => [
             [
                 'name' => 'organisation_id',
@@ -55,13 +56,13 @@ use Symfony\Component\Serializer\SerializerInterface;
         ],
     ],
 )]
-#[Post(
+#[Delete(
     routePrefix: '/organisations/{organisation_id}/user/{user_id}/remove_user',
     routeName: 'remove_user_from_organisation',
     openapiContext: [
         'denormalization_context' => ['groups' => GroupsEnum::TEAMS_READ_USER_DETAILED->value],
         'summary' => 'Remove user from an organisation',
-        'tags' => ['Teams'],
+        'tags' => ['Organisation'],
         'parameters' => [
             [
                 'name' => 'organisation_id',
