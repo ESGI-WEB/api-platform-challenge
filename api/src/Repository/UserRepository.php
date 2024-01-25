@@ -53,4 +53,15 @@ class UserRepository extends ServiceEntityRepository
             ->setMaxResults($limit);
         return new Paginator($query);
     }
+
+    public function findEmployeeByEmail(string $email): ?User
+    {
+        return $this->createQueryBuilder('user')
+            ->andWhere('user.email = :email')
+            ->setParameter('email', $email)
+            ->andWhere('CAST(user.roles AS string) LIKE :role_employee')
+            ->setParameter('role_employee', '%' . RolesEnum::EMPLOYEE->value . '%')
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }
