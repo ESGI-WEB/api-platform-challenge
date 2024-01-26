@@ -1,11 +1,12 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { useTranslation } from "react-i18next";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
-import Button from "@codegouvfr/react-dsfr/Button";
 import Divider from "@mui/material/Divider";
+import InPageAlert from "./InPageAlert.jsx";
+import LoadableButton from "./LoadableButton/LoadableButton.jsx";
 
-export default function AddEmployee({ organisation, handleClickAddEmployee }) {
+export default function AddEmployee({ organisation, handleClickAddEmployee, error, isAddEmployeeLoading }) {
     const { t } = useTranslation();
     const [employeeEmail, setEmployeeEmail] = useState("");
 
@@ -30,10 +31,17 @@ export default function AddEmployee({ organisation, handleClickAddEmployee }) {
                     value={employeeEmail}
                     onChange={(e) => setEmployeeEmail(e.target.value)}
                 />
-                <Button color="primary" onClick={() => handleClickButton(employeeEmail, organisation.id)}>
-                    {t("add")}
-                </Button>
+                <LoadableButton isLoading={isAddEmployeeLoading} onClick={() => handleClickButton(employeeEmail, organisation.id)}>
+                    {t('add')}
+                </LoadableButton>
             </div>
+            {error &&
+                <InPageAlert alert={{
+                    title: "Erreur",
+                    description: error,
+                    severity: 'error',
+                }} />
+            }
         </div>
     );
 }

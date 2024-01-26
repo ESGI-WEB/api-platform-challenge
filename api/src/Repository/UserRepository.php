@@ -61,6 +61,7 @@ class UserRepository extends ServiceEntityRepository
             ->setParameter('email', $email)
             ->andWhere('CAST(user.roles AS string) LIKE :role_employee OR CAST(user.roles AS string) LIKE :role_provider')
             ->setParameter('role_employee', '%' . RolesEnum::EMPLOYEE->value . '%')
+            ->setParameter('role_provider', '%' . RolesEnum::PROVIDER->value . '%')
             ->getQuery()
             ->getOneOrNullResult();
     }

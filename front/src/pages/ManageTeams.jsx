@@ -12,15 +12,33 @@ export default function ManageTeams() {
     const [loading, setLoading] = useState(true);
     const [organisationPage, setOrganisationPage] = useState(1);
     const [hasNextPage, setHasNextPage] = useState(true);
+    const [error, setError] = useState({});
+    const [isAddEmployeeLoading, setIsAddEmployeeLoading] = useState({});
 
     const handleClickAddEmployee = (employeeEmail, organisationId) => {
+        setIsAddEmployeeLoading((prevIsAddEmployeeLoading) => ({
+            ...prevIsAddEmployeeLoading,
+            [organisationId]: true
+        }));
         const emailUser = {
             email : employeeEmail
         }
         organisationService.addUserToOrganisation(organisationId, emailUser)
             .then((response) => {
-            console.log(response);
-        })
+                setOrganisations(organisations.map(organisation => {
+                    if (organisation.id === organisationId) {
+                        organisation.users.push(response.user);
+                    }
+                    return organisation;
+                }));
+            })
+            .catch((error) => {
+                setError((prevErrors) => ({
+                    ...prevErrors,
+                    [organisationId]: "Il y a eu une erreur lors de l'ajout de l'utilisateur à l'organisation"
+                }));
+            })
+            .finally(() => setIsAddEmployeeLoading(false));
     }
 
     const fetchOrganisations = () => {
@@ -48,7 +66,13 @@ export default function ManageTeams() {
           <h1>{t('manage_teams')}</h1>
            <div className="my-1">
                {organisations.map(organisation =>
-                   <AccordionElement key={organisation.id} organisation={organisation} handleClickAddEmployee={handleClickAddEmployee}/>
+                   <AccordionElement
+                       key={organisation.id}
+                       organisation={organisation}
+                       isAddEmployeeLoading={isAddEmployeeLoading[organisation.id]}
+                       error={error[organisation.id]}
+                       handleClickAddEmployee={handleClickAddEmployee}
+                   />
                )}
            </div>
            {organisations.length > 0 && hasNextPage &&

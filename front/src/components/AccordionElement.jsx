@@ -4,7 +4,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import EmployeeList from "./EmployeeList.jsx";
 import AddEmployee from "./AddEmployee.jsx";
-export default function AccordionElement({organisation, handleClickAddEmployee}) {
+export default function AccordionElement({organisation, handleClickAddEmployee, error, isAddEmployeeLoading}) {
 
     return (
         <Accordion>
@@ -20,7 +20,7 @@ export default function AccordionElement({organisation, handleClickAddEmployee})
             </AccordionSummary>
             <AccordionDetails>
                 <EmployeeList users={organisation.users}/>
-                <AddEmployee organisation={organisation} handleClickAddEmployee={handleClickAddEmployee}/>
+                <AddEmployee error={error} isAddEmployeeLoading={isAddEmployeeLoading} organisation={organisation} handleClickAddEmployee={handleClickAddEmployee}/>
             </AccordionDetails>
         </Accordion>
     );

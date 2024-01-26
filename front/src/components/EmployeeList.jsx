@@ -11,7 +11,7 @@ export default function EmployeeList({users}) {
             {users.length === 0 && <ListItemText primary={t('no_employee')}/>}
             {users.map(user =>
                 <ListItem
-                    key={user.id}
+                    key={user.email}
                     secondaryAction={
                         <IconButton edge="end" aria-label="delete">
                             <span className="fr-icon-delete-fill" aria-hidden="true"></span>
