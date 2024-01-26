@@ -14,6 +14,8 @@ import Modal from "../components/Modal/Modal.jsx";
 import LoadableButton from "../components/LoadableButton/LoadableButton.jsx";
 import {useTranslation} from "react-i18next";
 import OrganisationLocation from "../components/OrganisationLocation.jsx";
+import CreateServiceModal from "../components/CreateServiceModal.jsx";
+import {Tag} from "@codegouvfr/react-dsfr/Tag.js";
 import useAuth, {Roles} from "../auth/useAuth.js";
 import CalendarItem from "../components/Calendar/CalendarItem.jsx";
 import CalendarHeaderDate from "../components/Calendar/CalendarHeaderDate.jsx";
@@ -33,8 +35,8 @@ export default function Organisation() {
     const [selectedSlot, setSelectedSlot] = useState(null);
     const [selectedSlotProvider, setSelectedSlotProvider] = useState(null);
     const navigate = useNavigate();
+    const {data} = useAuth();
     const {t,i18n} = useTranslation();
-    const auth = useAuth();
 
     const loadService = () => {
         setIsLoading(true);
@@ -45,7 +47,7 @@ export default function Organisation() {
         ]).then(([organisation, slots]) => {
             setOrganisation(organisation);
             setSlots(slots);
-            setIsUserProvider(auth.data.roles.includes(Roles.PROVIDER) && organisation.users.some((provider) => provider.id === auth.data.id));
+            setIsUserProvider(data.roles.includes(Roles.PROVIDER) && organisation.users.some((provider) => provider.id === data.id));
         }).catch((e) => {
             console.error(e);
             setIsErrored(true);
@@ -95,6 +97,16 @@ export default function Organisation() {
         });
     }
 
+    const handleOnServiceCreated = (service) => {
+        organisation.services.push(service)
+        setOrganisation({...organisation})
+    }
+
+    const isUserAuthorized = () => {
+        return data.roles.includes(Roles.PROVIDER) &&
+          organisation.users.some(user => user.id === data.id);
+    };
+
     useEffect(() => {
         loadService();
     }, [organisationId]);
@@ -109,9 +121,11 @@ export default function Organisation() {
 
     return (
         <div className="flex flex-column gap-2">
-            <h1>{organisation.name}</h1>
-
-            {isUserProvider &&
+            <div className="flex space-between">
+                <h1>{organisation.name}</h1>
+                {isUserAuthorized() && <CreateServiceModal onServiceCreated={handleOnServiceCreated} organisationId={organisation.id}></CreateServiceModal>}
+            </div>
+                {isUserProvider &&
                 <div>
                     <Button
                         iconId="ri-calendar-line"
@@ -123,17 +137,27 @@ export default function Organisation() {
             }
 
             {(organisation.services.length <= 0 || slots.length <= 0) &&
-                <CallOut
-                    buttonProps={{
-                        children: t('back'),
-                        onClick: () => navigate(-1),
-                    }}
-                    iconId="ri-calendar-close-fill"
-                    title={t('this_station_has_no_appointment')}
+                  <>
+                      <div className="flex flex-wrap gap-1">
+                          {organisation.services.length > 0 && organisation.services.map((service) =>
+                            <Tag key={service.id}>{service.title}</Tag>
+                          )}
+                      </div>
 
-                >
-                    {t('this_station_has_no_appointment_details')}
-                </CallOut>
+
+                        <CallOut
+                            buttonProps={{
+                                children: t('back'),
+                                onClick: () => navigate(-1),
+                            }}
+                            iconId="ri-calendar-close-fill"
+                            title={t('this_station_has_no_appointment')}
+
+                        >
+                            {t('this_station_has_no_appointment_details')}
+                        </CallOut>
+
+                  </>
             }
 
             {organisation.services.length > 0 && slots.length > 0 &&

@@ -29,7 +29,7 @@ export default function CreateService() {
         setMessage(t('service_created'));
         setIsLoading(true);
 
-        organisationService.organisation(title, description).then((response) => {
+        organisationService.post(title, description).then((response) => {
             if (response) {
                 setMessage();
                 console.log(response);
