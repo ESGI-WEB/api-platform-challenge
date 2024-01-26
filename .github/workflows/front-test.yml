@@ -6,8 +6,8 @@ on:
     types:
       - opened
   push:
-    branches:
-      - !main # not in main as test will be workflow_call by deploy
+    branches_ignore:
+      - main # not in main as test will be workflow_call by deploy
     paths:
       - 'front/**'
       - '.github/workflows/front-test.yml'
@@ -50,4 +50,4 @@ jobs:
       - run: sleep 5
       - name: Curl the server to test if everything is ok
         run: curl -I http://localhost:4173
-      - run: pnpm cypress run --component
+      - run: pnpm cypress install && pnpm cypress run --component
