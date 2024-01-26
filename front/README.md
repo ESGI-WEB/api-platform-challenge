@@ -38,7 +38,7 @@ run the following command to run tests
 
 Your computer may ask you to validate the installation of cypress
 
-Run this command to access the cypress interface (a very cool/usefull one)
+Run this command to access the cypress interface (a very cool/usefull one). For now we're using component testing
 
 ```bash
  npx cypress open
