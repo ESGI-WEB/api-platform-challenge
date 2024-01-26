@@ -39,7 +39,7 @@ use Symfony\Component\Serializer\SerializerInterface;
             ],
         ],
         'responses' => [
-            '200' => [
+            '201' => [
                 'description' => 'User added to organisation',
                 'content' => [
                     'application/json' => [
@@ -57,7 +57,7 @@ use Symfony\Component\Serializer\SerializerInterface;
     ],
 )]
 #[Delete(
-    routePrefix: '/organisations/{organisation_id}/user/{user_id}/remove_user',
+    routePrefix: '/organisations/{organisation_id}/users/{user_id}/remove_user',
     routeName: 'remove_user_from_organisation',
     openapiContext: [
         'denormalization_context' => ['groups' => GroupsEnum::TEAMS_READ_USER_DETAILED->value],
@@ -80,17 +80,11 @@ use Symfony\Component\Serializer\SerializerInterface;
             ],
         ],
         'responses' => [
-            '200' => [
+            '204' => [
                 'description' => 'User removed from organisation',
                 'content' => [
                     'application/json' => [
-                        'schema' => [
-                            'type' => 'object',
-                            'properties' => [
-                                'user' => ['type' => 'object'],
-                                'organisation_id' => ['type' => 'integer'],
-                            ],
-                        ],
+                        'schema' => [],
                     ],
                 ],
             ],
@@ -112,17 +106,17 @@ class TeamsController extends AbstractController
 
         $email = $requestData['email'] ?? null;
 
-        $foundUser = $this->userRepository->findEmployeeByEmail($email);
+        $foundUser = $this->userRepository->findEmployeeAndProviderByEmail($email);
 
         if (!$foundUser) {
-            return $this->json(['error' => 'User not found'], 404);
+            throw $this->createNotFoundException('No user found for email ' . $email);
         }
 
         $foundUserOrganisations = $foundUser->getOrganisations();
 
         foreach ($foundUserOrganisations as $organisation) {
             if ($organisation->getId() === $id) {
-                return $this->json(['error' => 'User is already in this organisation'], 400);
+                throw new \Error('User is already in this organisation');
             }
         }
 
@@ -146,7 +140,7 @@ class TeamsController extends AbstractController
         });
     }
 
-    #[Route('/organisations/{organisation_id}/users/{user_id}/remove_user', name: 'remove_user_from_organisation', methods: ['POST'])]
+    #[Route('/organisations/{organisation_id}/users/{user_id}/remove_user', name: 'remove_user_from_organisation', methods: ['DELETE'])]
     #[IsGranted(RolesEnum::PROVIDER->value)]
     public function removeUserFromOrganisation(EntityManagerInterface $entityManager, int $organisation_id, int $user_id): JsonResponse
     {
@@ -154,7 +148,7 @@ class TeamsController extends AbstractController
         $foundUser = $this->userRepository->find($user_id);
 
         if (!$foundUser) {
-            return $this->json(['error' => 'User not found'], 404);
+            throw new \Error('User not found');
         }
 
         $foundUserOrganisations = $foundUser->getOrganisations();
@@ -162,12 +156,10 @@ class TeamsController extends AbstractController
         foreach ($foundUserOrganisations as $organisation) {
             if ($organisation->getId() === $organisation_id) {
                 $this->removeUser($entityManager, $organisation_id, $foundUser);
-                $restrictedFoundUser = $this->serializer->normalize($foundUser, null, ['groups' => GroupsEnum::TEAMS_READ_USER_DETAILED->value]);
-                return $this->json(['user' => $restrictedFoundUser, 'organisation_id' => $organisation_id]);
             }
         }
 
-        return $this->json(['error' => 'User is not in this organisation'], 400);
+        throw new \Error('User is not in this organisation');
     }
 
     private function removeUser(EntityManagerInterface $entityManager, int $id, User $user): void

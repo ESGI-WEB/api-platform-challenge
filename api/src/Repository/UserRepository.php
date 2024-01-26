@@ -54,12 +54,12 @@ class UserRepository extends ServiceEntityRepository
         return new Paginator($query);
     }
 
-    public function findEmployeeByEmail(string $email): ?User
+    public function findEmployeeAndProviderByEmail(string $email): ?User
     {
         return $this->createQueryBuilder('user')
             ->andWhere('user.email = :email')
             ->setParameter('email', $email)
-            ->andWhere('CAST(user.roles AS string) LIKE :role_employee')
+            ->andWhere('CAST(user.roles AS string) LIKE :role_employee OR CAST(user.roles AS string) LIKE :role_provider')
             ->setParameter('role_employee', '%' . RolesEnum::EMPLOYEE->value . '%')
             ->getQuery()
             ->getOneOrNullResult();
