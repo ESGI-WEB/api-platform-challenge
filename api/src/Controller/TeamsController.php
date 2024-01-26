@@ -55,6 +55,7 @@ use Symfony\Component\Serializer\SerializerInterface;
             ],
         ],
     ],
+    description: 'Add user to an organisation',
 )]
 #[Delete(
     routePrefix: '/organisations/{organisation_id}/users/{user_id}/remove_user',
@@ -90,6 +91,7 @@ use Symfony\Component\Serializer\SerializerInterface;
             ],
         ],
     ],
+    description: 'Remove user from an organisation',
 )]
 class TeamsController extends AbstractController
 {
