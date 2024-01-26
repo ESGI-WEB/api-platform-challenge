@@ -6,7 +6,7 @@ export const AppointmentStatus = {
     CANCELLED: 'cancelled',
 }
 
-export default function AppointmentStatusBadge({status}) {
+export default function AppointmentStatusBadge({status = AppointmentStatus.VALID}) {
     const {t} = useTranslation();
 
     const statusMapping = {
