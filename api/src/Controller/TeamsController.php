@@ -156,6 +156,7 @@ class TeamsController extends AbstractController
         foreach ($foundUserOrganisations as $organisation) {
             if ($organisation->getId() === $organisation_id) {
                 $this->removeUser($entityManager, $organisation_id, $foundUser);
+                return $this->json([], 204);
             }
         }
 

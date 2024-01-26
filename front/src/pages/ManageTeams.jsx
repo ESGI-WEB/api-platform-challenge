@@ -41,6 +41,24 @@ export default function ManageTeams() {
             .finally(() => setIsAddEmployeeLoading(false));
     }
 
+    const handleClickRemoveEmployee = (organisationId, userId) => {
+        organisationService.removeUserFromOrganisation(organisationId, userId)
+            .then(() => {
+                setOrganisations(organisations.map(organisation => {
+                    if (organisation.id === organisationId) {
+                        organisation.users = organisation.users.filter(user => user.id !== userId);
+                    }
+                    return organisation;
+                }));
+            })
+            .catch((error) => {
+                setError((prevErrors) => ({
+                    ...prevErrors,
+                    [organisationId]: "Il y a eu une erreur lors de l'ajout de l'utilisateur à l'organisation"
+                }));
+            })
+    }
+
     const fetchOrganisations = () => {
         if (!hasNextPage) {
             return;
@@ -72,6 +90,7 @@ export default function ManageTeams() {
                        isAddEmployeeLoading={isAddEmployeeLoading[organisation.id]}
                        error={error[organisation.id]}
                        handleClickAddEmployee={handleClickAddEmployee}
+                       handleClickRemoveEmployee={handleClickRemoveEmployee}
                    />
                )}
            </div>

@@ -3,7 +3,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
-export default function EmployeeList({users}) {
+export default function EmployeeList({users, organisation, handleClickRemoveEmployee}) {
     const {t} = useTranslation();
 
     return (
@@ -13,7 +13,7 @@ export default function EmployeeList({users}) {
                 <ListItem
                     key={user.email}
                     secondaryAction={
-                        <IconButton edge="end" aria-label="delete">
+                        <IconButton edge="end" aria-label="delete" onClick={() => handleClickRemoveEmployee(organisation.id, user.id)}>
                             <span className="fr-icon-delete-fill" aria-hidden="true"></span>
                         </IconButton>
                     }

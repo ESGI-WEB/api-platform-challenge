@@ -70,7 +70,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED_LOGGED->value, GroupsEnum::AVAILABLE_SLOT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
+    #[Groups([GroupsEnum::USER_READ->value,  GroupsEnum::TEAMS_READ_USER_DETAILED->value, GroupsEnum::ORGANISATION_READ_DETAILED_LOGGED->value, GroupsEnum::AVAILABLE_SLOT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
     #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 
