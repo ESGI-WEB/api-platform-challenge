@@ -43,11 +43,11 @@ readonly class AppointmentListProvider implements ProviderInterface
 
         // check if request is paginated
         if (!$this->pagination->isEnabled($operation, $context)) {
-            return $this->appointmentRepository->findAppointmentsByOrganisationQuery($uriVariables['id'], $user->getId(), $filters)->getResult();
+            return $this->appointmentRepository->findAppointmentsByOrganisationQuery($uriVariables['id'], $filters, $user->getId())->getResult();
         }
 
         [$page, , $limit] = $this->pagination->getPagination($operation, $context);
 
-        return new Paginator($this->appointmentRepository->findAppointmentsByOrganisationPaginated($uriVariables['id'], $user->getId(), $filters, $page, $limit));
+        return new Paginator($this->appointmentRepository->findAppointmentsByOrganisationPaginated($uriVariables['id'], $filters, $page, $limit, $user->getId()));
     }
 }
