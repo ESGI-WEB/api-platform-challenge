@@ -1,4 +1,4 @@
-name: Deploy Front To Vercel
+name: Deploy Front-End To Vercel
 
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}

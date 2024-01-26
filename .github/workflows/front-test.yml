@@ -1,4 +1,4 @@
-name: Deploy Front To Vercel
+name: Test Front-End
 
 on:
   workflow_call:
