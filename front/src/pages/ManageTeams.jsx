@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import LoadableButton from "../components/LoadableButton/LoadableButton.jsx";
 import PageLoader from "../components/PageLoader/PageLoader.jsx";
 import AccordionElement from "../components/AccordionElement.jsx";
+import InPageAlert from "../components/InPageAlert.jsx";
 
 export default function ManageTeams() {
     const {t} = useTranslation();
@@ -82,6 +83,11 @@ export default function ManageTeams() {
     return (
        <>
           <h1>{t('manage_teams')}</h1>
+           <InPageAlert alert={{
+               title: t('manage_teams_title'),
+               description: t('manage_teams_description'),
+               severity: 'info',
+           }} />
            <div className="my-1">
                {organisations.map(organisation =>
                    <AccordionElement
