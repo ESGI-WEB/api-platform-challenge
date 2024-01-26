@@ -13,14 +13,15 @@ on:
       - '.github/workflows/vercel-deploy.yml'
 
 jobs:
+  tests:
+    uses: ./.github/workflows/front-test.yml
   deploy:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./front
     needs:
-      - build-test
-
+      - tests
     steps:
       - uses: actions/checkout@v4
 

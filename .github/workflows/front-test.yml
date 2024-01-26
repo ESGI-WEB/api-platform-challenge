@@ -1,13 +1,17 @@
 name: Deploy Front To Vercel
 
 on:
+  workflow_call:
+  pull_request:
+    types:
+      - opened
   push:
     paths:
       - 'front/**'
       - '.github/workflows/front-test.yml'
 
 jobs:
-  build-test:
+  tests:
     runs-on: ubuntu-latest
     defaults:
       run:
