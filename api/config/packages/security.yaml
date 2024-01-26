@@ -40,7 +40,7 @@ security:
         - { path: ^/api/organisations, roles: PUBLIC_ACCESS, method: GET }
         - { path: ^/api/names, roles: PUBLIC_ACCESS, method: GET }
         - { path: ^/api/translations, roles: PUBLIC_ACCESS, method: GET }
-        - { path: ^/api/(login|users)$, roles: PUBLIC_ACCESS, method: POST }
+        - { path: ^/api/(login|users|users/provider)$, roles: PUBLIC_ACCESS, method: POST }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:

@@ -6,6 +6,8 @@ on:
     types:
       - opened
   push:
+    branches:
+      - !main # not in main as test will be workflow_call by deploy
     paths:
       - 'front/**'
       - '.github/workflows/front-test.yml'
