@@ -19,8 +19,7 @@ jobs:
     defaults:
       run:
         working-directory: ./api
-    container:
-      image: php:8.2
+
     steps:
       - uses: actions/checkout@v4
 
