@@ -15,10 +15,6 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
-    services:
-      - name: docker
-        image: docker:20.10.7
-        command: ["dockerd-entrypoint.sh"]
 
     defaults:
       run:
