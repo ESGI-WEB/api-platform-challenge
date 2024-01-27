@@ -34,5 +34,8 @@ jobs:
       - name: Install dependencies
         run: docker compose exec -it php composer install
 
+      - name: Generate JWT keys
+        run: docker compose exec -it php bin/console lexik:jwt:generate-keypair -n -overwrite
+
       - name: Run tests
         run: docker compose exec -it php bin/phpunit
