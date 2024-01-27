@@ -1,10 +1,20 @@
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import Typography from '@mui/material/Typography';
-import EmployeeList from "./EmployeeList.jsx";
-import AddEmployee from "./AddEmployee.jsx";
-export default function AccordionElement({organisation, handleClickAddEmployee, handleClickRemoveEmployee, error, isAddEmployeeLoading}) {
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import List from '@mui/material/List';
+
+export default function AccordionElement({
+     organisation = {},
+     handleClickAddEmployee,
+     handleClickRemoveEmployee,
+     error,
+     isAddEmployeeLoading = false,
+     accordionComponent: Accordion,
+     accordionSummaryComponent: AccordionSummary,
+     typographyComponent: Typography,
+     accordionDetailsComponent: AccordionDetails,
+     employeeListComponent: EmployeeList,
+     addEmployeeComponent: AddEmployee
+}) {
 
     return (
         <Accordion>
@@ -19,7 +29,13 @@ export default function AccordionElement({organisation, handleClickAddEmployee, 
                 <Typography sx={{ color: 'text.secondary' }}>{`${organisation.zipcode} ${organisation.city}`}</Typography>
             </AccordionSummary>
             <AccordionDetails>
-                <EmployeeList users={organisation.users} organisation={organisation} handleClickRemoveEmployee={handleClickRemoveEmployee}/>
+                <EmployeeList
+                    listComponent={List}
+                    listItemComponent={ListItem}
+                    listItemTextComponent={ListItemText}
+                    users={organisation.users}
+                    organisation={organisation}
+                    handleClickRemoveEmployee={handleClickRemoveEmployee}/>
                 <AddEmployee error={error} isAddEmployeeLoading={isAddEmployeeLoading} organisation={organisation} handleClickAddEmployee={handleClickAddEmployee}/>
             </AccordionDetails>
         </Accordion>

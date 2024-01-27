@@ -5,6 +5,12 @@ import LoadableButton from "../components/LoadableButton/LoadableButton.jsx";
 import PageLoader from "../components/PageLoader/PageLoader.jsx";
 import AccordionElement from "../components/AccordionElement.jsx";
 import InPageAlert from "../components/InPageAlert.jsx";
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import Typography from "@mui/material/Typography";
+import EmployeeList from "../components/EmployeeList.jsx";
+import AddEmployee from "../components/AddEmployee.jsx";
 
 export default function ManageTeams() {
     const {t} = useTranslation();
@@ -97,6 +103,12 @@ export default function ManageTeams() {
                        error={error[organisation.id]}
                        handleClickAddEmployee={handleClickAddEmployee}
                        handleClickRemoveEmployee={handleClickRemoveEmployee}
+                       accordionComponent={Accordion}
+                       accordionSummaryComponent={AccordionSummary}
+                       typographyComponent={Typography}
+                       accordionDetailsComponent={AccordionDetails}
+                       employeeListComponent={EmployeeList}
+                       addEmployeeComponent={AddEmployee}
                    />
                )}
            </div>

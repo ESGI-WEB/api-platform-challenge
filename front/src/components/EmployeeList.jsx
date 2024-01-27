@@ -1,9 +1,13 @@
 import {useTranslation} from "react-i18next";
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
-export default function EmployeeList({users, organisation, handleClickRemoveEmployee}) {
+export default function EmployeeList({
+     users = [],
+     organisation = {},
+     handleClickRemoveEmployee,
+    listComponent: List,
+    listItemComponent: ListItem,
+    listItemTextComponent: ListItemText,
+}) {
     const {t} = useTranslation();
 
     return (

@@ -24,6 +24,7 @@ readonly class UsersService
         }
 
         $organisation->addUser($user);
+        $this->entityManager->flush();
     }
 
     public function removeUser(int $id, User $user): void
@@ -35,5 +36,6 @@ readonly class UsersService
         }
 
         $organisation->removeUser($user);
+        $this->entityManager->flush();
     }
 }
