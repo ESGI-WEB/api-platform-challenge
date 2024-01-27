@@ -1,0 +1,41 @@
+name: Test Back-End
+
+on:
+  workflow_call:
+  pull_request:
+    types:
+      - opened
+  push:
+    branches_ignore:
+      - main # not in main as test will be workflow_call by deploy
+    paths:
+      - 'api/**'
+      - '.github/workflows/back-test.yml'
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    services:
+      - name: docker
+        image: docker:20.10.7
+        command: ["dockerd-entrypoint.sh"]
+
+    defaults:
+      run:
+        working-directory: ./api
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker compose build
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'
+
+      - name: Install dependencies
+        run: composer install
+
+      - name: Run tests
+        run: bin/phpunit tests/
