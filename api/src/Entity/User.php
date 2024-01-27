@@ -158,6 +158,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups([GroupsEnum::USER_READ->value])]
     public ?string $contentUrl = null;
 
+    #[ORM\Column(length: 20, nullable: true)]
+    #[Groups([GroupsEnum::USER_CREATE->value, GroupsEnum::USER_WRITE->value])]
+    #[Assert\Regex(pattern: '/^\+336[0-9]{8}$/')]
+    private ?string $phone = null;
+
     public function __construct()
     {
         $this->createdAt = new DateTimeImmutable();
@@ -421,5 +426,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getCountOrganisations(): int
     {
         return $this->organisations->count();
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): static
+    {
+        $this->phone = $phone;
+
+        return $this;
     }
 }
