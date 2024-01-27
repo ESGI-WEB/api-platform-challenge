@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build Docker image
-        run: docker compose build
+        run: docker compose build --target=php_dev
 
       - name: Start Docker containers
         run: docker compose up -d
