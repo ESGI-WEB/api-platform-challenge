@@ -42,4 +42,9 @@ class AppointmentDenormalizer implements DenormalizerInterface
     {
         return $type === Appointment::class;
     }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [Appointment::class];
+    }
 }

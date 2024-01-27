@@ -36,4 +36,9 @@ final class UserNormalizer implements NormalizerInterface, NormalizerAwareInterf
 
         return $data instanceof User;
     }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return [User::class];
+    }
 }
