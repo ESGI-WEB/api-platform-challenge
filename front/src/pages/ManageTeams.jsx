@@ -36,7 +36,7 @@ export default function ManageTeams() {
             .catch((error) => {
                 setError((prevErrors) => ({
                     ...prevErrors,
-                    [organisationId]: "Il y a eu une erreur lors de l'ajout de l'utilisateur à l'organisation"
+                    [organisationId]: error.message
                 }));
             })
             .finally(() => setIsAddEmployeeLoading(false));

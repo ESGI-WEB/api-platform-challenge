@@ -15,6 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -120,7 +121,7 @@ class TeamsController extends AbstractController
 
         foreach ($foundUserOrganisations as $organisation) {
             if ($organisation->getId() === $id) {
-                throw new \Error('User is already in this organisation');
+                throw new UnprocessableEntityHttpException('User is already in this organisation');
             }
         }
 
@@ -152,7 +153,7 @@ class TeamsController extends AbstractController
         $foundUser = $this->userRepository->find($user_id);
 
         if (!$foundUser) {
-            throw new \Error('User not found');
+            throw $this->createNotFoundException('User not found');
         }
 
         $foundUserOrganisations = $foundUser->getOrganisations();
@@ -164,7 +165,7 @@ class TeamsController extends AbstractController
             }
         }
 
-        throw new \Error('User is not in this organisation');
+        throw new UnprocessableEntityHttpException('User is not in this organisation');
     }
 
     private function removeUser(int $id, User $user): void
