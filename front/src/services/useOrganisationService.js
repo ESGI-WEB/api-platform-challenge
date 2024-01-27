@@ -47,7 +47,7 @@ const useOrganisationService = () => {
             method: 'POST',
             body: body,
         }),
-        removeUserFromOrganisation: (organisation_id, user_id) => api(`organisations/${organisation_id}/users/${user_id}/remove_user`, {
+        removeUserFromOrganisation: (organisation_id, user_id) => api(`organisations/${organisation_id}/users/${user_id}`, {
             method: 'DELETE',
         }),
     };

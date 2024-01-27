@@ -5,12 +5,10 @@ namespace App\Controller;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Post;
-use App\Entity\Organisation;
-use App\Entity\User;
 use App\Enum\GroupsEnum;
 use App\Enum\RolesEnum;
 use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Services\UsersService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -59,7 +57,7 @@ use Symfony\Component\Serializer\SerializerInterface;
     description: 'Add user to an organisation',
 )]
 #[Delete(
-    routePrefix: '/organisations/{organisation_id}/users/{user_id}/remove_user',
+    routePrefix: '/organisations/{organisation_id}/users/{user_id}',
     routeName: 'remove_user_from_organisation',
     openapiContext: [
         'denormalization_context' => ['groups' => GroupsEnum::TEAMS_READ_USER_DETAILED->value],
@@ -99,7 +97,7 @@ class TeamsController extends AbstractController
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly SerializerInterface $serializer,
-        private readonly EntityManagerInterface $entityManager,
+        private readonly UsersService $usersService,
     ) {
     }
 
@@ -125,27 +123,14 @@ class TeamsController extends AbstractController
             }
         }
 
-        $this->addUser($id, $foundUser);
+        $this->usersService->addUser($id, $foundUser);
 
         $restrictedFoundUser = $this->serializer->normalize($foundUser, null, ['groups' => GroupsEnum::TEAMS_READ_USER_DETAILED->value]);
 
         return $this->json(['user' => $restrictedFoundUser, 'organisation_id' => $id]);
     }
 
-    private function addUser(int $organisationId, User $user): void
-    {
-        $organisation = $this->entityManager->getRepository(Organisation::class)->find($organisationId);
-
-        if (!$organisation) {
-            throw $this->createNotFoundException('No organisation found for id ' . $organisationId);
-        }
-
-        $this->entityManager->transactional(function () use ($organisation, $user) {
-            $organisation->addUser($user);
-        });
-    }
-
-    #[Route('/organisations/{organisation_id}/users/{user_id}/remove_user', name: 'remove_user_from_organisation', methods: ['DELETE'])]
+    #[Route('/organisations/{organisation_id}/users/{user_id}', name: 'remove_user_from_organisation', methods: ['DELETE'])]
     #[IsGranted(RolesEnum::PROVIDER->value)]
     public function removeUserFromOrganisation(int $organisation_id, int $user_id): JsonResponse
     {
@@ -160,25 +145,12 @@ class TeamsController extends AbstractController
 
         foreach ($foundUserOrganisations as $organisation) {
             if ($organisation->getId() === $organisation_id) {
-                $this->removeUser($organisation_id, $foundUser);
+                $this->usersService->removeUser($organisation_id, $foundUser);
                 return $this->json([], 204);
             }
         }
 
         throw new UnprocessableEntityHttpException('User is not in this organisation');
-    }
-
-    private function removeUser(int $id, User $user): void
-    {
-        $organisation = $this->entityManager->getRepository(Organisation::class)->find($id);
-
-        if (!$organisation) {
-            throw $this->createNotFoundException('No organisation found for id ' . $id);
-        }
-
-        $this->entityManager->transactional(function () use ($organisation, $user) {
-            $organisation->removeUser($user);
-        });
     }
 
 }
