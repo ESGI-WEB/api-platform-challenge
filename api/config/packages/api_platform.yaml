@@ -20,6 +20,13 @@ api_platform:
         pagination_client_partial: true
         pagination_maximum_items_per_page: 100
 
+    formats:
+        jsonld: [ 'application/ld+json' ]
+        jsonhal: [ 'application/hal+json' ]
+        json: [ 'application/json' ]
+        html: [ 'text/html' ]
+        multipart: [ 'multipart/form-data' ]
+
     swagger:
         api_keys:
             JWT:
