@@ -30,7 +30,7 @@ jobs:
         run: docker compose up -d
 
       - name: Install dependencies
-        run: docker compose exec server composer install --prefer-dist --no-progress --no-suggest --no-interaction
+        run: docker compose exec -it php composer install
 
       - name: Run tests
         run: bin/phpunit
