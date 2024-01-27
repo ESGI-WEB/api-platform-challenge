@@ -25,5 +25,8 @@ jobs:
       - name: Build Docker image
         run: docker compose build
 
+      - name: Install dependencies
+        run: composer install
+
       - name: Run tests
         run: bin/phpunit tests/
