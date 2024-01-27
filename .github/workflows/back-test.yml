@@ -26,8 +26,11 @@ jobs:
       - name: Build Docker image
         run: docker compose build
 
+      - name: Start Docker containers
+        run: docker compose up -d
+
       - name: Install dependencies
-        run: composer install --dev
+        run: docker compose exec server composer install --prefer-dist --no-progress --no-suggest --no-interaction
 
       - name: Run tests
         run: bin/phpunit
