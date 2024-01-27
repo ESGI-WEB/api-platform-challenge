@@ -35,4 +35,4 @@ jobs:
         run: docker compose exec -it php composer install
 
       - name: Run tests
-        run: bin/phpunit
+        run: docker compose exec -it php bin/phpunit
