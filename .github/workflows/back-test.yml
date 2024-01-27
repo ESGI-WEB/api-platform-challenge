@@ -26,7 +26,7 @@ jobs:
         run: docker compose build
 
       - name: Add phpunit
-        run: composer require phpunit
+        run: composer require phpunit/phpunit
 
       - name: Run tests
-        run: bin/phpunit tests/
+        run: bin/phpunit
