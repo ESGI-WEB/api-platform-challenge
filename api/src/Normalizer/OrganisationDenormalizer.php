@@ -49,9 +49,4 @@ class OrganisationDenormalizer implements DenormalizerInterface
     {
         return $type === Organisation::class;
     }
-
-    public function getSupportedTypes(?string $format): array
-    {
-        return [Organisation::class];
-    }
 }

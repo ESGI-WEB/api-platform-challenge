@@ -22,9 +22,4 @@ final class UploadedFileDenormalizer implements DenormalizerInterface
     {
         return $data instanceof UploadedFile;
     }
-
-    public function getSupportedTypes(?string $format): array
-    {
-        return [UploadedFile::class];
-    }
 }
