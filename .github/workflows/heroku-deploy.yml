@@ -9,6 +9,8 @@ on:
       - '.github/workflows/heroku-deploy.yml'
 
 jobs:
+  tests:
+      uses: ./.github/workflows/back-test.yml
   build:
     runs-on: ubuntu-latest
     steps:
