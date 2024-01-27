@@ -19,14 +19,16 @@ jobs:
     defaults:
       run:
         working-directory: ./api
+    container:
+      image: php:8.2
     steps:
       - uses: actions/checkout@v4
 
       - name: Build Docker image
         run: docker compose build
 
-      - name: Add phpunit
-        run: composer require phpunit/phpunit
+      - name: Install dependencies
+        run: composer install --dev
 
       - name: Run tests
         run: bin/phpunit
