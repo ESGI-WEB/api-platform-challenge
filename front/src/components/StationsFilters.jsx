@@ -1,6 +1,6 @@
 "use client";
 
-import useServiceService from "../services/useServiceService.js";
+import useAppointmentReasonService from "../services/useAppointmentReasonService.js";
 import {useEffect, useState} from "react";
 import Box from "@mui/material/Box";
 
@@ -10,7 +10,7 @@ export default function StationsFilters({
     onSearch = void 0,
     disabled = false,
 }) {
-    const serviceSrv = useServiceService();
+    const serviceSrv = useAppointmentReasonService();
     const [services, setServices] = useState([]);
     const [loadingServices, setLoadingServices] = useState(true);
     const [serviceSelected, setServiceSelected] = useState(null);

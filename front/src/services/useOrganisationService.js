@@ -40,6 +40,9 @@ const useOrganisationService = () => {
         getCoordinatesFromAddress: (address, limit = 5) => fetch(
             import.meta.env.VITE_API_ADDRESS_ENDPOINT + `/search?q=${address}&limit=${limit}`
         ).then(response => response.json()),
+        getURI(organisationId) {
+            return `api/organisations/${organisationId}`
+        },
         addUserToOrganisation: (organisation_id, body) => api(`organisations/${organisation_id}/add_user`, {
             method: 'POST',
             body: body,

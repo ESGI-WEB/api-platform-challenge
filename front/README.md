@@ -27,3 +27,19 @@ npm run dev
 > ⚠️ Components describes [here](https://www.systeme-de-design.gouv.fr/elements-d-interface/composants/) are for plain html components not react-dsfr ones  
 - Icons : https://react-dsfr.codegouv.studio/icons
 > ⚠️ Whenever you add a new icon to your project, launch `npm run icons` or restart your local server, else you'll see a blue square instead of your icon
+
+# Testing
+
+run the following command to run tests
+
+```bash
+ npx cypress run --component
+```
+
+Your computer may ask you to validate the installation of cypress
+
+Run this command to access the cypress interface (a very cool/usefull one). For now we're using component testing
+
+```bash
+ npx cypress open
+```

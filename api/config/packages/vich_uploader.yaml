@@ -1,0 +1,9 @@
+vich_uploader:
+    db_driver: orm
+    metadata:
+        type: attribute
+    mappings:
+        kbis:
+            uri_prefix: /kbis
+            upload_destination: '%kernel.project_dir%/public/kbis'
+            namer: Vich\UploaderBundle\Naming\UniqidNamer

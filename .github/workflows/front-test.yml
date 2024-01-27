@@ -1,0 +1,53 @@
+name: Test Front-End
+
+on:
+  workflow_call:
+  pull_request:
+    types:
+      - opened
+  push:
+    branches_ignore:
+      - main # not in main as test will be workflow_call by deploy
+    paths:
+      - 'front/**'
+      - '.github/workflows/front-test.yml'
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./front
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Node.js # for cache
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: latest
+          run_install: false
+
+      - name: Get pnpm store directory # for cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache # for cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - run: pnpm install
+      - run: pnpm run build
+      - run: pnpm run preview &
+      - run: sleep 5
+      - name: Curl the server to test if everything is ok
+        run: curl -I http://localhost:4173
+      - run: pnpm cypress install && pnpm cypress run --component

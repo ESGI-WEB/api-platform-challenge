@@ -7,6 +7,7 @@ namespace App\Enum;
 enum GroupsEnum: string
 {
     case USER_CREATE = 'user:create';
+    case USER_CREATE_PROVIDER = 'user:create:provider';
     case USER_WRITE = 'user:write';
     case USER_WRITE_ADMIN = 'user:write:admin';
     case USER_READ = 'user:read';
@@ -18,6 +19,7 @@ enum GroupsEnum: string
     case ORGANISATION_READ_SCHEDULES = 'organisation:read:schedules';
     case ORGANISATION_READ_HOLIDAYS = 'organisation:read:holidays';
     case SERVICE_READ = 'service:read';
+    case SERVICE_WRITE = 'service:write';
     case SCHEDULE_WRITE = 'schedule:write';
     case SCHEDULE_READ = 'schedule:read';
     case SCHEDULE_READ_DETAILED = 'schedule:read:detailed';
