@@ -10,6 +10,8 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use ApiPlatform\OpenApi\Model\Operation;
+use ApiPlatform\OpenApi\Model\RequestBody;
 use App\Enum\GroupsEnum;
 use App\Enum\RolesEnum;
 use App\Provider\EmployeesProvider;
@@ -50,7 +52,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
         new Post(
             uriTemplate: "/users/provider",
             inputFormats: ['multipart' => ['multipart/form-data']],
-            denormalizationContext: ['groups' => [GroupsEnum::USER_WRITE->value, GroupsEnum::USER_CREATE->value, GroupsEnum::USER_CREATE_PROVIDER->value]],
+            denormalizationContext: ['groups' => [GroupsEnum::USER_WRITE->value, GroupsEnum::USER_CREATE->value, GroupsEnum::USER_CREATE_PROVIDER->value]]
         ),
         new Put(
             denormalizationContext: ['groups' => [GroupsEnum::USER_WRITE->value]],
@@ -136,7 +138,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups([GroupsEnum::USER_READ->value])]
     private int $countOrganisations = 0;
 
+    #[ApiProperty(
+        openapiContext: [
+            'type' => 'string',
+            'format' => 'binary',
+            'example' => 'data:application/pdf;base64, ...'
+        ],
+        types: ['file']
+    )]
     #[Vich\UploadableField(mapping: 'kbis', fileNameProperty: 'filePath')]
+    #[Assert\File(maxSize: '2048k', mimeTypes: ['application/pdf'])]
     #[Groups([GroupsEnum::USER_CREATE_PROVIDER->value])]
     public ?File $file = null;
 
@@ -146,6 +157,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ApiProperty(types: ['https://schema.org/contentUrl'])]
     #[Groups([GroupsEnum::USER_READ->value])]
     public ?string $contentUrl = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    #[Groups([GroupsEnum::USER_CREATE->value, GroupsEnum::USER_WRITE->value])]
+    #[Assert\Regex(pattern: '/^\+336[0-9]{8}$/')]
+    private ?string $phone = null;
 
     public function __construct()
     {
@@ -410,5 +426,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getCountOrganisations(): int
     {
         return $this->organisations->count();
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): static
+    {
+        $this->phone = $phone;
+
+        return $this;
     }
 }
