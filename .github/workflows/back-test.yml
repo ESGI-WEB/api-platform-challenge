@@ -22,9 +22,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          php-version: '8.2'
 
       - name: Build Docker image
-        run: docker compose build --target=php_dev
+        run: docker compose build
 
       - name: Start Docker containers
         run: docker compose up -d
