@@ -82,7 +82,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
 
-    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED_LOGGED->value, GroupsEnum::AVAILABLE_SLOT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value, GroupsEnum::ORGANISATION_READ_DETAILED->value])]
+    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::TEAMS_READ_USER_DETAILED->value, GroupsEnum::ORGANISATION_READ_DETAILED_LOGGED->value, GroupsEnum::AVAILABLE_SLOT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value, GroupsEnum::ORGANISATION_READ_DETAILED->value])]
     #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 
@@ -99,7 +99,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups([GroupsEnum::USER_WRITE->value, GroupsEnum::USER_CREATE->value])]
     private ?string $plainPassword = null;
 
-    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE->value])]
+    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::TEAMS_READ_USER_DETAILED->value, GroupsEnum::USER_WRITE->value, GroupsEnum::ORGANISATION_READ_DETAILED_LOGGED->value])]
     #[Assert\Email]
     #[Assert\NotBlank]
     #[ORM\Column(length: 180, unique: true)]
@@ -109,11 +109,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private DateTimeImmutable $createdAt;
 
-    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE->value, GroupsEnum::AVAILABLE_SLOT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
+    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::TEAMS_READ_USER_DETAILED->value, GroupsEnum::USER_WRITE->value, GroupsEnum::AVAILABLE_SLOT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value, GroupsEnum::ORGANISATION_READ_DETAILED_LOGGED->value])]
     #[ORM\Column(length: 255)]
     private ?string $firstname = null;
 
-    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE->value, GroupsEnum::AVAILABLE_SLOT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
+    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::TEAMS_READ_USER_DETAILED->value, GroupsEnum::USER_WRITE->value, GroupsEnum::AVAILABLE_SLOT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value, GroupsEnum::ORGANISATION_READ_DETAILED_LOGGED->value])]
     #[ORM\Column(length: 255)]
     private ?string $lastname = null;
 

@@ -67,7 +67,7 @@ const useApi = () => {
             }
 
             return response.json().then(error => {
-                const e = new Error(response.statusText);
+                const e = new Error(error.detail ?? response.statusText ?? "An error occurred");
                 e.data = error;
                 throw e;
             });

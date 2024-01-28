@@ -42,7 +42,14 @@ const useOrganisationService = () => {
         ).then(response => response.json()),
         getURI(organisationId) {
             return `api/organisations/${organisationId}`
-        }
+        },
+        addUserToOrganisation: (organisation_id, body) => api(`organisations/${organisation_id}/add_user`, {
+            method: 'POST',
+            body: body,
+        }),
+        removeUserFromOrganisation: (organisation_id, user_id) => api(`organisations/${organisation_id}/users/${user_id}`, {
+            method: 'DELETE',
+        }),
     };
 };
 

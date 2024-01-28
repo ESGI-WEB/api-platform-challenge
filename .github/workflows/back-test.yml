@@ -1,0 +1,41 @@
+name: Test Back-End
+
+on:
+  workflow_call:
+  pull_request:
+    types:
+      - opened
+  push:
+    branches_ignore:
+      - main # not in main as test will be workflow_call by deploy
+    paths:
+      - 'api/**'
+      - '.github/workflows/back-test.yml'
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./api
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          php-version: '8.2'
+
+      - name: Build Docker image
+        run: docker compose build
+
+      - name: Start Docker containers
+        run: docker compose up -d
+
+      - name: Install dependencies
+        run: docker compose exec -it php composer install
+
+      - name: Generate JWT keys
+        run: docker compose exec -it php bin/console lexik:jwt:generate-keypair -n --overwrite
+
+      - name: Run tests
+        run: docker compose exec -it php bin/phpunit

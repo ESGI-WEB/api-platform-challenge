@@ -22,6 +22,7 @@ import Appointments from "./pages/Appointments.jsx";
 import {headerFooterDisplayItem} from "@codegouvfr/react-dsfr/Display";
 import Employees from "./pages/Employees.jsx";
 import Employee from "./pages/Employee.jsx";
+import ManageTeams from "./pages/ManageTeams.jsx";
 
 function App() {
     const {t} = useTranslation();
@@ -81,6 +82,13 @@ function App() {
                 to: '/employees',
             },
             text: t('employees'),
+        },
+        {
+            role: Roles.PROVIDER,
+            linkProps: {
+                to: '/manage-teams',
+            },
+            text: t('manage_teams'),
         },
         {
             role: Roles.EMPLOYEE,
@@ -184,6 +192,11 @@ function App() {
                                 <Route path="employees" element={
                                     <ProtectedRoute requiredRole={Roles.EMPLOYEE}>
                                         <Employees/>
+                                    </ProtectedRoute>
+                                }/>
+                                <Route path="manage-teams" element={
+                                    <ProtectedRoute requiredRole={Roles.PROVIDER}>
+                                        <ManageTeams/>
                                     </ProtectedRoute>
                                 }/>
                                 <Route path="employees/:employeeId" element={
