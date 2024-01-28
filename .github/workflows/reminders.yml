@@ -1,6 +1,7 @@
 name: Send reminders
 
 on:
+  workflow_dispatch: # added for testing and demo purposes during presentation by simply clicking the "Run workflow" button
   schedule:
     - cron: '0 9 * * *'
 
