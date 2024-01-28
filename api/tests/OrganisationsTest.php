@@ -1,5 +1,4 @@
 <?php
-// api/tests/BooksTest.php
 
 namespace App\Tests;
 

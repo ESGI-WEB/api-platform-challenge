@@ -1,19 +1,12 @@
 <?php
-// api/tests/BooksTest.php
 
 namespace App\Tests;
 
-use App\Entity\Organisation;
-use App\Entity\Schedule;
-use App\Entity\Service;
-use App\Entity\User;
 use App\Enum\RolesEnum;
 use App\Factory\OrganisationFactory;
 use App\Factory\ScheduleFactory;
 use App\Factory\ServiceFactory;
 use App\Factory\UserFactory;
-use App\Story\DefaultOrganisationsStory;
-use App\Story\DefaultUsersStory;
 use Zenstruck\Foundry\Proxy;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
