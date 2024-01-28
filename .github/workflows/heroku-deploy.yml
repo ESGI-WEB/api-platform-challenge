@@ -30,3 +30,4 @@ jobs:
           HD_JWT_PUBLIC_KEY: "%kernel.project_dir%/config/jwt/public.pem"
           HD_TWILIO_SID: ${{secrets.TWILIO_SID}}
           HD_TWILIO_TOKEN: ${{secrets.TWILIO_TOKEN}}
+          HD_FRONT_URL: "https://api-platform-challenge.vercel.app"
