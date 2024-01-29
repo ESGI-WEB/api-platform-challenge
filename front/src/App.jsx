@@ -23,6 +23,7 @@ import {headerFooterDisplayItem} from "@codegouvfr/react-dsfr/Display";
 import Employees from "./pages/Employees.jsx";
 import Employee from "./pages/Employee.jsx";
 import ManageTeams from "./pages/ManageTeams.jsx";
+import Register from "./pages/Register.jsx";
 
 function App() {
     const {t} = useTranslation();
@@ -143,6 +144,9 @@ function App() {
                         {translationsLoaded ?
                             <Routes>
                                 <Route index element={<Home/>}/>
+                                <Route path="register" element={
+                                    <Register/>
+                                }/>
                                 <Route
                                     path="login"
                                     element={
