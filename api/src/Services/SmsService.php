@@ -113,7 +113,6 @@ readonly class SmsService
                     ]
                 );
         } catch (\Exception $e) {
-            echo $e->getMessage();
             // Do nothing as we don't want to break the app if Twilio is down
             // But we should log the error by something like Sentry
         }
