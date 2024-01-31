@@ -9,34 +9,32 @@ import CallOut from "@codegouvfr/react-dsfr/CallOut.js";
 import Notice from "@codegouvfr/react-dsfr/Notice.js";
 import Button from "@codegouvfr/react-dsfr/Button.js";
 import ActionTile from "../components/ActionTile/ActionTile.jsx";
-import useAppointmentService from "../services/useAppoitmentService.js";
-import Modal from "../components/Modal/Modal.jsx";
-import LoadableButton from "../components/LoadableButton/LoadableButton.jsx";
 import {useTranslation} from "react-i18next";
 import OrganisationLocation from "../components/OrganisationLocation.jsx";
 import CreateServiceModal from "../components/CreateServiceModal.jsx";
-import {Tag} from "@codegouvfr/react-dsfr/Tag.js";
 import useAuth, {Roles} from "../auth/useAuth.js";
 import CalendarItem from "../components/Calendar/CalendarItem.jsx";
 import CalendarHeaderDate from "../components/Calendar/CalendarHeaderDate.jsx";
+import ServiceTag from "../components/ServiceTag.jsx";
+import GetAppointmentModal from "../components/GetAppointmentModal.jsx";
+import EditServiceFeedbackModal from "../components/EditServiceFeedbackModal.jsx";
 
 export default function Organisation() {
     const {organisationId} = useParams();
     const organisationSrv = useOrganisationService();
-    const appointmentService = useAppointmentService();
     const [isUserProvider, setIsUserProvider] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [isSaving, setIsSaving] = useState(false);
     const [isErrored, setIsErrored] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isServiceFormOpen, setIsServiceFormOpen] = useState(false);
     const [organisation, setOrganisation] = useState(null);
     const [slots, setSlots] = useState([]);
     const [selectedService, setSelectedService] = useState(null);
     const [selectedSlot, setSelectedSlot] = useState(null);
-    const [selectedSlotProvider, setSelectedSlotProvider] = useState(null);
+    const [hasUserEditRights, setHasUserEditRights] = useState(false);
     const navigate = useNavigate();
     const {data} = useAuth();
-    const {t,i18n} = useTranslation();
+    const {t} = useTranslation();
 
     const loadService = () => {
         setIsLoading(true);
@@ -66,38 +64,7 @@ export default function Organisation() {
 
     const handleSlotSelection = (slot) => {
         setSelectedSlot(slot);
-        if (slot.providers.length === 1) {
-            setSelectedSlotProvider(slot.providers[0]);
-        } else {
-            setSelectedSlotProvider(null);
-        }
         setIsModalOpen(true);
-    }
-
-    const handleProviderSelection = (provider) => {
-        if (provider === selectedSlotProvider) {
-            setSelectedSlotProvider(null);
-        } else {
-            setSelectedSlotProvider(provider);
-        }
-    }
-
-    const handleSaveMeeting = () => {
-        const data = {
-            provider: `api/users/${selectedSlotProvider.id}`,
-            datetime: selectedSlot.datetime,
-            service: `api/services/${selectedService.id}`,
-        };
-
-        setIsSaving(true);
-        appointmentService.create(data).then((appointment) => {
-            setIsSaving(false);
-            setIsModalOpen(false);
-            navigate(`/appointment/${appointment.id}?display=success`);
-        }).catch((e) => {
-            console.error(e);
-            setIsSaving(false);
-        });
     }
 
     const handleOnServiceCreated = (service) => {
@@ -105,14 +72,27 @@ export default function Organisation() {
         setOrganisation({...organisation})
     }
 
-    const isUserAuthorized = () => {
-        return data.roles.includes(Roles.PROVIDER) &&
-          organisation.users.some(user => user.id === data.id);
-    };
+    const handleEditForm = (service) => {
+        if (!hasUserEditRights) {
+            return;
+        }
+        setSelectedService(service);
+        setIsServiceFormOpen(true);
+    }
 
     useEffect(() => {
         loadService();
+        setHasUserEditRights(false);
     }, [organisationId]);
+
+    useEffect(() => {
+        setHasUserEditRights(
+            organisation?.users?.length > 0 &&
+            data?.roles?.length > 0 &&
+            data.roles.includes(Roles.PROVIDER) &&
+            organisation.users.some(user => user.id === data.id)
+        );
+    }, [organisation, data]);
 
     if (isErrored) {
         return <InPageAlert alert={{severity: AlertSeverity.ERROR, closable: false}}/>;
@@ -126,7 +106,7 @@ export default function Organisation() {
         <div className="flex flex-column gap-2">
             <div className="flex space-between">
                 <h1>{organisation.name}</h1>
-                {isUserAuthorized() && <CreateServiceModal onServiceCreated={handleOnServiceCreated} organisationId={organisation.id}></CreateServiceModal>}
+                {hasUserEditRights && <CreateServiceModal onServiceCreated={handleOnServiceCreated} organisationId={organisation.id}></CreateServiceModal>}
             </div>
                 {isUserProvider &&
                 <div>
@@ -134,33 +114,30 @@ export default function Organisation() {
                         iconId="ri-calendar-line"
                         onClick={() => navigate(`/appointments?organisation=${organisationId}`)}
                     >
-                        Voir les rendez-vous de ce commissariat
+                        {t('see_police_station_appointments')}
                     </Button>
                 </div>
             }
 
             {(organisation.services.length <= 0 || slots.length <= 0) &&
-                  <>
-                      <div className="flex flex-wrap gap-1">
-                          {organisation.services.length > 0 && organisation.services.map((service) =>
-                            <Tag key={service.id}>{service.title}</Tag>
-                          )}
-                      </div>
+                <>
+                    <ServiceTag
+                        services={organisation.services}
+                        iconName={hasUserEditRights ? "ri-survey-line" : null}
+                        onIconClick={handleEditForm}
+                    />
 
-
-                        <CallOut
-                            buttonProps={{
-                                children: t('back'),
-                                onClick: () => navigate(-1),
-                            }}
-                            iconId="ri-calendar-close-fill"
-                            title={t('this_station_has_no_appointment')}
-
-                        >
-                            {t('this_station_has_no_appointment_details')}
-                        </CallOut>
-
-                  </>
+                    <CallOut
+                        buttonProps={{
+                        children: t('back'),
+                        onClick: () => navigate(-1),
+                        }}
+                        iconId="ri-calendar-close-fill"
+                        title={t('this_station_has_no_appointment')}
+                    >
+                        {t('this_station_has_no_appointment_details')}
+                    </CallOut>
+                </>
             }
 
             {organisation.services.length > 0 && slots.length > 0 &&
@@ -168,18 +145,15 @@ export default function Organisation() {
                     <ActionTile>
                         <p className="margin-0">{t('available_service_at_this_station')}</p>
 
-                        <div className="flex flex-wrap gap-2">
-                            {organisation.services.map((service, index) => (
-                                <Button
-                                    className="btn-with-background"
-                                    key={index}
-                                    priority={selectedService === service ? "primary" : "secondary"}
-                                    onClick={() => handleServiceChange(service)}
-                                >
-                                    {service.title}
-                                </Button>
-                            ))}
-                        </div>
+                        <ServiceTag
+                            services={organisation.services}
+                            className="btn-with-background"
+                            priority={(service) => selectedService === service ? "primary" : "secondary"}
+                            onClick={handleServiceChange}
+                            component={Button}
+                            iconName={hasUserEditRights ? "ri-survey-line" : null}
+                            onIconClick={handleEditForm}
+                        />
                     </ActionTile>
 
                     {selectedService === null &&
@@ -205,55 +179,21 @@ export default function Organisation() {
             }
 
 
-            {isModalOpen && <Modal
-                title={t('take_an_appointment')}
-                onClose={() => setIsModalOpen(false)}
-            >
-                <div className="flex flex-column gap-2">
-                    <p className="margin-0">{
-                        new Date(selectedSlot.datetime).toLocaleDateString(i18n.language, {
-                            weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'
-                        })
-                    }</p>
+            {isModalOpen &&
+                <GetAppointmentModal
+                    selectedSlot={selectedSlot}
+                    selectedService={selectedService}
+                    setIsModalOpen={setIsModalOpen}
+                    onSaved={(appointment) => navigate(`/appointment/${appointment.id}?display=success`)}
+                />
+            }
 
-
-                    <ActionTile>
-                        {selectedSlot.providers.length === 1 ?
-                            <p className="margin-0">{t('youll_have_an_appointment_with')}</p> :
-                            <p className="margin-0">{t('please_select_a_provider')}</p>
-                        }
-                        <div className="flex flex-wrap gap-2">
-                            {selectedSlot.providers.map((provider, index) => (
-                                <Button
-                                    className="btn-with-background"
-                                    key={index}
-                                    priority={selectedSlotProvider && selectedSlotProvider.id === provider.id ? "primary" : "secondary"}
-                                    onClick={() => handleProviderSelection(provider)}
-                                >
-                                    {provider.firstname} {provider.lastname}
-                                </Button>
-                            ))}
-                        </div>
-                    </ActionTile>
-
-                    <div className="flex space-between">
-                        <Button
-                            onClick={() => setIsModalOpen(false)}
-                            priority="tertiary no outline"
-                        >
-                            {t('back')}
-                        </Button>
-
-                        <LoadableButton
-                            onClick={() => handleSaveMeeting()}
-                            disabled={selectedSlotProvider === null || isSaving}
-                            isLoading={isSaving}
-                        >
-                            {t('take_an_appointment')}
-                        </LoadableButton>
-                    </div>
-                </div>
-            </Modal>}
+            {isServiceFormOpen &&
+                <EditServiceFeedbackModal
+                    setIsModalOpen={setIsServiceFormOpen}
+                    serviceId={selectedService.id}
+                />
+            }
         </div>
     );
 }

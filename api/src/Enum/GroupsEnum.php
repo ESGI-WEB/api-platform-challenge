@@ -33,4 +33,6 @@ enum GroupsEnum: string
     case APPOINTMENT_READ_DETAILED = 'appointment:read:detailed';
     case APPOINTMENT_WRITE = 'appointment:write';
     case TEAMS_READ_USER_DETAILED = 'teams:read:user_detailed';
+    case FEEDBACK_READ = 'feedback:read';
+    case FEEDBACK_WRITE = 'feedback:write';
 }
