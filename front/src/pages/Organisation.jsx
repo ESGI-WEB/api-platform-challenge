@@ -94,6 +94,9 @@ export default function Organisation() {
             setIsSaving(false);
             setIsModalOpen(false);
             navigate(`/appointment/${appointment.id}?display=success`);
+        }).catch((e) => {
+            console.error(e);
+            setIsSaving(false);
         });
     }
 

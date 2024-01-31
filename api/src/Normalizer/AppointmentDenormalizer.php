@@ -31,7 +31,7 @@ class AppointmentDenormalizer implements DenormalizerInterface
         }
 
         if (!empty($data['provider'])) { // normally no need of that, but a weird bug occurs and symfony doesn't set provider but try to create one instead
-            $provider = $this->iriConverter->getResourceFromIri($data['provider']);
+            $provider = $this->iriConverter->getResourceFromIri($data['provider'], ['fetch_data' => false]);
             $appointment->setProvider($provider);
         }
 
