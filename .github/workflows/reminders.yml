@@ -17,8 +17,12 @@ jobs:
     steps:
       - name: Login and Get Token
         run: |
-          TOKEN=$(curl -X POST -H "Content-Type: application/json" -d '{"email":"'"$EMAIL"'","password":"'"$PASSWORD"'"}' $API_URL/login | jq -r '.token')
+          echo "$(curl -X POST -H "Content-Type: application/json" -d '{"email":"'"$EMAIL"'","password":"'"$PASSWORD"'"}' $API_URL/login | jq -r '.token')" > token_file
 
       - name: Send Reminder
         run: |
-          curl -X POST -H "Authorization: Bearer $TOKEN" $API_URL/sms/user-reminders
+          curl -X POST -H "Authorization: Bearer $(cat token_file)" $API_URL/sms/user-reminders
+
+      - name: Delete Token
+        run: |
+          rm token_file
