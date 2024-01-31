@@ -10,14 +10,14 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      API_URL: https://ecommissariat-back-c094c30ab3bb.herokuapp.com
+      API_URL: https://ecommissariat-back-c094c30ab3bb.herokuapp.com/api
       EMAIL: ${{ secrets.API_CRON_EMAIL }}
       PASSWORD: ${{ secrets.API_CRON_PASSWORD }}
 
     steps:
       - name: Login and Get Token
         run: |
-          TOKEN=$(curl -X POST -H "Content-Type: application/json" -d '{"email":"'"$EMAIL"'","password":"'"$PASSWORD"'"}' $API_URL/api/login | jq -r '.token')
+          TOKEN=$(curl -X POST -H "Content-Type: application/json" -d '{"email":"'"$EMAIL"'","password":"'"$PASSWORD"'"}' $API_URL/login | jq -r '.token')
 
       - name: Send Reminder
         run: |
