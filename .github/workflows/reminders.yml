@@ -21,4 +21,4 @@ jobs:
 
       - name: Send Reminder
         run: |
-          curl -X GET -H "Authorization: Bearer $TOKEN" $API_URL/send-reminder
+          curl -X GET -H "Authorization: Bearer $TOKEN" $API_URL/user-reminders
