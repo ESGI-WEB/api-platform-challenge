@@ -3,8 +3,7 @@
 namespace App\Controller;
 
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\GetCollection;
-use App\Repository\ServiceRepository;
+use ApiPlatform\Metadata\Post;
 use App\Services\SmsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/api/sms')]
 #[AsController]
 #[ApiResource]
-#[GetCollection(
+#[Post(
     routePrefix: '/user-reminders',
     routeName: 'user_reminders',
     openapiContext: [
