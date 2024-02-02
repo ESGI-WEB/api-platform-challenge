@@ -20,6 +20,9 @@ api_platform:
         pagination_client_partial: true
         pagination_maximum_items_per_page: 100
 
+    eager_loading:
+        force_eager: false
+
     formats:
         jsonld: [ 'application/ld+json' ]
         jsonhal: [ 'application/hal+json' ]

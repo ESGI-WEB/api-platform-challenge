@@ -55,7 +55,7 @@ function App() {
     }
     const navigation = [
         {
-            role: [Roles.ADMIN, Roles.PROVIDER, Roles.EMPLOYEE],
+            role: [Roles.ADMIN, Roles.PROVIDER],
             iconId: 'fr-icon-user-line',
             linkProps: {
                 to: '/admin',
@@ -154,7 +154,7 @@ function App() {
                                 <Route
                                     path="admin"
                                     element={
-                                        <ProtectedRoute requiredRoles={[Roles.ADMIN, Roles.PROVIDER, Roles.EMPLOYEE]}>
+                                        <ProtectedRoute requiredRoles={[Roles.ADMIN, Roles.PROVIDER]}>
                                             <Admin/>
                                         </ProtectedRoute>
                                     }

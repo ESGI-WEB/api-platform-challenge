@@ -41,6 +41,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
                 GroupsEnum::ORGANISATION_READ->value
             ]],
             security: "is_granted('" . UserVoter::VIEW . "', object)",
+
         ),
         new GetCollection(security: "is_granted('" . RolesEnum::ADMIN->value . "')"),
         new Post(
