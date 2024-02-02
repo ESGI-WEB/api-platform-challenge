@@ -4,7 +4,6 @@ import GlobalFooter from "./components/GlobalFooter.jsx";
 import GlobalHeader from "./components/GlobalHeader.jsx";
 import {Navigate, Route, Routes} from "react-router-dom";
 import Home from "./pages/Home.jsx";
-import Admin from "./pages/admin/Admin.jsx";
 import CreateOrganisation from "./pages/CreateOrganisation.jsx";
 import ProvidersOrganisations from "./pages/ProvidersOrganisations.jsx";
 import useAuth, {Roles} from "./auth/useAuth.js";
@@ -23,6 +22,7 @@ import {headerFooterDisplayItem} from "@codegouvfr/react-dsfr/Display";
 import Employees from "./pages/Employees.jsx";
 import Employee from "./pages/Employee.jsx";
 import ManageTeams from "./pages/ManageTeams.jsx";
+import Statistics from "./pages/admin/Statistics.jsx";
 
 function App() {
     const {t} = useTranslation();
@@ -58,9 +58,9 @@ function App() {
             role: [Roles.ADMIN, Roles.PROVIDER],
             iconId: 'fr-icon-user-line',
             linkProps: {
-                to: '/admin',
+                to: '/statistics',
             },
-            text: t('admin')
+            text: t('statistics'),
         },
         {
             role: Roles.PROVIDER,
@@ -152,10 +152,10 @@ function App() {
                                     }
                                 />
                                 <Route
-                                    path="admin"
+                                    path="statistics"
                                     element={
                                         <ProtectedRoute requiredRoles={[Roles.ADMIN, Roles.PROVIDER]}>
-                                            <Admin/>
+                                            <Statistics/>
                                         </ProtectedRoute>
                                     }
                                 />

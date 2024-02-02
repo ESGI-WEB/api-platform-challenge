@@ -9,7 +9,7 @@ import ChartIndicator from "../../components/ChartIndicator.jsx";
 import CardListIndicator from "../../components/CardListIndicator.jsx";
 import TableIndicator from "../../components/TableIndicator.jsx";
 
-export default function Admin() {
+export default function Statistics() {
     const {t, i18n} = useTranslation();
     const [stats, setStats] = useState({
         isLoading: true,
