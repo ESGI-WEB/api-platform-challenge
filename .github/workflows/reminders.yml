@@ -1,0 +1,28 @@
+name: Send reminders
+
+on:
+  workflow_dispatch: # added for testing and demo purposes during presentation by simply clicking the "Run workflow" button
+  schedule:
+    - cron: '0 9 * * *'
+
+jobs:
+  send-reminders:
+    runs-on: ubuntu-latest
+
+    env:
+      API_URL: https://ecommissariat-back-c094c30ab3bb.herokuapp.com/api
+      EMAIL: ${{ secrets.API_CRON_EMAIL }}
+      PASSWORD: ${{ secrets.API_CRON_PASSWORD }}
+
+    steps:
+      - name: Login and Get Token
+        run: |
+          echo "$(curl -X POST -H "Content-Type: application/json" -d '{"email":"'"$EMAIL"'","password":"'"$PASSWORD"'"}' $API_URL/login | jq -r '.token')" > token_file
+
+      - name: Send Reminder
+        run: |
+          curl -X POST -H "Authorization: Bearer $(cat token_file)" $API_URL/sms/user-reminders
+
+      - name: Delete Token
+        run: |
+          rm token_file
