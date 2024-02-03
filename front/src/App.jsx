@@ -24,7 +24,7 @@ import Employees from "./pages/Employees.jsx";
 import Employee from "./pages/Employee.jsx";
 import ManageTeams from "./pages/ManageTeams.jsx";
 import Register from "./pages/Register.jsx";
-
+import RegisterOrganisation from "./pages/RegisterOrganisation.jsx"
 function App() {
     const {t} = useTranslation();
     const [translationsLoaded, setTranslationsLoaded] = useState(true);
@@ -146,6 +146,9 @@ function App() {
                                 <Route index element={<Home/>}/>
                                 <Route path="register" element={
                                     <Register/>
+                                }/>
+                                <Route path="register-organisation" element={
+                                    <RegisterOrganisation/>
                                 }/>
                                 <Route
                                     path="login"

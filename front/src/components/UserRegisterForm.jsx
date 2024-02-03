@@ -9,7 +9,7 @@ import useUserService from "../services/useUserService.js";
 import {useNavigate} from "react-router-dom";
 
 export default function UserRegisterForm () {
-  const { t } = useTranslation();
+  const {t} = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [isPasswordValid, setIsPasswordValid] = useState(false);
   const [email, setEmail] = useState('default');
@@ -24,20 +24,25 @@ export default function UserRegisterForm () {
   const [passwordMismatch, setPasswordMismatch] = useState(false);
   const userService = useUserService();
   const navigate = useNavigate();
+  const [message, setMessage] = useState("");
 
 
 
 
-  const handleRegister = () => {
+
+  const handleRegister = (e) => {
+    e.preventDefault();
     const user = {}
+    setIsLoading(true);
     user.lastname = name
     user.firstname = firstName
     user.email = email
     user.phone = phone
     user.plainPassword = password
+
     userService.postUser(user).then((response) => {
       if (response) {
-        console.log(response)
+        setMessage('Compte crée');
       }
     }).catch((error) => {
       console.error(error)
@@ -58,7 +63,7 @@ export default function UserRegisterForm () {
   return (
     <form onSubmit={handleRegister} className={'fr-col-md-6 fr-col-lg-4 centered'}>
       <InPageAlert alert={alert} />
-      <h1>Inscription</h1>
+      <h1>{t('registration')}</h1>
       <Input
         label={t('mail')}
         nativeInputProps={{
@@ -67,21 +72,22 @@ export default function UserRegisterForm () {
         onChange={(e) => setEmail(e.target.value)}
       ></Input>
       <Input
-        label='Nom'
+        label={t('last_name')}
         nativeInputProps={{
           type: 'text',
         }}
         onChange={(e) => setName(e.target.value)}
       ></Input>
       <Input
-        label='Prénom'
+        label={t('first_name')}
         nativeInputProps={{
           type: 'text',
         }}
         onChange={(e) => setFirstName(e.target.value)}
       ></Input>
+      <span className="fr-hint-text">Facultatif. Pour être notifié lors des rdv</span>
       <Input
-        label='Numéro de téléphone'
+        label={t('phone_number')}
         nativeInputProps={{
           type: 'text',
         }}
@@ -93,7 +99,7 @@ export default function UserRegisterForm () {
         onValidityChange={setIsPasswordValid}
       />
       <Input
-        label='Confirmer le mot de passe'
+        label={t('confirm_password')}
         nativeInputProps={{
           type: 'password',
         }}
@@ -102,15 +108,20 @@ export default function UserRegisterForm () {
       ></Input>
 
       {passwordMismatch && (
-        <p>Les mots de passes ne sont pas identiques</p>
+        <p>{t('password_not_identical')}</p>
       )}
       <div className={'flex flex-column justify-center align-center gap-2 fr-my-4w'}>
         <LoadableButton
           isLoading={isLoading}
         >
-          S'inscrire
+          {t('registration')}
         </LoadableButton>
+        { message &&
+          <div className="message">{message ? <p>{message}</p> : null}</div>
+        }
+        <a className="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="/register-organisation">Vous êtes policier ou commissaire ?</a>
       </div>
+
     </form>
   );
 }

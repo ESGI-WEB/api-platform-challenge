@@ -13,6 +13,10 @@ const useUserService = () => {
             method: 'POST',
             body: body,
         }),
+        postProvider: (body) => api(`users/provider`, {
+            method: 'POST',
+            body: body,
+        }),
     };
 };
 
