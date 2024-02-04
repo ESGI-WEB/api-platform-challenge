@@ -12,6 +12,8 @@ jobs:
   tests:
       uses: ./.github/workflows/back-test.yml
   build:
+    needs:
+      - tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,3 +28,6 @@ jobs:
           HD_JWT_PASSPHRASE: ${{secrets.JWT_PASSPHRASE}}
           HD_JWT_SECRET_KEY: "%kernel.project_dir%/config/jwt/private.pem"
           HD_JWT_PUBLIC_KEY: "%kernel.project_dir%/config/jwt/public.pem"
+          HD_TWILIO_SID: ${{secrets.TWILIO_SID}}
+          HD_TWILIO_TOKEN: ${{secrets.TWILIO_TOKEN}}
+          HD_FRONT_URL: "https://api-platform-challenge.vercel.app"
