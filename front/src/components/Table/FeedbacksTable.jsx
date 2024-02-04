@@ -59,15 +59,13 @@ export default function FeedbacksTable({
                                 {answer.appointment.provider.firstname} {answer.appointment.provider.lastname}
                             </TableCellComponent>
                             <TableCellComponent>
-                                <LinkButton to={`/appointments/${answer.appointment.id}`}>
-                                    #{answer.appointment.id} {t('on')} {new Date(answer.appointment.datetime).toLocaleDateString(i18n.language, {
-                                        year: 'numeric',
-                                        month: 'numeric',
-                                        day: 'numeric',
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                    })}
-                                </LinkButton>
+                                {t('on')} {new Date(answer.appointment.datetime).toLocaleDateString(i18n.language, {
+                                    year: 'numeric',
+                                    month: 'numeric',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                })}
                             </TableCellComponent>
                         </TableRowComponent>
                     ))}
