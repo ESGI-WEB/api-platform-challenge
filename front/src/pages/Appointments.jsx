@@ -136,7 +136,7 @@ export default function Appointments() {
 
             {appointments.map((appointment) =>
                 <div key={appointment.id} className="fr-mb-5v">
-                    <AppointmentCard appointment={appointment} enlargeLink={!isUserEmployee}/>
+                    <AppointmentCard appointment={appointment} enlargeLink/>
                 </div>
             )}
 

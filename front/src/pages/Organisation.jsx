@@ -17,12 +17,11 @@ import CalendarItem from "../components/Calendar/CalendarItem.jsx";
 import CalendarHeaderDate from "../components/Calendar/CalendarHeaderDate.jsx";
 import ServiceTag from "../components/ServiceTag.jsx";
 import GetAppointmentModal from "../components/GetAppointmentModal.jsx";
-import EditServiceFeedbackModal from "../components/EditServiceFeedbackModal.jsx";
+import EditServiceFeedback from "../components/EditServiceFeedback.jsx";
 
 export default function Organisation() {
     const {organisationId} = useParams();
     const organisationSrv = useOrganisationService();
-    const [isUserProvider, setIsUserProvider] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [isErrored, setIsErrored] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,7 +44,6 @@ export default function Organisation() {
         ]).then(([organisation, slots]) => {
             setOrganisation(organisation);
             setSlots(slots);
-            setIsUserProvider(data.roles.includes(Roles.PROVIDER) && organisation.users.some((provider) => provider.id === data.id));
         }).catch((e) => {
             console.error(e);
             setIsErrored(true);
@@ -106,16 +104,17 @@ export default function Organisation() {
         <div className="flex flex-column gap-2">
             <div className="flex space-between">
                 <h1>{organisation.name}</h1>
-                {hasUserEditRights && <CreateServiceModal onServiceCreated={handleOnServiceCreated} organisationId={organisation.id}></CreateServiceModal>}
             </div>
-                {isUserProvider &&
-                <div>
+
+            {hasUserEditRights &&
+                <div className="flex flex-row gap-2">
                     <Button
                         iconId="ri-calendar-line"
                         onClick={() => navigate(`/appointments?organisation=${organisationId}`)}
                     >
                         {t('see_police_station_appointments')}
                     </Button>
+                    <CreateServiceModal onServiceCreated={handleOnServiceCreated} organisationId={organisation.id}></CreateServiceModal>
                 </div>
             }
 
@@ -149,9 +148,9 @@ export default function Organisation() {
                             services={organisation.services}
                             className="btn-with-background"
                             priority={(service) => selectedService === service ? "primary" : "secondary"}
-                            onClick={handleServiceChange}
                             component={Button}
                             iconName={hasUserEditRights ? "ri-survey-line" : null}
+                            onTagClick={handleServiceChange}
                             onIconClick={handleEditForm}
                         />
                     </ActionTile>
@@ -189,7 +188,7 @@ export default function Organisation() {
             }
 
             {isServiceFormOpen &&
-                <EditServiceFeedbackModal
+                <EditServiceFeedback
                     setIsModalOpen={setIsServiceFormOpen}
                     serviceId={selectedService.id}
                 />

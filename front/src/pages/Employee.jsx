@@ -119,7 +119,12 @@ export default function Employee() {
                     {t('default_planning')}
                 </Typography>
 
-                <EmployeePlanning schedules={schedules} onAddClick={(day) => setEditSchedulesForDay(day)} disabled={isPageReadOnly}/>
+                <EmployeePlanning
+                    schedules={schedules}
+                    onAddClick={(day) => setEditSchedulesForDay(day)}
+                    disabled={isPageReadOnly}
+                    showLegend={+employeeId !== data.id}
+                />
             </div>
             <div>
                 <Typography variant="h2" gutterBottom>

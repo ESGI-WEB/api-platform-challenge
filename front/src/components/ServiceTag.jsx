@@ -4,7 +4,7 @@ export default function ServiceTag({
     services = [],
     className = "",
     priority = (service) => "",
-    onClick = void 0,
+    onTagClick = void 0,
     component: Component = Tag,
     iconName = null,
     onIconClick = void 0,
@@ -12,17 +12,18 @@ export default function ServiceTag({
     return (
         <div className="flex flex-row gap-2">
                 {services.length > 0 && services.map((service) =>
-                    <Component
-                        className={className}
-                        key={service.id}
-                        priority={priority(service)}
-                        onClick={() => onClick(service)}
-                    >
-                        {service.title}
+                    <div key={service.id}>
+                        <Component
+                            className={className}
+                            priority={priority(service)}
+                            onClick={() => onTagClick(service)}
+                        >
+                            {service.title}
+                        </Component>
                         {iconName &&
-                            <i className={iconName + ' fr-ml-1w'} onClick={() => onIconClick(service)}></i>
+                            <i className={iconName} onClick={() => onIconClick(service)}></i>
                         }
-                    </Component>
+                    </div>
                 )}
         </div>
     );
