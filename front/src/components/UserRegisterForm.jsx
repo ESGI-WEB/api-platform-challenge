@@ -8,7 +8,7 @@ import {useTranslation} from "react-i18next";
 import useUserService from "../services/useUserService.js";
 import {useNavigate} from "react-router-dom";
 
-export default function UserRegisterForm () {
+export default function UserRegisterForm ({ userType }) {
   const {t} = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [isPasswordValid, setIsPasswordValid] = useState(false);
@@ -16,7 +16,7 @@ export default function UserRegisterForm () {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [firstName, setFirstName] = useState('');
-  const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState(null);
   const [alert, setAlert] = useState(null);
   const [passwordErrorSeverity, setPasswordErrorSeverity] = useState(PasswordSeverity.INFO);
   const AuthService = useAuthService();
@@ -25,6 +25,8 @@ export default function UserRegisterForm () {
   const userService = useUserService();
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
+  const [file, setFile] = useState(null);
+
 
 
 
@@ -32,36 +34,64 @@ export default function UserRegisterForm () {
 
   const handleRegister = (e) => {
     e.preventDefault();
-    const user = {}
     setIsLoading(true);
-    user.lastname = name
-    user.firstname = firstName
-    user.email = email
-    user.phone = phone
-    user.plainPassword = password
 
-    userService.postUser(user).then((response) => {
-      if (response) {
-        setMessage('Compte crée');
+    if (userType === 'provider'){
+      const formData = new FormData();
+      const sanitizedPhone = phone.replace(/\s/g, '').replace(/^0/, '');
+      formData.append("lastname", name);
+      formData.append("firstname", firstName);
+      formData.append("email", email);
+      formData.append("phone", sanitizedPhone !== null ? `+33${sanitizedPhone}` : null);
+      formData.append("plainPassword", password);
+      formData.append("file", file);
+
+
+
+      userService.postProvider(formData).then((response) => {
+        if (response) {
+          setMessage('Compte crée');
+        }
+      }).catch((error) => {
+        console.error(error)
+        setAlert({
+          severity: AlertSeverity.ERROR,
+        });
+        window.scrollTo(0, 0)
+      }).finally(() => setIsLoading(false));
+    }
+
+    else {
+      const user = {}
+      user.lastname = name
+      user.firstname = firstName
+      user.email = email
+      user.phone = phone
+      user.plainPassword = password
+      if (userType === 'employee'){
+        user.registerAsEmployee = true;
       }
-    }).catch((error) => {
-      console.error(error)
-      setAlert({
-        severity: AlertSeverity.ERROR,
-      });
-      window.scrollTo(0, 0)
-    }).finally(() => setIsLoading(false));
+      userService.postUser(user).then((response) => {
+        if (response) {
+          setMessage('Compte crée');
+        }
+      }).catch((error) => {
+        console.error(error)
+        setAlert({
+          severity: AlertSeverity.ERROR,
+        });
+        window.scrollTo(0, 0)
+      }).finally(() => setIsLoading(false));
+    }
   };
 
   const handlePasswordChange = (value) => {
     setConfirmPassword(value);
-
-    // Vérification en temps réel et mise à jour du statut de correspondance des mots de passe
     setPasswordMismatch(value !== password);
   };
 
   return (
-    <form onSubmit={handleRegister} className={'fr-col-md-6 fr-col-lg-4 centered'}>
+    <form onSubmit={handleRegister}>
       <InPageAlert alert={alert} />
       <h1>{t('registration')}</h1>
       <Input
@@ -110,6 +140,16 @@ export default function UserRegisterForm () {
       {passwordMismatch && (
         <p>{t('password_not_identical')}</p>
       )}
+      {userType === 'provider' && (
+        <Input
+          label='Télécharger un fichier PDF (optionnel)'
+          nativeInputProps={{
+            type: 'file',
+            accept: '.pdf',
+          }}
+          onChange={(e) => setFile(e.target.files[0])}
+        ></Input>
+      )}
       <div className={'flex flex-column justify-center align-center gap-2 fr-my-4w'}>
         <LoadableButton
           isLoading={isLoading}
@@ -119,7 +159,6 @@ export default function UserRegisterForm () {
         { message &&
           <div className="message">{message ? <p>{message}</p> : null}</div>
         }
-        <a className="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="/register-organisation">Vous êtes policier ou commissaire ?</a>
       </div>
 
     </form>

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import ProviderRegisterForm from "../components/ProviderRegisterForm.jsx";
-import EmployeeRegisterForm from "../components/EmployeeRegisterForm.jsx";
+import UserRegisterForm from "../components/UserRegisterForm.jsx";
 
 export default function Register() {
   const [selectedOption, setSelectedOption] = useState('user');
@@ -45,8 +44,8 @@ export default function Register() {
       </fieldset>
 
       <div>
-        {selectedOption === 'provider' && <ProviderRegisterForm />}
-        {selectedOption === 'employee' && <EmployeeRegisterForm />}
+        {selectedOption === 'provider' && <UserRegisterForm userType='provider' />}
+        {selectedOption === 'employee' && <UserRegisterForm userType='employee' />}
       </div>
     </div>
   );

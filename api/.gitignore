@@ -2,6 +2,7 @@
 .no-docker
 Makefile.local.mk
 .idea
+public/kbis
 
 ###> symfony/framework-bundle ###
 /.env.local
