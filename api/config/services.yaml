@@ -8,7 +8,6 @@ parameters:
     app.twilio_token: '%env(TWILIO_TOKEN)%'
     app.twilio_from: '%env(TWILIO_FROM)%'
     app.front_url: '%env(FRONT_URL)%'
-    $emailSender: '%env(EMAIL_RECEIVER)%'
 
 services:
     # default configuration for services in *this* file
@@ -37,6 +36,10 @@ services:
         arguments:
             $mailjetAPIKey: '%env(MAILJET_API_KEY)%'
             $mailjetSecretKey: '%env(MAILJET_SECRET_KEY)%'
+
+    App\EventListener\ProviderRegisteredListener:
+        arguments:
+            $emailSender: '%env(EMAIL_RECEIVER)%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
