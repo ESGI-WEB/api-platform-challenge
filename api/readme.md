@@ -1,5 +1,7 @@
 # Install project : 
 
+copy .exemple.local.env to .env.local and fill it with your own values, then install it :
+
 ```shell
 make install
 ```
