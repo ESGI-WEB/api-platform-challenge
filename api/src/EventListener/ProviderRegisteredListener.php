@@ -14,12 +14,12 @@ class ProviderRegisteredListener
 {
     public function __construct(
         private readonly EmailService $emailService,
-        private readonly string $emailSender
+        private readonly string $emailReceiver
     ) { }
 
     public function postPersist(User $user, PostPersistEventArgs $event): void
     {
-        $emailAdmin = $this->emailSender;
+        $emailAdmin = $this->emailReceiver;
 
         if (in_array(RolesEnum::PROVIDER->value, $user->getRoles()) && $emailAdmin !== null) {
             $this->emailService->sendValidationEmail($emailAdmin, $user);

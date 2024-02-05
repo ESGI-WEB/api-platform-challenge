@@ -39,7 +39,7 @@ services:
 
     App\EventListener\ProviderRegisteredListener:
         arguments:
-            $emailSender: '%env(EMAIL_RECEIVER)%'
+            $emailReceiver: '%env(EMAIL_RECEIVER)%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
