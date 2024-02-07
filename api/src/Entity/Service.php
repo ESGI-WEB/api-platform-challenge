@@ -31,13 +31,13 @@ use ApiPlatform\Metadata\Post;
 #[ORM\Entity(repositoryClass: ServiceRepository::class)]
 class Service
 {
-    #[Groups([GroupsEnum::SERVICE_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_WRITE->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
+    #[Groups([GroupsEnum::SERVICE_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_WRITE->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value, GroupsEnum::ANSWER_READ_DETAILED->value])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups([GroupsEnum::SERVICE_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value, GroupsEnum::SERVICE_WRITE->value])]
+    #[Groups([GroupsEnum::SERVICE_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value, GroupsEnum::SERVICE_WRITE->value, GroupsEnum::ANSWER_READ_DETAILED->value])]
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
@@ -45,11 +45,12 @@ class Service
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
-    #[Groups([GroupsEnum::SERVICE_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value, GroupsEnum::SERVICE_WRITE->value])]
+    #[Groups([GroupsEnum::SERVICE_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value, GroupsEnum::SERVICE_WRITE->value, GroupsEnum::ANSWER_READ_DETAILED->value])]
     #[ORM\ManyToOne(inversedBy: 'services')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Organisation $organisation = null;
 
+    #[Groups([GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
     #[ORM\OneToMany(mappedBy: 'service', targetEntity: Feedback::class, orphanRemoval: true)]
     private Collection $feedback;
 

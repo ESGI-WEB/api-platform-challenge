@@ -65,7 +65,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 class Organisation
 {
-    #[Groups([GroupsEnum::ORGANISATION_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
+    #[Groups([GroupsEnum::ORGANISATION_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value, GroupsEnum::ANSWER_READ_DETAILED->value])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -77,7 +77,8 @@ class Organisation
     #[Groups([
         GroupsEnum::ORGANISATION_READ->value, GroupsEnum::ORGANISATION_READ_DETAILED->value,
         GroupsEnum::APPOINTMENT_READ_DETAILED->value,
-        GroupsEnum::ORGANISATION_UPDATE->value
+        GroupsEnum::ORGANISATION_UPDATE->value,
+        GroupsEnum::ANSWER_READ_DETAILED->value
     ])]
     #[Assert\NotBlank]
     #[Assert\Length(min: 3, max: 255)]

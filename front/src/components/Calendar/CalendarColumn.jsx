@@ -26,6 +26,7 @@ export default function CalendarColumn({
                         onClick={onDateClick ? () => onDateClick(date.data) : undefined}
                         severity={date.data.severity ?? 'info'}
                         disabled={disabled}
+                        hoverText={date.data.hoverText}
                     />
                 ))}
             </div>
