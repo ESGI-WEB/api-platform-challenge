@@ -115,7 +115,7 @@ export default function UserRegisterForm ({ userType }) {
         }}
         onChange={(e) => setFirstName(e.target.value)}
       ></Input>
-      <span className="fr-hint-text">Facultatif. Pour être notifié lors des rdv</span>
+      <span className="fr-hint-text">{t('phone_optional')}</span>
       <Input
         label={t('phone_number')}
         nativeInputProps={{
@@ -142,7 +142,7 @@ export default function UserRegisterForm ({ userType }) {
       )}
       {userType === 'provider' && (
         <Input
-          label='Télécharger un fichier PDF (optionnel)'
+          label={t('upload_pdf')}
           nativeInputProps={{
             type: 'file',
             accept: '.pdf',

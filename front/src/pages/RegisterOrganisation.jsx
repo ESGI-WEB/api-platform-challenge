@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import UserRegisterForm from "../components/UserRegisterForm.jsx";
+import {useTranslation} from "react-i18next";
+
 
 export default function Register() {
   const [selectedOption, setSelectedOption] = useState('user');
+  const {t} = useTranslation();
+
 
   const handleOptionChange = (option) => {
     setSelectedOption(option);
@@ -10,7 +14,7 @@ export default function Register() {
 
   return (
     <div>
-      <h1>Register</h1>
+      <h1>{t('registration')}</h1>
 
       <fieldset className="fr-fieldset" id="radio-inline" aria-labelledby="radio-inline-legend radio-inline-messages">
         <div className="fr-fieldset__element fr-fieldset__element--inline">
@@ -22,7 +26,7 @@ export default function Register() {
                    checked={selectedOption === 'employee'}
                    onChange={() => handleOptionChange('employee')}/>
             <label className="fr-label" htmlFor="radio-inline-2">
-              Vous êtes un policier
+              {t('you_are_police_officer')}
             </label>
           </div>
         </div>
@@ -35,7 +39,7 @@ export default function Register() {
                    checked={selectedOption === 'provider'}
                    onChange={() => handleOptionChange('provider')}/>
             <label className="fr-label" htmlFor="radio-inline-3">
-              Vous êtes un commisaire
+              {t('you_are_commissioner')}
             </label>
           </div>
         </div>
