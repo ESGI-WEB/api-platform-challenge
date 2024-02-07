@@ -21,7 +21,7 @@ class ProviderRegisteredListener
     {
         $emailAdmin = $this->emailReceiver;
 
-        if (in_array(RolesEnum::PROVIDER->value, $user->getRoles()) && $emailAdmin !== null) {
+        if (in_array(RolesEnum::PROVIDER_TO_VALIDATE->value, $user->getRoles()) && $emailAdmin !== null) {
             $this->emailService->sendValidationEmail($emailAdmin, $user);
         }
     }
