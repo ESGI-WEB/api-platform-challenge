@@ -30,6 +30,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
     operations: [
+        new Get(security: 'is_granted("' . RolesEnum::ADMIN->value . '")'),
         new GetCollection(security: 'is_granted("' . RolesEnum::ADMIN->value . '")'),
         new Post(
             normalizationContext: ['groups' => [GroupsEnum::APPOINTMENT_READ->value]],
@@ -168,19 +169,19 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: AppointmentRepository::class)]
 class Appointment
 {
-    #[Groups([GroupsEnum::APPOINTMENT_READ->value])]
+    #[Groups([GroupsEnum::APPOINTMENT_READ->value, GroupsEnum::ANSWER_READ_DETAILED->value])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[Groups([GroupsEnum::APPOINTMENT_WRITE->value, GroupsEnum::APPOINTMENT_READ->value])]
+    #[Groups([GroupsEnum::APPOINTMENT_WRITE->value, GroupsEnum::APPOINTMENT_READ->value, GroupsEnum::ANSWER_READ_DETAILED->value])]
     #[Assert\NotNull]
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'clientAppointments')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $client = null;
 
-    #[Groups([GroupsEnum::APPOINTMENT_WRITE->value, GroupsEnum::APPOINTMENT_READ->value])]
+    #[Groups([GroupsEnum::APPOINTMENT_WRITE->value, GroupsEnum::APPOINTMENT_READ->value, GroupsEnum::ANSWER_READ_DETAILED->value])]
     #[Assert\NotNull]
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'providerAppointments')]
     #[ORM\JoinColumn(nullable: false)]
@@ -192,12 +193,12 @@ class Appointment
     #[ORM\JoinColumn(nullable: false)]
     private ?Service $service = null;
 
-    #[Groups([GroupsEnum::APPOINTMENT_WRITE->value, GroupsEnum::APPOINTMENT_READ->value])]
+    #[Groups([GroupsEnum::APPOINTMENT_WRITE->value, GroupsEnum::APPOINTMENT_READ->value, GroupsEnum::ANSWER_READ_DETAILED->value])]
     #[Assert\NotNull]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $datetime = null;
 
-    #[Groups([GroupsEnum::APPOINTMENT_WRITE->value])]
+    #[Groups([GroupsEnum::APPOINTMENT_WRITE->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value])]
     #[ORM\OneToMany(mappedBy: 'appointment', targetEntity: Answer::class, orphanRemoval: true)]
     private Collection $answers;
 

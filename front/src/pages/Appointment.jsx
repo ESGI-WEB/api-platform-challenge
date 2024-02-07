@@ -9,6 +9,8 @@ import OrganisationLocation from "../components/OrganisationLocation.jsx";
 import AppointmentStatusBadge, {AppointmentStatus} from "../components/AppointmentStatusBadge.jsx";
 import LoadableButton from "../components/LoadableButton/LoadableButton.jsx";
 import RescheduleAppointment from "../components/RescheduleAppointment.jsx";
+import AnswerFeedback from "../components/AnswerFeedback.jsx";
+import useFeedbackService from "../services/useFeedbackService.js";
 
 export default function Appointment() {
     const {appointmentId} = useParams();
@@ -17,9 +19,12 @@ export default function Appointment() {
     const display = params.get('display');
     const [isLoading, setIsLoading] = useState(false);
     const [isCancelling, setIsCancelling] = useState(false);
+    const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
+    const [hasSubmittedFeedback, setHasSubmittedFeedback] = useState(false);
     const [pageAlert, setPageAlert] = useState(null);
     const [appointment, setAppointment] = useState(null);
     const appointmentService = useAppointmentService();
+    const feedbackService = useFeedbackService();
     const navigate = useNavigate();
     const location = useLocation();
     const {t, i18n} = useTranslation();
@@ -39,6 +44,7 @@ export default function Appointment() {
             .then((appointment) => {
                 setAppointment(appointment);
                 setPageAlert(null);
+                setHasSubmittedFeedback(appointment.answers?.length > 0);
             })
             .catch((e) => {
                 console.error(e);
@@ -77,6 +83,19 @@ export default function Appointment() {
         loadAppointment();
     }, [location]);
 
+    const submitFeedback = (feedbacks) => {
+        setIsSubmittingFeedback(true);
+        const answers = feedbacks
+            .filter(fb => fb.value !== undefined && fb.value !== null && fb.value !== '')
+            .map(fb => ({feedback: fb.id, value: `${fb.value}`}));
+
+        feedbackService.postFeedbacksForAppointment(appointmentId, answers)
+            .finally(() => {
+                setHasSubmittedFeedback(true);
+                setIsSubmittingFeedback(false);
+            });
+    }
+
     return (
         <>
             <h1>{t('your_appointment')}</h1>
@@ -87,6 +106,21 @@ export default function Appointment() {
             <PageLoader isLoading={isLoading}/>
 
             {appointment && !isLoading && <>
+                {appointment.status === 'valid' && new Date(appointment.datetime) < new Date() &&
+                    <div className="fr-mb-5v">
+                        <h4><i className="ri-user-smile-line"></i> {t('we_need_your_opinion')}</h4>
+                        <p>{t('your_opinion_count_and_help_us')}</p>
+                        {!hasSubmittedFeedback && <AnswerFeedback feedbacks={appointment.service.feedback} onSubmit={submitFeedback} isLoading={isSubmittingFeedback}/>}
+                        {hasSubmittedFeedback &&
+                            <InPageAlert alert={{
+                                    description: t('feedback_submitted'),
+                                    severity: AlertSeverity.SUCCESS,
+                                    closable: false
+                            }}/>
+                        }
+                    </div>
+                }
+
                 <h4><i className="ri-chat-3-line"></i> {t('your_asked_service')}</h4>
                 <div className="flex flex-wrap-reverse gap-1 fr-mb-5v">
                     <Badge>{appointment.service.title}</Badge>
@@ -112,7 +146,7 @@ export default function Appointment() {
                     })}
                 </p>
 
-                {appointment.status === 'valid' && <div>
+                {appointment.status === 'valid' && new Date(appointment.datetime) >= new Date() && <div>
                     <h4><i className="ri-file-text-line"></i> {t('the_appointment_day')}</h4>
                     <p>
                         {t('appointment_day_needed_documents')}
@@ -155,8 +189,6 @@ export default function Appointment() {
                     }
                 </div>
             </>}
-
-
         </>
     );
-};
+}

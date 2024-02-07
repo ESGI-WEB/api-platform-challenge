@@ -3,27 +3,46 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
+use ApiPlatform\Metadata\Post;
 use App\Enum\FeedbackTypeEnum;
+use App\Enum\GroupsEnum;
 use App\Repository\FeedbackRepository;
+use App\Security\Voter\FeedbackVoter;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
-    uriTemplate: '/services/{id}/feedbacks',
     operations: [
-        new GetCollection(), // TODO to secure
+        new Get(
+            security: "is_granted('" . FeedbackVoter::READ . "', object)"
+        ),
+        new GetCollection(
+            uriTemplate: '/services/{id}/feedbacks',
+            uriVariables: [
+                'id' => new Link(
+                    toProperty: 'service',
+                    fromClass: Service::class,
+                )
+            ],
+            security: "is_granted('" . FeedbackVoter::LIST . "', object)"
+        ),
+        new Post(
+            securityPostDenormalize: "is_granted('" . FeedbackVoter::CREATE . "', object)"
+        ), # we don't know why post cannot work with uriTemplate...
+        new Delete(
+            securityPostDenormalize: "is_granted('" . FeedbackVoter::DELETE . "', object)"
+        ), # same here
     ],
-    uriVariables: [
-        'id' => new Link(
-            fromProperty: 'feedback',
-            fromClass: Service::class
-        )
-    ],
+    normalizationContext: ['groups' => [GroupsEnum::FEEDBACK_READ->value]],
+    denormalizationContext: ['groups' => [GroupsEnum::FEEDBACK_WRITE->value]],
 )]
 #[ORM\Entity(repositoryClass: FeedbackRepository::class)]
 class Feedback
@@ -31,20 +50,28 @@ class Feedback
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups([GroupsEnum::FEEDBACK_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value, GroupsEnum::ANSWER_READ_DETAILED->value])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'feedback')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups([GroupsEnum::FEEDBACK_WRITE->value, GroupsEnum::ANSWER_READ_DETAILED->value])]
     private ?Service $service = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 3, max: 255)]
+    #[Groups([GroupsEnum::FEEDBACK_READ->value, GroupsEnum::FEEDBACK_WRITE->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value, GroupsEnum::ANSWER_READ_DETAILED->value])]
     private ?string $question = null;
 
     #[Assert\Choice(callback: [FeedbackTypeEnum::class, 'values'])]
     #[ORM\Column(length: 20)]
+    #[Groups([GroupsEnum::FEEDBACK_READ->value, GroupsEnum::FEEDBACK_WRITE->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value, GroupsEnum::ANSWER_READ_DETAILED->value])]
     private ?string $type = null;
 
     #[ORM\Column]
+    #[Assert\Type('bool')]
+    #[Groups([GroupsEnum::FEEDBACK_READ->value, GroupsEnum::FEEDBACK_WRITE->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value, GroupsEnum::ANSWER_READ_DETAILED->value])]
     private ?bool $isMandatory = null;
 
     #[ORM\OneToMany(mappedBy: 'feedback', targetEntity: Answer::class, orphanRemoval: true)]

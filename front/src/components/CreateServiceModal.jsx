@@ -31,7 +31,8 @@ export default function CreateServiceModal({
     appointmentReasonService.post({title, description, organisation:organisationService.getURI(organisationId)} ).then((response) => {
       if (response) {
         onServiceCreated(response)
-        setMessage(t('service_created'));
+        setIsModalOpen(false);
+        // setMessage(t('service_created')); // not necessary as we close the modal
       }
     }).catch((error) => {
       console.error(error);

@@ -23,6 +23,7 @@ import {headerFooterDisplayItem} from "@codegouvfr/react-dsfr/Display";
 import Employees from "./pages/Employees.jsx";
 import Employee from "./pages/Employee.jsx";
 import ManageTeams from "./pages/ManageTeams.jsx";
+import FeedbackAnswers from "./pages/FeedbackAnswers.jsx";
 
 function App() {
     const {t} = useTranslation();
@@ -81,7 +82,7 @@ function App() {
             linkProps: {
                 to: '/employees',
             },
-            text: t('employees'),
+            text: t('your_employees'),
         },
         {
             role: Roles.PROVIDER,
@@ -89,6 +90,13 @@ function App() {
                 to: '/manage-teams',
             },
             text: t('manage_teams'),
+        },
+        {
+            role: Roles.EMPLOYEE,
+            linkProps: {
+                to: '/feedbacks/answers',
+            },
+            text: t('feedbacks'),
         },
         {
             role: Roles.EMPLOYEE,
@@ -202,6 +210,12 @@ function App() {
                                 <Route path="employees/:employeeId" element={
                                     <ProtectedRoute requiredRole={Roles.EMPLOYEE}>
                                         <Employee/>
+                                    </ProtectedRoute>
+                                }/>
+                                <Route path="feedbacks/answers" element={
+                                    <ProtectedRoute requiredRole={Roles.EMPLOYEE}>
+                                        {/* lambda users can access this page too as data are filtered by their own responses, but not necessary ? */}
+                                        <FeedbackAnswers/>
                                     </ProtectedRoute>
                                 }/>
                                 <Route path="403" element={<NoTranslations/>}/>
