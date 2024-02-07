@@ -12,6 +12,7 @@ export default function EmployeePlanning({
     schedules = [],
     onAddClick = void 0,
     disabled = false,
+    showLegend = true,
     calendarComponent : CalendarComponent = Calendar,
     calendarDateHeader : CalendarDateHeader = PlanningHeaderDate,
     calendarItem : CalendarItemComponent = PlanningItem,
@@ -54,6 +55,7 @@ export default function EmployeePlanning({
                         datetime: new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate(), hours, minutes, 0),
                         severity: daySchedule.severity,
                         isEditable: daySchedule.isEditable,
+                        hoverText: daySchedule.organisation.name,
                     });
                 }
             }
@@ -133,7 +135,7 @@ export default function EmployeePlanning({
                 onAddClick={handleAddClick}
                 disabled={disabled}
             ></CalendarComponent>
-            <div className="flex flex-row flex-wrap gap-2">
+            {showLegend && <div className="flex flex-row flex-wrap gap-1 fr-mt-2v">
                 <LegendItemComponent
                     text={t('your_stations_hours')}
                     severity="info"
@@ -142,7 +144,7 @@ export default function EmployeePlanning({
                     text={t('other_stations_hours')}
                     severity="warning"
                 />
-            </div>
+            </div>}
             <SnackBarComponent
                 open={openSnackBar}
                 autoHideDuration={5*1000}
