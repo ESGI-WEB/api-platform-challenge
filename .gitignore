@@ -1,6 +1,7 @@
 .no-docker
 Makefile.local.mk
 .idea
+public/kbis/
 
 ### macOS ###
 # General

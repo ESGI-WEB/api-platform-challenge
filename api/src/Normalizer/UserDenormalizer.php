@@ -37,9 +37,14 @@ class UserDenormalizer implements DenormalizerInterface
         $user->setPassword($hashedPassword);
         $user->eraseCredentials();
 
+        //Only set this two roles
 
         if ($user->file !== null) {
             $user->setRoles([RolesEnum::PROVIDER_TO_VALIDATE]);
+        }
+
+        if ($user->registerAsEmployee) {
+            $user->setRoles([RolesEnum::EMPLOYEE]);
         }
 
         return $user;
