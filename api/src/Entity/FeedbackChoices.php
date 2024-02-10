@@ -2,28 +2,10 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Link;
 use App\Repository\FeedbackChoicesRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ApiResource(
-    uriTemplate: '/services/{service_id}/feedbacks/{feedback_id}/choices',
-    operations: [
-        new GetCollection(), // TODO to secure
-    ],
-    uriVariables: [
-        'service_id' => new Link(
-            fromProperty: 'feedback',
-            fromClass: Service::class
-        ),
-        'feedback_id' => new Link(
-            fromProperty: 'feedbackChoices',
-            fromClass: Feedback::class
-        ),
-    ],
-)]
+// TODO To implement if we have time
 #[ORM\Entity(repositoryClass: FeedbackChoicesRepository::class)]
 class FeedbackChoices
 {

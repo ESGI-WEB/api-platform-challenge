@@ -95,6 +95,34 @@ readonly class SmsService
         );
     }
 
+    public function sendFeedbackRequests(): void
+    {
+        // get all appointments for yesterday
+        $appointments = $this->appointmentRepository->findByDateTimeBetween(
+            new \DateTimeImmutable('yesterday'),
+            new \DateTimeImmutable('yesterday + 1 day'),
+            [
+                'status' => AppointmentStatusEnum::valid->value,
+            ]
+        );
+
+        foreach ($appointments as $appointment) {
+            /** @var Appointment $appointment */
+            $client = $appointment->getClient();
+
+            if (!$client->getPhone() || !$appointment->getAnswers()->isEmpty() || $appointment->getService()->getFeedback()->isEmpty()) {
+                continue;
+            }
+
+            $this->sendSms(
+                $client->getPhone(),
+                "Bonjour {$client->getFirstName()} {$client->getLastName()},\n" .
+                "Merci d'avoir choisi notre service. Nous aimerions avoir votre avis sur votre rendez-vous d'hier avec {$appointment->getProvider()->getFirstName()} {$appointment->getProvider()->getLastName()}.\n" .
+                "Vous pouvez donner votre avis via ce lien : " . $this->frontUrl . "/appointment/" . $appointment->getId() . "\n",
+            );
+        }
+    }
+
     private function sendSms($to, $message): void
     {
         // We must use user's phone number ($to), but as long as we don't pay Twilio, we can only send messages to our own sandbox phone numbers

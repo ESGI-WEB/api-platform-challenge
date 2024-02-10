@@ -2,6 +2,7 @@
 .no-docker
 Makefile.local.mk
 .idea
+public/kbis
 
 ###> symfony/framework-bundle ###
 /.env.local
@@ -152,3 +153,4 @@ yarn-error.log
 /phpunit.xml
 .phpunit.result.cache
 ###< phpunit/phpunit ###
+/public/kbis/

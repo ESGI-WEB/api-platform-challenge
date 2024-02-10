@@ -80,8 +80,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-
-    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::TEAMS_READ_USER_DETAILED->value, GroupsEnum::ORGANISATION_READ_DETAILED_LOGGED->value, GroupsEnum::AVAILABLE_SLOT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value, GroupsEnum::ORGANISATION_READ_DETAILED->value])]
+    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::TEAMS_READ_USER_DETAILED->value, GroupsEnum::ORGANISATION_READ_DETAILED_LOGGED->value, GroupsEnum::AVAILABLE_SLOT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value, GroupsEnum::ORGANISATION_READ_DETAILED->value, GroupsEnum::ANSWER_READ_DETAILED->value])]
     #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 
@@ -108,11 +107,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private DateTimeImmutable $createdAt;
 
-    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::TEAMS_READ_USER_DETAILED->value, GroupsEnum::USER_WRITE->value, GroupsEnum::AVAILABLE_SLOT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value, GroupsEnum::ORGANISATION_READ_DETAILED_LOGGED->value])]
+    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::TEAMS_READ_USER_DETAILED->value, GroupsEnum::USER_WRITE->value, GroupsEnum::AVAILABLE_SLOT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value, GroupsEnum::ORGANISATION_READ_DETAILED_LOGGED->value, GroupsEnum::ANSWER_READ_DETAILED->value])]
     #[ORM\Column(length: 255)]
     private ?string $firstname = null;
 
-    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::TEAMS_READ_USER_DETAILED->value, GroupsEnum::USER_WRITE->value, GroupsEnum::AVAILABLE_SLOT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value, GroupsEnum::ORGANISATION_READ_DETAILED_LOGGED->value])]
+    #[Groups([GroupsEnum::USER_READ->value, GroupsEnum::TEAMS_READ_USER_DETAILED->value, GroupsEnum::USER_WRITE->value, GroupsEnum::AVAILABLE_SLOT_READ->value, GroupsEnum::APPOINTMENT_READ_DETAILED->value, GroupsEnum::ORGANISATION_READ_DETAILED_LOGGED->value, GroupsEnum::ANSWER_READ_DETAILED->value])]
     #[ORM\Column(length: 255)]
     private ?string $lastname = null;
 
@@ -152,6 +151,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(nullable: true)]
     public ?string $filePath = null;
+
+    #[Groups([GroupsEnum::USER_CREATE->value])]
+    public bool $registerAsEmployee = false;
 
     #[ApiProperty(types: ['https://schema.org/contentUrl'])]
     #[Groups([GroupsEnum::USER_READ->value])]
@@ -281,6 +283,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getSchedules(): Collection
     {
         return $this->schedules;
+    }
+
+    public function setRegisterAsEmployee(bool $registerAsEmployee): static
+    {
+        $this->registerAsEmployee = $registerAsEmployee;
+        return $this;
+    }
+
+    public function getRegisterAsEmployee(): ?string
+    {
+        return $this->registerAsEmployee;
     }
 
     public function addSchedule(Schedule $schedule): static
