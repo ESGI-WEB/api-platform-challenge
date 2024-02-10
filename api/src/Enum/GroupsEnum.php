@@ -38,5 +38,4 @@ enum GroupsEnum: string
     case ANSWER_READ = 'answer:read';
     case ANSWER_WRITE = 'answer:write';
     case ANSWER_READ_DETAILED = 'answer:read:detailed';
-    case USER_UPDATE_ADMIN = 'user:update_admin';
 }
