@@ -40,6 +40,3 @@ api_platform:
         - '%kernel.project_dir%/src/Entity'
         - '%kernel.project_dir%/src/ValueObject'
         - '%kernel.project_dir%/src/Controller'
-
-    eager_loading:
-        enabled: false
