@@ -6,11 +6,12 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import {useTranslation} from "react-i18next";
-import {Button} from "@codegouvfr/react-dsfr/Button";
+import LoadableButton from "../LoadableButton/LoadableButton.jsx";
+import {useEffect} from "react";
 
 export default function ProvidersToValidateTable({
-    handleClickValidate,
-    handleClickRefuse,
+    loadingNewRole = {},
+    handleClickEditRole,
     providers = [],
     tableContainer: TableContainerComponent = TableContainer,
     table: TableComponent = Table,
@@ -21,6 +22,12 @@ export default function ProvidersToValidateTable({
     paper: PaperComponent = Paper,
 }) {
     const {t, i18n} = useTranslation();
+    const ROLE_PROVIDER = "ROLE_PROVIDER";
+    const ROLE_EMPLOYEE = "ROLE_EMPLOYEE";
+
+    useEffect(() => {
+        console.log(loadingNewRole);
+    }, [loadingNewRole]);
 
     return (
         <TableContainerComponent component={PaperComponent}>
@@ -51,26 +58,21 @@ export default function ProvidersToValidateTable({
                                 {provider.phone}
                             </TableCellComponent>
                             <TableCellComponent>
-                                {t('on')} {new Date(provider.createdAt).toLocaleDateString(i18n.language, {
-                                year: 'numeric',
-                                month: 'numeric',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                            })}
+                                {new Date(provider.createdAt).toLocaleDateString(i18n.language, {
+                                    year: 'numeric',
+                                    month: 'numeric',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                })}
                             </TableCellComponent>
                             <TableCellComponent>
-                                <Button
-                                    onClick={() => handleClickValidate(provider.id)}
-                                >
+                                <LoadableButton isLoading={loadingNewRole[provider.id]} onClick={() => handleClickEditRole(provider.id, ROLE_PROVIDER)}>
                                     <i className="ri-checkbox-circle-line"></i>
-                                </Button>
-                                <Button
-                                    onClick={() => handleClickRefuse(provider.id)}
-                                    priority="secondary"
-                                >
+                                </LoadableButton>
+                                <LoadableButton isLoading={loadingNewRole[provider.id]} onClick={() => handleClickEditRole(provider.id, ROLE_EMPLOYEE)} priority="secondary">
                                     <i className="ri-close-circle-line"></i>
-                                </Button>
+                                </LoadableButton>
                             </TableCellComponent>
                         </TableRowComponent>
                     ))}

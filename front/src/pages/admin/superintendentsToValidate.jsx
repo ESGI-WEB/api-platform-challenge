@@ -5,6 +5,7 @@ import ProvidersToValidateTable from "../../components/Table/ProvidersToValidate
 import PageLoader from "../../components/PageLoader/PageLoader.jsx";
 import InPageAlert, {AlertSeverity} from "../../components/InPageAlert.jsx";
 import Typography from "@mui/material/Typography";
+import LoadableButton from "../../components/LoadableButton/LoadableButton.jsx";
 
 export default function SuperintendentsToValidate() {
     const {t} = useTranslation();
@@ -14,13 +15,24 @@ export default function SuperintendentsToValidate() {
     const [loading, isLoading] = useState(true);
     const [hasNextPage, setHasNextPage] = useState(true);
     const [isErrored, setIsErrored] = useState(false);
+    const [loadingNewRole, setLoadingNewRole] = useState({});
 
-    const handleClickValidate = (provider) => {
-        console.log('validate', provider)
-    }
-
-    const handleClickRefuse = (provider) => {
-        console.log('refuse', provider)
+    const handleClickEditRole = (providerId, role) => {
+        setLoadingNewRole((prevLoadingNewRole) => ({
+            ...prevLoadingNewRole,
+            [providerId]: true
+        }));
+        userService.patchUser(providerId, {roles: [role]}).then(() => {
+            setProviders(providers.filter(provider => provider.id !== providerId));
+        }).catch((error) => {
+            console.error(error);
+            setIsErrored(true);
+        }).finally(() => {
+            setLoadingNewRole((prevLoadingNewRole) => ({
+                ...prevLoadingNewRole,
+                [providerId]: false
+            }));
+        })
     }
 
     const fetchProviders = () => {
@@ -47,23 +59,28 @@ export default function SuperintendentsToValidate() {
     return (
         <>
             <Typography variant="h3" component="h1" gutterBottom>
-                {t('new_superintendents_to_validate')}
+                {t('new_superintendents')}
             </Typography>
             <InPageAlert alert={{
-                title: t('new_superintendents_to_validate_title'),
+                title: t('new_superintendents_to_validate'),
                 description: t('new_superintendents_to_validate_description'),
                 severity: 'info',
             }} />
-            <PageLoader isLoading={loading}/>
             {isErrored && <InPageAlert alert={{
                 severity: AlertSeverity.ERROR,
                 closable: false
             }}/>}
             {providers.length === 0 && !loading && <p>{t('no_providers_to_validate')}</p>}
 
-            {providers.length > 0 && <ProvidersToValidateTable handleClickValidate={handleClickValidate}
-                                                               handleClickRefuse={handleClickRefuse}
-                                                               providers={providers}/>}
+            <div className="my-1">
+                {providers.length > 0 && <ProvidersToValidateTable
+                    loadingNewRole={loadingNewRole}
+                    handleClickEditRole={handleClickEditRole}
+                    providers={providers}/>}
+            </div>
+            {providers.length > 0 && hasNextPage &&
+                <LoadableButton isLoading={loading} onClick={fetchProviders}>{t('load_more')}</LoadableButton>}
+            {providers.length <= 0 && <PageLoader isLoading={loading}/>}
         </>
     );
 }

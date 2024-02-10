@@ -157,7 +157,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     #[Vich\UploadableField(mapping: 'kbis', fileNameProperty: 'filePath')]
     #[Assert\File(maxSize: '2048k', mimeTypes: ['application/pdf'])]
-    #[Groups([GroupsEnum::USER_CREATE_PROVIDER->value])]
+    #[Groups([GroupsEnum::USER_CREATE_PROVIDER->value, GroupsEnum::USER_READ->value])]
     public ?File $file = null;
 
     #[ORM\Column(nullable: true)]
@@ -169,7 +169,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 20, nullable: true)]
     #[Groups([GroupsEnum::USER_CREATE->value, GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE->value])]
-    #[Assert\Regex(pattern: '/^\+336[0-9]{8}$/')]
+    #[Assert\Regex(
+        pattern: '/^\+336[0-9]{8}$/',
+        groups: [GroupsEnum::USER_CREATE->value, GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE->value]
+    )]
     private ?string $phone = null;
 
     public function __construct()
