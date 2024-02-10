@@ -1,6 +1,5 @@
 import {useEffect, useState} from "react";
 import useOrganisationService from "../services/useOrganisationService.js";
-import {Card} from "@codegouvfr/react-dsfr/Card";
 import {Button} from "@codegouvfr/react-dsfr/Button";
 import {useNavigate} from "react-router-dom";
 import PageLoader from "../components/PageLoader/PageLoader.jsx";

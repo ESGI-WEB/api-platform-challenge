@@ -10,11 +10,10 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
-use ApiPlatform\OpenApi\Model\Operation;
-use ApiPlatform\OpenApi\Model\RequestBody;
 use App\Enum\GroupsEnum;
 use App\Enum\RolesEnum;
 use App\Provider\EmployeesProvider;
+use App\Provider\ProviderToValidateProvider;
 use App\Repository\UserRepository;
 use App\Security\Voter\UserVoter;
 use DateTimeImmutable;
@@ -75,6 +74,16 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
     ],
     normalizationContext: ['groups' => [GroupsEnum::USER_READ->value]],
     security: "is_granted('" . RolesEnum::PROVIDER->value . "')",
+)]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            uriTemplate: "/providers_to_validate",
+            normalizationContext: ['groups' => [GroupsEnum::USER_READ->value]],
+            security: "is_granted('" . RolesEnum::ADMIN->value . "')",
+            provider: ProviderToValidateProvider::class
+        ),
+    ],
 )]
 #[UniqueEntity(fields: ['email'])]
 #[ORM\Table(name: '`user`')]
@@ -159,7 +168,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public ?string $contentUrl = null;
 
     #[ORM\Column(length: 20, nullable: true)]
-    #[Groups([GroupsEnum::USER_CREATE->value, GroupsEnum::USER_WRITE->value])]
+    #[Groups([GroupsEnum::USER_CREATE->value, GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE->value])]
     #[Assert\Regex(pattern: '/^\+336[0-9]{8}$/')]
     private ?string $phone = null;
 
