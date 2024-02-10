@@ -7,7 +7,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import {useTranslation} from "react-i18next";
 import LoadableButton from "../LoadableButton/LoadableButton.jsx";
-import {useEffect} from "react";
+import DownloadButton from "../DownloadButton.jsx";
 
 export default function ProvidersToValidateTable({
     loadingNewRole = {},
@@ -25,10 +25,6 @@ export default function ProvidersToValidateTable({
     const ROLE_PROVIDER = "ROLE_PROVIDER";
     const ROLE_EMPLOYEE = "ROLE_EMPLOYEE";
 
-    useEffect(() => {
-        console.log(loadingNewRole);
-    }, [loadingNewRole]);
-
     return (
         <TableContainerComponent component={PaperComponent}>
             <TableComponent sx={{ minWidth: 650 }}>
@@ -39,6 +35,7 @@ export default function ProvidersToValidateTable({
                         <TableCellComponent>{t('email')}</TableCellComponent>
                         <TableCellComponent>{t('phone')}</TableCellComponent>
                         <TableCellComponent>{t('date_of_request')}</TableCellComponent>
+                        <TableCellComponent>{t('kbis')}</TableCellComponent>
                         <TableCellComponent>{t('validate_or_refuse')}</TableCellComponent>
                     </TableRowComponent>
                 </TableHeadComponent>
@@ -66,6 +63,9 @@ export default function ProvidersToValidateTable({
                                     minute: '2-digit',
                                 })}
                             </TableCellComponent>
+                            <TableCellComponent>
+                                { provider.contentUrl && <DownloadButton fileUrl={provider.contentUrl} />}
+                                </TableCellComponent>
                             <TableCellComponent>
                                 <LoadableButton isLoading={loadingNewRole[provider.id]} onClick={() => handleClickEditRole(provider.id, ROLE_PROVIDER)}>
                                     <i className="ri-checkbox-circle-line"></i>
