@@ -16,18 +16,18 @@ const useApi = () => {
             headers.Authorization = `Bearer ${token}`;
         }
 
-        if (options.body && typeof options.body !== 'string') {
-            options.body = JSON.stringify(options.body);
-        }
-
         const type = hydra ? 'application/ld+json' : 'application/json';
 
         if (!headers['Content-Type']) {
             if (options?.method === 'PATCH') {
                 headers['Content-Type'] = 'application/merge-patch+json';
-            } else {
+            } else if (!options.body || !(options.body instanceof FormData)) {
                 headers['Content-Type'] = type;
             }
+        }
+
+        if (options.body && !(options.body instanceof FormData)) {
+            options.body = JSON.stringify(options.body);
         }
 
         if (!headers['Accept']) {

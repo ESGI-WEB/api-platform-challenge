@@ -23,8 +23,9 @@ import {headerFooterDisplayItem} from "@codegouvfr/react-dsfr/Display";
 import Employees from "./pages/Employees.jsx";
 import Employee from "./pages/Employee.jsx";
 import ManageTeams from "./pages/ManageTeams.jsx";
+import Register from "./pages/Register.jsx";
+import RegisterOrganisation from "./pages/RegisterOrganisation.jsx"
 import FeedbackAnswers from "./pages/FeedbackAnswers.jsx";
-
 function App() {
     const {t} = useTranslation();
     const [translationsLoaded, setTranslationsLoaded] = useState(true);
@@ -151,6 +152,12 @@ function App() {
                         {translationsLoaded ?
                             <Routes>
                                 <Route index element={<Home/>}/>
+                                <Route path="register" element={
+                                    <Register/>
+                                }/>
+                                <Route path="register-organisation" element={
+                                    <RegisterOrganisation/>
+                                }/>
                                 <Route
                                     path="login"
                                     element={
