@@ -40,8 +40,8 @@ class OrganisationRepository extends ServiceEntityRepository
             ->orderBy('title', 'DESC')
             ->setMaxResults($limit);
 
-        if (!$this->security->isGranted(RolesEnum::ADMIN)) {
-            if ($this->security->isGranted(RolesEnum::PROVIDER)) {
+        if (!$this->security->isGranted(RolesEnum::ADMIN->value)) {
+            if ($this->security->isGranted(RolesEnum::PROVIDER->value)) {
                 $qb->innerJoin('organisation.users', 'users')
                     ->andWhere('users.id = :user')
                     ->setParameter('user', $this->security->getUser());

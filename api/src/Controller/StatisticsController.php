@@ -79,6 +79,41 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
     description: 'Get the most popular appointment slot',
 )]
 #[Get(
+    routePrefix: '/most_popular_slot_by_hours',
+    routeName: 'most_popular_slot_by_hours',
+    openapiContext: [
+        'summary' => 'Get the most popular appointment slot by hours',
+        'tags' => ['Statistics'],
+        'parameters' => [],
+        'responses' => [
+            '200' => [
+                'description' => 'The most popular appointment slot by hours',
+                'content' => [
+                    'application/json' => [
+                        'schema' => [
+                            'type' => 'array',
+                            'items' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'hour' => [
+                                        'type' => 'string',
+                                        'example' => '10:00',
+                                    ],
+                                    'count' => [
+                                        'type' => 'integer',
+                                        'example' => 10,
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
+    description: 'Get the most popular appointment slot by hours',
+)]
+#[Get(
     routePrefix: '/last_appointments',
     routeName: 'last_appointments',
     openapiContext: [
@@ -255,6 +290,14 @@ class StatisticsController extends AbstractController
     {
         $result = $this->appointmentRepository->getMostPopularSlot();
         return $this->json($result ? ['time' => $result] : null);
+    }
+
+    #[Route('/most_popular_slot_by_hours', name: 'most_popular_slot_by_hours', methods: ['GET'])]
+    #[IsGranted(RolesEnum::EMPLOYEE->value)]
+    public function getMostPopularSlotByHours(): JsonResponse
+    {
+        $result = $this->appointmentRepository->getMostPopularSlotByHours();
+        return $this->json($result);
     }
 
     #[Route('/last_appointments', name: 'last_appointments', methods: ['GET'])]

@@ -3,7 +3,7 @@ import {useTranslation} from "react-i18next";
 
 export default function Dashboard({
     cardIndicators = [],
-    barChartData = {},
+    barChartDatas = [],
     tableData = {},
     listsData = [],
     cardIndicatorComponent: CardIndicator,
@@ -28,7 +28,9 @@ export default function Dashboard({
                             <CardIndicator key={index} title={indicator.value} description={indicator.description} to={indicator.to} />
                         )}
                     </div>
-                    <ChartIndicator data={barChartData} />
+                    {barChartDatas.map(barChartData =>
+                        <ChartIndicator key={barChartData.title} data={barChartData}/>
+                    )}
                     <TableIndicator data={tableData}/>
                 </div>
                 <div className="flex flex-row gap-2 flex-1 align-start">

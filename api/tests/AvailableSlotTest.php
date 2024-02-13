@@ -25,7 +25,7 @@ class AvailableSlotTest extends AbstractTest
     {
         parent::setUp();
 
-        $this->employee = UserFactory::createOne(['roles' => [RolesEnum::EMPLOYEE]]);
+        $this->employee = UserFactory::createOne(['roles' => [RolesEnum::EMPLOYEE->value]]);
         $this->organisation = OrganisationFactory::createOne(['users' => [$this->employee]]);
         $this->service = ServiceFactory::createOne(['organisation' => $this->organisation]);
         $this->schedule = ScheduleFactory::createOne(['provider' => $this->employee, 'organisation' => $this->organisation]);
