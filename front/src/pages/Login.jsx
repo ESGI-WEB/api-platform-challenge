@@ -72,7 +72,7 @@ export default function Login ({
                     {t('login')}
                 </LoadableButton>
                 <LinkButton
-                    to={'/'}
+                    to={'/register'}
                     suffixIcon='fr-icon-arrow-right-line fr-icon--sm'
                 >
                     {t('createAccount')}
