@@ -9,6 +9,9 @@ const useStatisticsService = () => {
         getMaxAppointmentSlot: () => api(`statistics/max_appointment_slot`, {
             method: 'GET',
         }),
+        getMostPopularSlotByHours: () => api(`statistics/most_popular_slot_by_hours`, {
+            method: 'GET',
+        }),
         getLastAppointments: () => api(`statistics/last_appointments`, {
             method: 'GET',
         }),

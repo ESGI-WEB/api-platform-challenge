@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Appointment;
 use App\Entity\User;
+use App\Enum\AppointmentStatusEnum;
 use App\Enum\RolesEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -59,10 +60,11 @@ class AppointmentRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('appointments')
             ->select('count(appointments.id)')
-            ->andWhere("appointments.status = 'valid'");
+            ->andWhere("appointments.status = :status")
+            ->setParameter('status', AppointmentStatusEnum::valid->value);
 
-        if (!$this->security->isGranted(RolesEnum::ADMIN)) {
-            if ($this->security->isGranted(RolesEnum::PROVIDER)) {
+        if (!$this->security->isGranted(RolesEnum::ADMIN->value)) {
+            if ($this->security->isGranted(RolesEnum::PROVIDER->value)) {
                 $qb->innerJoin('appointments.service', 'service')
                     ->innerJoin('service.organisation', 'organisation')
                     ->innerJoin('organisation.users', 'users')
@@ -82,8 +84,9 @@ class AppointmentRepository extends ServiceEntityRepository
     public function getMostPopularSlot($limit = 1)
     {
         $qb = $this->createQueryBuilder('appointment')
-            ->select("date_format(appointment.datetime, 'YYYY-MM-DD HH24:MI TZH:TZM') AS appointment_time")
-            ->andWhere("appointment.status = 'valid'")
+            ->select("date_format(appointment.datetime, 'HH24:MI TZH:TZM') AS appointment_time")
+            ->andWhere("appointment.status = :status")
+            ->setParameter('status', AppointmentStatusEnum::valid->value)
             ->groupBy('appointment_time')
             ->orderBy('COUNT(appointment.id)', 'DESC')
             ->setMaxResults($limit);
@@ -106,6 +109,32 @@ class AppointmentRepository extends ServiceEntityRepository
         return $result ? $result['appointment_time'] : null;
     }
 
+    public function getMostPopularSlotByHours()
+    {
+        $qb = $this->createQueryBuilder('appointment')
+            ->select("date_format(appointment.datetime, 'HH24:MI TZH:TZM') AS hour, COUNT(appointment.id) AS count")
+            ->andWhere("appointment.status = :status")
+            ->setParameter('status', AppointmentStatusEnum::valid->value)
+            ->groupBy('hour')
+            ->orderBy('hour')
+        ;
+
+        if (!$this->security->isGranted(RolesEnum::ADMIN->value)) {
+            if ($this->security->isGranted(RolesEnum::PROVIDER->value)) {
+                $qb->innerJoin('appointment.service', 'service')
+                    ->innerJoin('service.organisation', 'organisation')
+                    ->innerJoin('organisation.users', 'users')
+                    ->andWhere('users.id = :user')
+                    ->setParameter('user', $this->security->getUser());
+            } else { // employee
+                $qb->andWhere('appointment.provider = :user')
+                    ->setParameter('user', $this->security->getUser());
+            }
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
     public function getLastCreatedAppointment($start = null, $end = null, $limit = 5)
     {
         $qb = $this->createQueryBuilder('appointment')
@@ -118,7 +147,8 @@ class AppointmentRepository extends ServiceEntityRepository
             ->innerJoin('appointment.client', 'client')
             ->innerJoin('appointment.service', 'service')
             ->innerJoin('service.organisation', 'organisation')
-            ->andWhere("appointment.status = 'valid'")
+            ->andWhere("appointment.status = :status")
+            ->setParameter('status', AppointmentStatusEnum::valid->value)
             ->orderBy('appointment.createdAt', 'DESC')
             ->setMaxResults($limit);
 
