@@ -6,7 +6,6 @@ describe('<AppointmentCard />', () => {
     id: 1,
     service: {
       title: 'Test Service',
-      description: 'Service Description',
       organisation: {
         name: 'Test Organisation',
         address: 'Test Address',
@@ -26,8 +25,10 @@ describe('<AppointmentCard />', () => {
     cy.mount(<AppointmentCard appointment={appointment} />);
 
     cy.contains('Test Service').should('exist');
-    cy.contains('Service Description').should('exist');
-    cy.get('.fr-badge').should('have.length', 3);
+    cy.contains('Test Address').should('exist');
+    cy.contains('Test City 12345').should('exist');
+    cy.contains('Test Organisation').should('exist');
+    cy.get('.fr-badge').should('have.length', 2);
   });
 
   it('navigates to appointment details page on link click', () => {
