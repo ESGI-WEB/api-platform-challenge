@@ -18,7 +18,6 @@ export default function AppointmentCard({
                 to: '/appointment/' + appointment.id,
             }}
             start={<ul className="fr-badges-group">
-                <li><Badge>{appointment.service.title}</Badge></li>
                 <li>
                     <Badge severity="new">
                         {new Date(appointment.datetime).toLocaleDateString(i18n.language, {
@@ -31,16 +30,25 @@ export default function AppointmentCard({
                         })}
                     </Badge>
                 </li>
+                <li>
+                    <AppointmentStatusBadge status={appointment.status}/>
+                </li>
             </ul>}
-            desc={appointment.service.description}
-            end={<ul className="fr-badges-group">
-                <li><AppointmentStatusBadge status={appointment.status}/></li>
-                {appointment.status === 'valid' && <li>
-                    {t('appointment_with', {
-                        name: appointment.provider.firstname + ' ' + appointment.provider.lastname
-                    })}
-                </li>}
-            </ul>}
+            desc={
+                <div>
+                    <div><span className="bold">{t("appointment_reason")}</span> {appointment.service.title}</div>
+                    <div className="mt-1">
+                        <div className="bold">{t("appointment_adress")}</div>
+                        <div>{appointment.service.organisation.name}</div>
+                        <div>{appointment.service.organisation.address}</div>
+                        <div>{`${appointment.service.organisation.city} ${appointment.service.organisation.zipcode}`}</div>
+                    </div>
+                </div>
+            }
+            end={
+                appointment.status === 'valid' && <div>
+                    <span className="bold">{t('appointment_with')}</span> {appointment.provider.firstname + ' ' + appointment.provider.lastname}
+                </div>}
         />
     )
 }
