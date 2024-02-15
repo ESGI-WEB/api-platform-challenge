@@ -63,7 +63,6 @@ export default function UserRegisterForm ({ userType }) {
     }
 
     setErrors(newErrors);
-    console.log(errors)
     return isValid;
   };
 
@@ -75,17 +74,23 @@ export default function UserRegisterForm ({ userType }) {
 
 
     if(validateForm()){
-      if (userType === 'provider'){
+      let sanitizedPhone = null;
+      if (phone.length) {
+        sanitizedPhone = phone.replace(/\s/g, '').replace(/^0/, '');
+      }
+
+      if (userType === 'provider') {
         const formData = new FormData();
-        const sanitizedPhone = phone.replace(/\s/g, '').replace(/^0/, '');
+
+        if (sanitizedPhone) {
+          formData.append("phone", sanitizedPhone);
+        }
+
         formData.append("lastname", name);
         formData.append("firstname", firstName);
         formData.append("email", email);
-        formData.append("phone", sanitizedPhone !== null ? `+33${sanitizedPhone}` : null);
         formData.append("plainPassword", password);
         formData.append("file", file);
-
-
 
         userService.postProvider(formData).then((response) => {
           if (response) {
@@ -98,17 +103,17 @@ export default function UserRegisterForm ({ userType }) {
           });
           window.scrollTo(0, 0)
         }).finally(() => setIsLoading(false));
-      }
-
-      else {
+      } else {
         const user = {}
         user.lastname = name
         user.firstname = firstName
         user.email = email
-        user.phone = phone
         user.plainPassword = password
         if (userType === 'employee'){
           user.registerAsEmployee = true;
+        }
+        if (sanitizedPhone) {
+          user.phone = sanitizedPhone;
         }
         userService.postUser(user).then((response) => {
           if (response) {
