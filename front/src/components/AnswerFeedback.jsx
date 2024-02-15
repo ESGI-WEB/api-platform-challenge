@@ -42,7 +42,12 @@ export default function AnswerFeedback({
                     </Typography>
                 }
                 {onDelete &&
-                    <i className="fr-icon-delete-fill pointer" onClick={() => onDelete(feedbacksState[currentFeedbackIndex])}/>
+                    <Button
+                        iconId="fr-icon-delete-fill"
+                        onClick={() => onDelete(feedbacksState[currentFeedbackIndex])}
+                        priority="tertiary no outline"
+                        disabled={isLoading}
+                    />
                 }
             </div>
             <FeedbackCardComponent
