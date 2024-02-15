@@ -80,8 +80,8 @@ class AnswerRepository extends ServiceEntityRepository
             ->innerJoin('appointment.service', 'service')
             ->innerJoin('service.organisation', 'organisation');
 
-        if (!$this->security->isGranted(RolesEnum::ADMIN)) {
-            if ($this->security->isGranted(RolesEnum::PROVIDER)) {
+        if (!$this->security->isGranted(RolesEnum::ADMIN->value)) {
+            if ($this->security->isGranted(RolesEnum::PROVIDER->value)) {
                 // il faut verifier que dans la liste des users liés à l'organisation, il y a le provider connecté, en sachant que c'est du many to many
                 $qb->innerJoin('organisation.users', 'users')
                     ->andWhere('users.id = :user')
