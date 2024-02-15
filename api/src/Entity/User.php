@@ -162,7 +162,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 20, nullable: true)]
     #[Groups([GroupsEnum::USER_CREATE->value, GroupsEnum::USER_WRITE->value])]
-    #[Assert\Regex(pattern: '/^\+336[0-9]{8}$/')]
+    #[Assert\Regex(pattern: '/^\+33[0-9]{9}$/')]
     private ?string $phone = null;
 
     public function __construct()
