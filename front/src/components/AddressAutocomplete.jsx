@@ -2,6 +2,7 @@ import * as React from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import useOrganisationService from "../services/useOrganisationService.js";
+import {useTranslation} from "react-i18next";
 
 export default function AddressAutocomplete({
     onChange = void 0,
@@ -12,6 +13,7 @@ export default function AddressAutocomplete({
     const [selectedValue, setSelectedValue] = React.useState(null);
     const [options, setOptions] = React.useState([]);
     const organisationService = useOrganisationService();
+    const {t} = useTranslation();
 
     React.useEffect(() => {
         const timeout = setTimeout(() => {
@@ -40,7 +42,7 @@ export default function AddressAutocomplete({
                 return option.properties.id === value.properties.id;
             }}
             autoComplete
-            noOptionsText="No locations"
+            noOptionsText={t('no_results')}
             value={selectedValue}
             onChange={(event, newValue) => {
                 setSelectedValue(newValue);
@@ -48,7 +50,7 @@ export default function AddressAutocomplete({
             }}
             onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
             renderInput={(params) => (
-                <TextField {...params} label="Add a location" fullWidth/>
+                <TextField {...params} label={t('add_adress')} fullWidth/>
             )}
             renderOption={(props, option) => {
                 return (

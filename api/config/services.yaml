@@ -31,6 +31,16 @@ services:
             $twilioFrom: '%app.twilio_from%'
             $frontUrl: '%app.front_url%'
 
+
+    App\Services\EmailService:
+        arguments:
+            $mailjetAPIKey: '%env(MAILJET_API_KEY)%'
+            $mailjetSecretKey: '%env(MAILJET_SECRET_KEY)%'
+
+    App\EventListener\ProviderRegisteredListener:
+        arguments:
+            $emailReceiver: '%env(EMAIL_RECEIVER)%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 

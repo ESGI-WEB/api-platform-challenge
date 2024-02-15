@@ -76,7 +76,7 @@ export default function CreateOrganisation() {
             <InPageAlert alert={alert}/>
             <form onSubmit={handleCreateOrganisation} className={'flex flex-column gap-2'}>
                 <Input
-                    label="Name"
+                    label={t('name_of_the_police_station')}
                     nativeInputProps={{
                         type: 'text',
                     }}
