@@ -13,7 +13,6 @@ export default function Register() {
   return (
     <div>
         <RadioButtons
-          legend="Label"
           options={[
             {
               label: t('you_are_commissioner'),
