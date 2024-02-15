@@ -56,7 +56,7 @@ class AnswerVoter extends Voter
 
     private function canCreate(Answer $answer, User $user): bool
     {
-        return $answer->getAppointment()->getDatetime() > new \DateTimeImmutable() &&
+        return $answer->getAppointment()->getDatetime() < new \DateTimeImmutable() &&
             $answer->getAppointment()->getStatus() === AppointmentStatusEnum::valid->value &&
             $user === $answer->getAppointment()->getClient();
     }

@@ -106,7 +106,7 @@ export default function Appointment() {
             <PageLoader isLoading={isLoading}/>
 
             {appointment && !isLoading && <>
-                {appointment.status === 'valid' && new Date(appointment.datetime) < new Date() &&
+                {appointment.status === 'valid' && new Date(appointment.datetime) < new Date() && appointment.service.feedback?.length > 0 &&
                     <div className="fr-mb-5v">
                         <h4><i className="ri-user-smile-line"></i> {t('we_need_your_opinion')}</h4>
                         <p>{t('your_opinion_count_and_help_us')}</p>
@@ -126,7 +126,7 @@ export default function Appointment() {
                     <Badge>{appointment.service.title}</Badge>
                     <Badge noIcon severity="new">
                         <span>
-                            {t('appointment_date', {
+                            {t('appointment_date_on', {
                                 date: new Date(appointment.datetime).toLocaleDateString(i18n.language, {
                                     day: 'numeric',
                                     month: 'long',
@@ -145,6 +145,10 @@ export default function Appointment() {
                         name: appointment.provider.firstname + ' ' + appointment.provider.lastname
                     })}
                 </p>
+
+                {appointment.status === 'valid' && new Date(appointment.datetime) > new Date() && appointment.service.feedback?.length > 0 &&
+                    <p>{t('appointment_feedback_soon')}</p>
+                }
 
                 {appointment.status === 'valid' && new Date(appointment.datetime) >= new Date() && <div>
                     <h4><i className="ri-file-text-line"></i> {t('the_appointment_day')}</h4>
