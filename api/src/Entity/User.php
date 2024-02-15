@@ -208,6 +208,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             $roles[] = RolesEnum::EMPLOYEE->value;
         }
 
+        $roles = array_map(function ($role) {
+            return $role instanceof RolesEnum ? $role->value : $role;
+        }, $roles);
+
         return array_unique($roles);
     }
 
