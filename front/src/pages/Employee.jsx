@@ -148,7 +148,7 @@ export default function Employee() {
                 >
                     <SchedulesForm
                         onSubmit={({hours, organisation}) => handleSaveHours(editSchedulesForDay, hours, organisation)}
-                        organisations={currentProvider.organisations}
+                        organisations={employee.organisations}
                         day={editSchedulesForDay}
                         unavailabilities={schedules.flatMap((schedule) => !schedule.isEditable && schedule.day === editSchedulesForDay ? schedule.hours : [])}
                     />

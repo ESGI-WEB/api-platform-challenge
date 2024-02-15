@@ -76,6 +76,7 @@ export default function EditServiceFeedback({
                                 <AnswerFeedbackComponent
                                     feedbacks={feedbacks}
                                     onDelete={onDeleteFeedback}
+                                    isLoading={isSaving}
                                 />
                             </CardContent>
                         </Card>

@@ -19,7 +19,7 @@ export default function Map({
             className={className}
             whenCreated={whenCreated}
         >
-            {locateOnUser && <MapLocator/>}
+            {locateOnUser && <MapLocator zoom={zoom}/>}
             <MapEvents mapMoved={mapMoved}/>
             <TileLayer
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
