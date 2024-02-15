@@ -22,7 +22,7 @@ const useUserService = () => {
         }, true),
         patchUser: (id, body) => api(`users/${id}`, {
             method: 'PATCH',
-            body: JSON.stringify(body),
+            body: body,
             headers: {
                 'Content-Type': 'application/merge-patch+json',
             }

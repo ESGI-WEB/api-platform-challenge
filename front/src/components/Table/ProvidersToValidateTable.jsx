@@ -8,6 +8,7 @@ import Paper from '@mui/material/Paper';
 import {useTranslation} from "react-i18next";
 import LoadableButton from "../LoadableButton/LoadableButton.jsx";
 import DownloadButton from "../DownloadButton.jsx";
+import {Roles} from "../../auth/useAuth.js";
 
 export default function ProvidersToValidateTable({
     loadingNewRole = {},
@@ -22,8 +23,6 @@ export default function ProvidersToValidateTable({
     paper: PaperComponent = Paper,
 }) {
     const {t, i18n} = useTranslation();
-    const ROLE_PROVIDER = "ROLE_PROVIDER";
-    const ROLE_EMPLOYEE = "ROLE_EMPLOYEE";
 
     return (
         <TableContainerComponent component={PaperComponent}>
@@ -67,10 +66,10 @@ export default function ProvidersToValidateTable({
                                 { provider.contentUrl && <DownloadButton fileUrl={provider.contentUrl} />}
                                 </TableCellComponent>
                             <TableCellComponent>
-                                <LoadableButton isLoading={loadingNewRole[provider.id]} onClick={() => handleClickEditRole(provider.id, ROLE_PROVIDER)}>
+                                <LoadableButton isLoading={loadingNewRole[provider.id]} onClick={() => handleClickEditRole(provider.id, Roles.PROVIDER)}>
                                     <i className="ri-checkbox-circle-line"></i>
                                 </LoadableButton>
-                                <LoadableButton isLoading={loadingNewRole[provider.id]} onClick={() => handleClickEditRole(provider.id, ROLE_EMPLOYEE)} priority="secondary">
+                                <LoadableButton isLoading={loadingNewRole[provider.id]} onClick={() => handleClickEditRole(provider.id, Roles.EMPLOYEE)} priority="secondary">
                                     <i className="ri-close-circle-line"></i>
                                 </LoadableButton>
                             </TableCellComponent>
