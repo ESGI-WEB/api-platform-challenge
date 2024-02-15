@@ -7,7 +7,6 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import {useTranslation} from "react-i18next";
 import Typography from "@mui/material/Typography";
-import LinkButton from "../LinkButton/LinkButton.jsx";
 import {Rating} from "@mui/material";
 
 export default function FeedbacksTable({

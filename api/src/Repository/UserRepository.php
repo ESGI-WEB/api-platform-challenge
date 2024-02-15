@@ -54,6 +54,26 @@ class UserRepository extends ServiceEntityRepository
         return new Paginator($query);
     }
 
+    public function findProvidersToValidate(array $order = ['by' => 'id', 'order' => 'ASC']): array
+    {
+        return $this->findProvidersToValidateQuery($order)->getResult();
+    }
+
+    public function findProvidersToValidateQuery(array $order = ['by' => 'id', 'order' => 'ASC']): Query {
+        return $this->createQueryBuilder('user')
+            ->andWhere('CAST(user.roles as string) LIKE :role_provider_to_validate')
+            ->setParameter('role_provider_to_validate', '%' . RolesEnum::PROVIDER_TO_VALIDATE->value . '%')
+            ->getQuery();
+    }
+
+    public function findProvidersToValidatePaginated(int $page = 1, int $limit = 10, array $order = ['by' => 'id', 'order' => 'ASC']): Paginator
+    {
+        $query = $this->findProvidersToValidateQuery($order);
+        $query->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit);
+        return new Paginator($query);
+    }
+
     public function findEmployeeAndProviderByEmail(string $email): ?User
     {
         return $this->createQueryBuilder('user')
