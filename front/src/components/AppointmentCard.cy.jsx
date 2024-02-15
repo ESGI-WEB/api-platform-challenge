@@ -7,6 +7,12 @@ describe('<AppointmentCard />', () => {
     service: {
       title: 'Test Service',
       description: 'Service Description',
+      organisation: {
+        name: 'Test Organisation',
+        address: 'Test Address',
+        city: 'Test City',
+        zipcode: '12345',
+      }
     },
     datetime: '2024-01-25T10:00:00Z',
     status: 'valid',
