@@ -31,3 +31,6 @@ jobs:
           HD_TWILIO_SID: ${{secrets.TWILIO_SID}}
           HD_TWILIO_TOKEN: ${{secrets.TWILIO_TOKEN}}
           HD_FRONT_URL: "https://api-platform-challenge.vercel.app"
+          HD_MAILJET_API_KEY: ${{secrets.MAILJET_API_KEY}}
+          HD_MAILJET_SECRET_KEY: ${{secrets.MAILJET_SECRET_KEY}}
+          HD_EMAIL_RECEIVER: ${{secrets.EMAIL_RECEIVER}}
