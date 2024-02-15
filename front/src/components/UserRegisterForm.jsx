@@ -146,24 +146,27 @@ export default function UserRegisterForm ({ userType }) {
           type: 'email',
         }}
         onChange={(e) => setEmail(e.target.value)}
+        state={errors.email ? "error" : "default"}
+        stateRelatedMessage={errors.email}
       ></Input>
-      {errors.email && <p>{errors.email}</p>}
       <Input
         label={t('last_name')}
         nativeInputProps={{
           type: 'text',
         }}
         onChange={(e) => setName(e.target.value)}
+        state={errors.name ? "error" : "default"}
+        stateRelatedMessage={errors.name}
       ></Input>
-      {errors.name && <p>{errors.name}</p>}
       <Input
         label={t('first_name')}
         nativeInputProps={{
           type: 'text',
         }}
         onChange={(e) => setFirstName(e.target.value)}
+        state={errors.firstName ? "error" : "default"}
+        stateRelatedMessage={errors.firstName}
       ></Input>
-      {errors.firstName && <p>{errors.firstName}</p>}
       <span className="fr-hint-text">{t('phone_optional')}</span>
       <Input
         label={t('phone_number')}
@@ -177,7 +180,6 @@ export default function UserRegisterForm ({ userType }) {
         onChange={(e) => setPassword(e.target.value)}
         onValidityChange={setIsPasswordValid}
       />
-      {errors.password && <p>{errors.password}</p>}
       <Input
         label={t('confirm_password')}
         nativeInputProps={{
@@ -185,8 +187,9 @@ export default function UserRegisterForm ({ userType }) {
         }}
         value={confirmPassword}
         onChange={(e) => handlePasswordChange(e.target.value)}
+        state={errors.confirmPassword ? "error" : "default"}
+        stateRelatedMessage={errors.confirmPassword}
       ></Input>
-      {errors.confirmPassword && <p>{errors.confirmPassword}</p>}
       {passwordMismatch && (
         <p>{t('password_not_identical')}</p>
       )}
