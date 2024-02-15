@@ -143,7 +143,7 @@ export default function Home() {
                     defaultLocation={[48.866667, 2.333333]} // Paris
                     className="large-map fr-my-5v"
                     mapMoved={handleMapMove}
-
+                    zoom={13}
                 >
                     {organisations.map((organisation) =>
                         <PinMarker key={organisation.id} position={[organisation.latitude, organisation.longitude]}>
