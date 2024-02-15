@@ -12,6 +12,7 @@ use App\Repository\ScheduleRepository;
 use DateInterval;
 use DateTime;
 use DateTimeImmutable;
+use Symfony\Bundle\SecurityBundle\Security;
 
 readonly class SlotsService
 {
@@ -19,6 +20,7 @@ readonly class SlotsService
         private ScheduleRepository $scheduleRepository,
         private HolidayRepository $holidayRepository,
         private AppointmentRepository $appointmentRepository,
+        private Security $security,
     ) {
     }
 
@@ -28,7 +30,7 @@ readonly class SlotsService
     public function getAvailableSlots(int $organisation_id, DateTime $targetDateTime = null, int $providerId = null): array
     {
         $startDate = new DateTime();
-        $endDate = new DateTime('+2 weeks');
+        $endDate = (new DateTime('+2 weeks'))->setTime(23, 59);
 
         if ($targetDateTime !== null) {
             $startDate = (clone $targetDateTime)->setTime(0, 0);
@@ -60,7 +62,6 @@ readonly class SlotsService
             $startDate,
             $endDate,
             ['status' => AppointmentStatusEnum::valid->value],
-            ['service' => ['service.organisation', $organisation_id]],
         );
 
         $allAvailableSlots = [];
@@ -75,6 +76,15 @@ readonly class SlotsService
             foreach ($daySchedules as $daySchedule) {
                 // add only available hours depending on holidays
                 foreach ($daySchedule->getHours() as $hour) {
+                    // if date is today, take only future hours
+                    if ($date->diff(new DateTime())->days === 0) {
+                        $hourDateTime = new DateTimeImmutable($date->format('Y-m-d') . ' ' . $hour);
+                        if ($hourDateTime->getTimestamp() < (new DateTime())->getTimestamp()) {
+                            continue;
+                        }
+                    }
+
+
                     $slotDateTime = new DateTimeImmutable($date->format('Y-m-d') . ' ' . $hour);
 
                     // if we are looking for a specific datetime, stop if it's not the right one
@@ -82,19 +92,7 @@ readonly class SlotsService
                         continue;
                     }
 
-                    // check if there is an appointment at this time for this
-                    $hasReservationAtThisTime = false;
-                    if ($nextTwoWeeksAppointments) {
-                        foreach ($nextTwoWeeksAppointments as $appointment) {
-                            if ($appointment->getDatetime()->getTimestamp() === $slotDateTime->getTimestamp() &&
-                                $appointment->getProvider()->getId() === $daySchedule->getProvider()->getId()) {
-                                $hasReservationAtThisTime = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if ($hasReservationAtThisTime) {
+                    if (!$this->isSlotAvailable($slotDateTime, $daySchedule, $nextTwoWeeksAppointments)) {
                         continue; // stop if slot is already reserved
                     }
 
@@ -136,5 +134,26 @@ readonly class SlotsService
         usort($allAvailableSlots, fn($a, $b) => $a->getDatetime() <=> $b->getDatetime());
 
         return $allAvailableSlots;
+    }
+
+    public function isSlotAvailable($slotDateTime, $daySchedule, array $nextTwoWeeksAppointments): bool
+    {
+        // check if there is an appointment at this time for this
+        $isSlotAvailable = true;
+        if (count($nextTwoWeeksAppointments)) {
+            foreach ($nextTwoWeeksAppointments as $appointment) {
+                $isSameProvider = $appointment->getProvider()->getId() === $daySchedule->getProvider()->getId();
+                $isSameClient = $this->security->getUser() instanceof User &&
+                    $appointment->getClient()->getId() === $this->security->getUser()->getId();
+
+                if ($appointment->getDatetime()->getTimestamp() === $slotDateTime->getTimestamp() &&
+                    ($isSameProvider || $isSameClient)) {
+                    $isSlotAvailable = false;
+                    break;
+                }
+            }
+        }
+
+        return $isSlotAvailable;
     }
 }

@@ -2,7 +2,9 @@ import {Circle, FeatureGroup, Popup, useMapEvents} from "react-leaflet";
 import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 
-export default function MapLocator() {
+export default function MapLocator(
+    zoom = 17,
+) {
     const [position, setPosition] = useState(null)
     const map = useMapEvents({
         locationfound(e) {
@@ -15,7 +17,7 @@ export default function MapLocator() {
         map.locate({
             setView: true,
             enableHighAccuracy: true,
-            maxZoom: 16,
+            maxZoom: zoom,
         })
     }, []);
 

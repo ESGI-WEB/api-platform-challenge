@@ -199,43 +199,43 @@ function App() {
                                 {/*    </ProtectedRoute>*/}
                                 {/*}/>*/}
                                 <Route path="create-organisation" element={
-                                    <ProtectedRoute requiredRole={Roles.PROVIDER}>
+                                    <ProtectedRoute requiredRoles={Roles.PROVIDER}>
                                         <CreateOrganisation/>
                                     </ProtectedRoute>
                                 }/>
                                 <Route path="providers-organisations" element={
-                                    <ProtectedRoute requiredRole={Roles.PROVIDER}>
+                                    <ProtectedRoute requiredRoles={Roles.PROVIDER}>
                                         <ProvidersOrganisations/>
                                     </ProtectedRoute>
                                 }/>
                                 <Route path="appointments" element={
-                                    <ProtectedRoute requiredRole={Roles.USER}>
+                                    <ProtectedRoute requiredRoles={Roles.USER}>
                                         <Appointments/>
                                     </ProtectedRoute>
                                 }/>
                                 <Route path="employees" element={
-                                    <ProtectedRoute requiredRole={Roles.EMPLOYEE}>
+                                    <ProtectedRoute requiredRoles={Roles.EMPLOYEE}>
                                         <Employees/>
                                     </ProtectedRoute>
                                 }/>
                                 <Route path="manage-teams" element={
-                                    <ProtectedRoute requiredRole={Roles.PROVIDER}>
+                                    <ProtectedRoute requiredRoles={Roles.PROVIDER}>
                                         <ManageTeams/>
                                     </ProtectedRoute>
                                 }/>
                                 <Route path="employees/:employeeId" element={
-                                    <ProtectedRoute requiredRole={Roles.EMPLOYEE}>
+                                    <ProtectedRoute requiredRoles={Roles.EMPLOYEE}>
                                         <Employee/>
                                     </ProtectedRoute>
                                 }/>
                                 <Route path="feedbacks/answers" element={
-                                    <ProtectedRoute requiredRole={Roles.EMPLOYEE}>
+                                    <ProtectedRoute requiredRoles={Roles.EMPLOYEE}>
                                         {/* lambda users can access this page too as data are filtered by their own responses, but not necessary ? */}
                                         <FeedbackAnswers/>
                                     </ProtectedRoute>
                                 }/>
                                 <Route path="manage_superintendents" element={
-                                    <ProtectedRoute requiredRole={Roles.ADMIN}>
+                                    <ProtectedRoute requiredRoles={Roles.ADMIN}>
                                         <SuperintendentsToValidate/>
                                     </ProtectedRoute>
                                 }/>

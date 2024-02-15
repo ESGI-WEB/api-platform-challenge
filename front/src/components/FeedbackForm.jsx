@@ -32,18 +32,19 @@ export default function FeedbackForm({
     return (
         <form className="flex flex-column gap-1" onSubmit={onSubmitForm}>
             <div className="flex flex-row gap-2">
-                <div>
-                    <InputLabel>{t('feedback_type')}</InputLabel>
-                    <FormControl>
-                        <Select
-                            value={type}
-                            onChange={(e) => setType(e.target.value)}
-                        >
-                            <MenuItem value='mark'>{t('mark')}</MenuItem>
-                            <MenuItem value='text'>{t('text')}</MenuItem>
-                        </Select>
-                    </FormControl>
-                </div>
+                <FormControl
+                    sx={{
+                        minWidth: '100px',
+                    }}
+                >
+                    <Select
+                        value={type}
+                        onChange={(e) => setType(e.target.value)}
+                    >
+                        <MenuItem value='mark'>{t('mark')}</MenuItem>
+                        <MenuItem value='text'>{t('text')}</MenuItem>
+                    </Select>
+                </FormControl>
                 <div className="full-width">
                     <TextField
                         fullWidth
