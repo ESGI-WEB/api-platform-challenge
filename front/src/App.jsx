@@ -4,7 +4,6 @@ import GlobalFooter from "./components/GlobalFooter.jsx";
 import GlobalHeader from "./components/GlobalHeader.jsx";
 import {Navigate, Route, Routes} from "react-router-dom";
 import Home from "./pages/Home.jsx";
-import Admin from "./pages/admin/Admin.jsx";
 import CreateOrganisation from "./pages/CreateOrganisation.jsx";
 import ProvidersOrganisations from "./pages/ProvidersOrganisations.jsx";
 import useAuth, {Roles} from "./auth/useAuth.js";
@@ -26,6 +25,7 @@ import ManageTeams from "./pages/ManageTeams.jsx";
 import Register from "./pages/Register.jsx";
 import RegisterOrganisation from "./pages/RegisterOrganisation.jsx"
 import FeedbackAnswers from "./pages/FeedbackAnswers.jsx";
+import Statistics from "./pages/admin/Statistics.jsx";
 import SuperintendentsToValidate from "./pages/admin/superintendentsToValidate.jsx";
 
 function App() {
@@ -59,12 +59,12 @@ function App() {
     }
     const navigation = [
         {
-            role: [Roles.ADMIN, Roles.PROVIDER, Roles.EMPLOYEE],
+            role: [Roles.ADMIN, Roles.PROVIDER],
             iconId: 'fr-icon-user-line',
             linkProps: {
-                to: '/admin',
+                to: '/statistics',
             },
-            text: t('admin')
+            text: t('statistics'),
         },
         {
             role: Roles.PROVIDER,
@@ -176,10 +176,10 @@ function App() {
                                     }
                                 />
                                 <Route
-                                    path="admin"
+                                    path="statistics"
                                     element={
-                                        <ProtectedRoute requiredRoles={[Roles.ADMIN, Roles.PROVIDER, Roles.EMPLOYEE]}>
-                                            <Admin/>
+                                        <ProtectedRoute requiredRoles={[Roles.ADMIN, Roles.PROVIDER]}>
+                                            <Statistics/>
                                         </ProtectedRoute>
                                     }
                                 />
