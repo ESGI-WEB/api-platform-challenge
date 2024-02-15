@@ -26,6 +26,7 @@ import Register from "./pages/Register.jsx";
 import RegisterOrganisation from "./pages/RegisterOrganisation.jsx"
 import FeedbackAnswers from "./pages/FeedbackAnswers.jsx";
 import Statistics from "./pages/admin/Statistics.jsx";
+import SuperintendentsToValidate from "./pages/admin/superintendentsToValidate.jsx";
 
 function App() {
     const {t} = useTranslation();
@@ -99,6 +100,13 @@ function App() {
                 to: '/feedbacks/answers',
             },
             text: t('feedbacks'),
+        },
+        {
+            role: Roles.ADMIN,
+            linkProps: {
+                to: '/manage_superintendents'
+            },
+            text: t('new_superintendents'),
         },
         {
             role: Roles.EMPLOYEE,
@@ -224,6 +232,11 @@ function App() {
                                     <ProtectedRoute requiredRole={Roles.EMPLOYEE}>
                                         {/* lambda users can access this page too as data are filtered by their own responses, but not necessary ? */}
                                         <FeedbackAnswers/>
+                                    </ProtectedRoute>
+                                }/>
+                                <Route path="manage_superintendents" element={
+                                    <ProtectedRoute requiredRole={Roles.ADMIN}>
+                                        <SuperintendentsToValidate/>
                                     </ProtectedRoute>
                                 }/>
                                 <Route path="403" element={<NoTranslations/>}/>

@@ -17,6 +17,16 @@ const useUserService = () => {
             method: 'POST',
             body: body,
         }),
+        getProvidersToValidate: (page = 1) => api(`providers_to_validate?page=${page}`, {
+            method: 'GET'
+        }, true),
+        patchUser: (id, body) => api(`users/${id}`, {
+            method: 'PATCH',
+            body: body,
+            headers: {
+                'Content-Type': 'application/merge-patch+json',
+            }
+        }),
     };
 };
 

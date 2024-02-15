@@ -1,11 +1,10 @@
 import LocalStorageBackend from 'i18next-localstorage-backend';
-import LanguageDetector from 'i18next-browser-languagedetector';
 import {initReactI18next} from 'react-i18next';
 import i18n from 'i18next';
 import HttpApi from 'i18next-http-backend';
 import Backend from 'i18next-chained-backend';
 
-const baseUrl = import.meta.env.VITE_API_ENDPOINT;
+const baseUrl = import.meta.env.VITE_ENDPOINT;
 const supportedLanguages = ['en', 'fr'];
 
 i18n.failedLoadings = [];
@@ -36,7 +35,7 @@ i18n
                         "Content-Type" : 'application/json',
                         "Accept": 'application/json',
                     },
-                    loadPath: `${baseUrl}/translations?language={{lng}}`,
+                    loadPath: `${baseUrl}/api/translations?language={{lng}}`,
                     parse: (data) => {
                         const parsedData = JSON.parse(data);
                         const translations = {};

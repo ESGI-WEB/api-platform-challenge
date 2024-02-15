@@ -13,6 +13,7 @@ use ApiPlatform\Metadata\Put;
 use App\Enum\GroupsEnum;
 use App\Enum\RolesEnum;
 use App\Provider\EmployeesProvider;
+use App\Provider\ProviderToValidateProvider;
 use App\Repository\UserRepository;
 use App\Security\Voter\UserVoter;
 use DateTimeImmutable;
@@ -74,6 +75,16 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
     ],
     normalizationContext: ['groups' => [GroupsEnum::USER_READ->value]],
     security: "is_granted('" . RolesEnum::PROVIDER->value . "')",
+)]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            uriTemplate: "/providers_to_validate",
+            normalizationContext: ['groups' => [GroupsEnum::USER_READ->value]],
+            security: "is_granted('" . RolesEnum::ADMIN->value . "')",
+            provider: ProviderToValidateProvider::class
+        ),
+    ],
 )]
 #[UniqueEntity(fields: ['email'])]
 #[ORM\Table(name: '`user`')]
@@ -146,7 +157,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     #[Vich\UploadableField(mapping: 'kbis', fileNameProperty: 'filePath')]
     #[Assert\File(maxSize: '2048k', mimeTypes: ['application/pdf'])]
-    #[Groups([GroupsEnum::USER_CREATE_PROVIDER->value])]
+    #[Groups([GroupsEnum::USER_CREATE_PROVIDER->value, GroupsEnum::USER_READ->value])]
     public ?File $file = null;
 
     #[ORM\Column(nullable: true)]
@@ -160,8 +171,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public ?string $contentUrl = null;
 
     #[ORM\Column(length: 20, nullable: true)]
-    #[Groups([GroupsEnum::USER_CREATE->value, GroupsEnum::USER_WRITE->value])]
-    #[Assert\Regex(pattern: '/^\+336[0-9]{8}$/')]
+    #[Groups([GroupsEnum::USER_CREATE->value, GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE->value])]
+    #[Assert\Regex(
+        pattern: '/^\+336[0-9]{8}$/',
+        groups: [GroupsEnum::USER_CREATE->value, GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE->value]
+    )]
     private ?string $phone = null;
 
     public function __construct()

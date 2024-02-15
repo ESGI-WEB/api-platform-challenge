@@ -5,7 +5,7 @@ const useApi = () => {
     const {token, data} = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
-    const baseUrl = import.meta.env.VITE_API_ENDPOINT;
+    const baseUrl = import.meta.env.VITE_ENDPOINT;
 
     return (url, options = {}, hydra = false, withAuthToken = true) => {
         const headers = {
@@ -34,7 +34,7 @@ const useApi = () => {
             headers['Accept'] = type;
         }
 
-        return fetch(`${baseUrl}/${url}`, {...options, headers}).then(response => {
+        return fetch(`${baseUrl}/api/${url}`, {...options, headers}).then(response => {
             if (response.ok) {
                 // check if it's a 204 response
                 if (response.status === 204) {
