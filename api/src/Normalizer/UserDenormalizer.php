@@ -40,11 +40,11 @@ class UserDenormalizer implements DenormalizerInterface
         //Only set this two roles
 
         if ($user->file !== null) {
-            $user->setRoles([RolesEnum::PROVIDER_TO_VALIDATE]);
+            $user->setRoles([RolesEnum::PROVIDER_TO_VALIDATE->value]);
         }
 
         if ($user->registerAsEmployee) {
-            $user->setRoles([RolesEnum::EMPLOYEE]);
+            $user->setRoles([RolesEnum::EMPLOYEE->value]);
         }
 
         return $user;

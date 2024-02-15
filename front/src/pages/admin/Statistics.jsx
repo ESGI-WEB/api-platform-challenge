@@ -1,9 +1,9 @@
 import Dashboard from "../../components/Dashboard.jsx";
 import useStatisticsService from "../../services/useStatisticsService.js";
-import { useEffect, useState } from "react";
-import InPageAlert, { AlertSeverity } from "../../components/InPageAlert.jsx";
+import {useEffect, useState} from "react";
+import InPageAlert, {AlertSeverity} from "../../components/InPageAlert.jsx";
 import PageLoader from "../../components/PageLoader/PageLoader.jsx";
-import { useTranslation } from "react-i18next";
+import {useTranslation} from "react-i18next";
 import CardIndicator from "../../components/CardIndicator.jsx";
 import ChartIndicator from "../../components/ChartIndicator.jsx";
 import CardListIndicator from "../../components/CardListIndicator.jsx";
@@ -31,6 +31,7 @@ export default function Statistics() {
             const [
                 appointmentsCount,
                 appointmentSlot,
+                appointmentSlotsByHours,
                 lastAppointments,
                 maxOrganisations,
                 appointmentsPerDay,
@@ -38,6 +39,7 @@ export default function Statistics() {
             ] = await Promise.all([
                 statisticsService.getAppointmentsCount(),
                 statisticsService.getMaxAppointmentSlot(),
+                statisticsService.getMostPopularSlotByHours(),
                 statisticsService.getLastAppointments(),
                 statisticsService.getMaxOrganisations(),
                 statisticsService.getAppointmentsPerDay(),
@@ -48,6 +50,7 @@ export default function Statistics() {
                 ...prevStats,
                 appointmentsCount,
                 appointmentSlot,
+                appointmentSlotsByHours,
                 lastAppointments,
                 maxOrganisations,
                 appointmentsPerDay,
@@ -78,11 +81,15 @@ export default function Statistics() {
             year: "numeric",
         });
 
-    const formatTime = (time) =>
-        new Date(time).toLocaleTimeString(i18n.language, {
+    // time is on format "HH:MM +00"
+    const formatTime = (time) => {
+        const today = new Date();
+        const dateString = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()} ${time}`;
+        return new Date(dateString).toLocaleTimeString(i18n.language, {
             hour: "numeric",
             minute: "numeric",
         });
+    }
 
     const cardIndicators = [
         {
@@ -113,23 +120,37 @@ export default function Statistics() {
         return d;
     });
 
-    const barChartData = {
-        title: t("appointments_per_day_title"),
-        xAxis: days.map((d) =>
-            new Date(d).toLocaleDateString(i18n.language, {
-                day: "numeric",
-                month: "long",
-            })
-        ),
-        series: [
-            {
-                data: stats.appointmentsPerDay,
-                color: "var(--blue-france-sun-113-625)",
-            },
-        ],
-        width: 500,
-        height: 300,
-    };
+    const barChartDatas = [
+        {
+            title: t("appointments_per_day_title"),
+            xAxis: days.map((d) =>
+                new Date(d).toLocaleDateString(i18n.language, {
+                    day: "numeric",
+                    month: "long",
+                })
+            ),
+            series: [
+                {
+                    data: stats.appointmentsPerDay,
+                    color: "var(--blue-france-sun-113-625)",
+                },
+            ],
+            width: 500,
+            height: 300,
+        },
+        {
+            title: t("appointment_slots_by_hours"),
+            xAxis: stats.appointmentSlotsByHours.map((slot) => formatTime(slot.hour)),
+            series: [
+                {
+                    data: stats.appointmentSlotsByHours.map((slot) => slot.count),
+                    color: "var(--blue-france-sun-113-625)",
+                },
+            ],
+            width: 500,
+            height: 300,
+        },
+    ];
 
     const listsData = [
         {
@@ -151,7 +172,7 @@ export default function Statistics() {
     return (
         <Dashboard
             cardIndicators={cardIndicators}
-            barChartData={barChartData}
+            barChartDatas={barChartDatas}
             tableData={tableData}
             listsData={listsData}
             cardIndicatorComponent={CardIndicator}

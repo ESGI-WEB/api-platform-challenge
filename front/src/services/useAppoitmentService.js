@@ -7,7 +7,7 @@ const useAppointmentService = () => {
     return {
         create: (appointment) => api('appointments', {
             method: 'POST',
-            body: JSON.stringify(appointment),
+            body: appointment,
         }),
         getClientAppointment: (id) => api(`users/${data.id}/client_appointments/${id}`, {
             method: 'GET',
@@ -83,7 +83,7 @@ const useAppointmentService = () => {
         },
         patchClientAppointment: (id, body) => api(`users/${data.id}/client_appointments/${id}`, {
             method: 'PATCH',
-            body: JSON.stringify(body),
+            body: body,
             headers: {
                 'Content-Type': 'application/merge-patch+json',
             }
