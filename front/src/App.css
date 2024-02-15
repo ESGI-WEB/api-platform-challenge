@@ -149,3 +149,15 @@ h4 {
 .p-1 {
     padding: 1rem;
 }
+
+.list-type-none {
+    list-style-type: none;
+}
+
+.mt-1 {
+    margin-top: 1rem;
+}
+
+.bold {
+    font-weight: bold;
+}

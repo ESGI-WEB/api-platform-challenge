@@ -9,7 +9,6 @@ import useAuth, {Roles} from "../auth/useAuth.js";
 import CallOut from "@codegouvfr/react-dsfr/CallOut.js";
 import {ToggleButton, ToggleButtonGroup} from "@mui/material";
 import AppointmentCard from "../components/AppointmentCard.jsx";
-import Download from "@codegouvfr/react-dsfr/Download.js";
 
 export default function Appointments() {
     const {t, i18n} = useTranslation();
