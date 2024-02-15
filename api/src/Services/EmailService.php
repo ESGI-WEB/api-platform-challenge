@@ -39,7 +39,7 @@ readonly class EmailService
                         'lastname' => $newProvider->getLastName(),
                         'phone' => $newProvider->getPhone() ?? "Non renseigné",
                         'email' => $newProvider->getEmail(),
-                        'link' => "https://img.freepik.com/photos-gratuite/portrait-chien-isole-blanc-cree-aide-ia-generative_60438-2499.jpg?size=338&ext=jpg&ga=GA1.1.1788068356.1706745600&semt=ais",
+                        'link' => "https://api-platform-challenge.vercel.app/manage_superintendents",
                     ],
                 ]
             ]
