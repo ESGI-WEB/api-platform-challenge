@@ -103,6 +103,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         ),
     ],
     normalizationContext: ['groups' => [GroupsEnum::APPOINTMENT_READ->value]],
+    denormalizationContext: ['groups' => [GroupsEnum::APPOINTMENT_WRITE->value]],
 )]
 #[ApiResource(
     uriTemplate: '/users/{provider_id}/employee_appointments',
@@ -206,7 +207,7 @@ class Appointment
     #[ORM\Column]
     private DateTimeImmutable $createdAt;
 
-    #[Groups([GroupsEnum::APPOINTMENT_READ->value])]
+    #[Groups([GroupsEnum::APPOINTMENT_READ->value, GroupsEnum::APPOINTMENT_WRITE->value])]
     #[ORM\Column(length: 20, options: ['default' => AppointmentStatusEnum::valid->value])]
     #[Assert\Choice(callback: [AppointmentStatusEnum::class, 'values'])]
     #[Choice(callback: [AppointmentStatusEnum::class, 'values'])]

@@ -174,7 +174,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups([GroupsEnum::USER_CREATE->value, GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE->value])]
     #[Assert\Regex(
         pattern: '/^\+33[0-9]{9}$/',
-        groups: [GroupsEnum::USER_CREATE->value, GroupsEnum::USER_READ->value, GroupsEnum::USER_WRITE->value]
+        groups: [GroupsEnum::USER_CREATE->value, GroupsEnum::USER_CREATE_PROVIDER->value, GroupsEnum::USER_WRITE->value]
     )]
     private ?string $phone = null;
 

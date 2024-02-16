@@ -31,8 +31,6 @@ export default function UserRegisterForm ({ userType }) {
     confirmPassword: "",
   });
 
-
-
   const validateForm = () => {
     let isValid = true;
     const newErrors = {};
@@ -62,21 +60,29 @@ export default function UserRegisterForm ({ userType }) {
       isValid = false;
     }
 
+    if (phone && !sanitizePhone(phone).match(/^\+33[0-9]{9}$/)) {
+      newErrors.phone = t('phone_invalid');
+      isValid = false;
+    }
+
     setErrors(newErrors);
     return isValid;
   };
 
-
+  const sanitizePhone = (phone) => {
+    return phone.replace(/\s/g, '').replace(/^0/, '+33');
+  }
 
   const handleRegister = (e) => {
     e.preventDefault();
     setIsLoading(true);
-
+    setAlert(null);
+    setMessage("");
 
     if(validateForm()){
       let sanitizedPhone = null;
-      if (phone.length) {
-        sanitizedPhone = phone.replace(/\s/g, '').replace(/^0/, '');
+      if (phone?.length) {
+        sanitizedPhone = sanitizePhone(phone);
       }
 
       if (userType === 'provider') {
@@ -96,13 +102,7 @@ export default function UserRegisterForm ({ userType }) {
           if (response) {
             setMessage(t('account_created'));
           }
-        }).catch((error) => {
-          console.error(error)
-          setAlert({
-            severity: AlertSeverity.ERROR,
-          });
-          window.scrollTo(0, 0)
-        }).finally(() => setIsLoading(false));
+        }).catch(handleFormError).finally(() => setIsLoading(false));
       } else {
         const user = {}
         user.lastname = name
@@ -119,22 +119,33 @@ export default function UserRegisterForm ({ userType }) {
           if (response) {
             setMessage(t('account_created'));
           }
-        }).catch((error) => {
-          console.error(error)
-          setAlert({
-            severity: AlertSeverity.ERROR,
-          });
-          window.scrollTo(0, 0)
-        }).finally(() => setIsLoading(false));
+        }).catch(handleFormError).finally(() => setIsLoading(false));
       }
 
-    }
-
-    else {
+    } else {
       setIsLoading(false)
     }
 
   };
+
+  const handleFormError = (error) => {
+    console.error(error)
+    if (error?.message) {
+      const errorMessages = error.message.split('\n');
+      const errorsToDisplay = {};
+      for (const errorMessage of errorMessages) {
+        const [field, message] = errorMessage.split(':');
+        errorsToDisplay[field] = message;
+      }
+      setErrors(errorsToDisplay);
+    }
+
+    setAlert({
+      severity: AlertSeverity.ERROR,
+    });
+
+    window.scrollTo(0, 0)
+  }
 
   const handlePasswordChange = (value) => {
     setConfirmPassword(value);
@@ -179,6 +190,8 @@ export default function UserRegisterForm ({ userType }) {
           type: 'text',
         }}
         onChange={(e) => setPhone(e.target.value)}
+        state={errors.phone ? "error" : "default"}
+        stateRelatedMessage={errors.phone}
       ></Input>
       <ScriptedPasswordInput
         invalidType={passwordErrorSeverity}
