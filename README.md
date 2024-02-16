@@ -1,6 +1,6 @@
 ## Projet
 
-Ce projet à pour but de créer un site web permettant à des utilisateurs de demander des rendez-vous dans des commissariats pour différentes raisons
+Ce projet à pour but de créer un site web permettant à des utilisateurs de demander des rendez-vous dans des commissariats pour déposer des plaintes.
 
 ## Membres
 
@@ -8,7 +8,7 @@ Ce projet à pour but de créer un site web permettant à des utilisateurs de de
 - Laurie Morin : mlaurie
 - Nicolas Wadoux : Nicolas-Wadoux-ESGI
 
-## Qui à fait quoi
+## Répartition des tâches
 
 - Modélisation de la DB : Tous
 - Ajout des entités en back : Théo Dubuisson
