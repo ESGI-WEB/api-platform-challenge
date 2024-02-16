@@ -6,7 +6,7 @@ import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 
 
 export default function Register() {
-  const [ value, setValue ] = useState('')
+  const [ value, setValue ] = useState('employee')
   const {t} = useTranslation();
 
 
