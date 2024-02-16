@@ -8,6 +8,15 @@ Ce projet à pour but de créer un site web permettant à des utilisateurs de de
 - Laurie Morin : mlaurie
 - Nicolas Wadoux : Nicolas-Wadoux-ESGI
 
+## Installation
+
+Detaillée dans les readme des dossiers api et front
+
+## Liens de production
+
+front : https://api-platform-challenge.vercel.app/
+api : https://ecommissariat-back-c094c30ab3bb.herokuapp.com/api/docs
+
 ## Répartition des tâches
 
 - Modélisation de la DB : Tous
