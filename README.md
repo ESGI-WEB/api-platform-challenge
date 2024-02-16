@@ -2,6 +2,12 @@
 
 Ce projet à pour but de créer un site web permettant à des utilisateurs de demander des rendez-vous dans des commissariats pour différentes raisons
 
+## Membres
+
+- Théo Dubuisson : Teyo01
+- Laurie Morin : mlaurie
+- Nicolas Wadoux : Nicolas-Wadoux-ESGI
+
 ## Qui à fait quoi
 
 - Modélisation de la DB : Tous
