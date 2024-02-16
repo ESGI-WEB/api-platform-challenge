@@ -24,7 +24,7 @@ Ce projet à pour but de créer un site web permettant à des utilisateurs de de
 - Gérer son équipe de salariés par établissement ou globalement : Laurie Morin
 - Recherche avec filtres de prestation ou prestataire avec carte de géolocalisation : Nicolas Wadoux
 - Inscription user, prestataire avec KBIS et employé : Théo Dubuisson
-- Feature +BONUS: Gestion des plannings d'équipes (FEATURE) +temps de RDV différents (BONUS): Nicolas Wadoux
+- Feature + BONUS : Gestion des plannings d'équipes (FEATURE) + congés + temps de RDV différents (BONUS): Nicolas Wadoux
 - Feature + BONUS : Créer & Ajouter un feedback (plusieurs notes en fonction du thème de prestataire avec moyenne par catégorie) sur une prestation déjà réalisée (FEATURE) + formulaire personnalisé (BONUS) : Nicolas Wadoux
 - Notification de nouvelle réservation par SMS (client et employé) : Nicolas Wadoux
 - Notification e-mail demande de nouveau prestataire (commissaire): Laurie Morin
