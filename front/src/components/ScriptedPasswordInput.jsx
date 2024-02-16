@@ -61,6 +61,7 @@ export default function ScriptedPasswordInput({
 
     const handlePasswordChange = (e) => {
         const newPassword = e.target.value;
+        console.log(e)
         setPassword(newPassword);
 
         const messages = validatePassword(newPassword);
@@ -82,7 +83,9 @@ export default function ScriptedPasswordInput({
         <PasswordInput
             label={passwordLabel}
             value={password}
-            onChange={handlePasswordChange}
+            nativeInputProps={{
+                onChange: handlePasswordChange,
+            }}
             messages={messages}
         />
     );
