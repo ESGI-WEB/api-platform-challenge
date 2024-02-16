@@ -19,7 +19,7 @@ Ce projet à pour but de créer un site web permettant à des utilisateurs de de
 - Landing page du prestataire : Théo Dubuisson
 - Espace de visualisation des RDV : Nicolas Wadoux
 - Dashboard de statistiques admin/employé/provider : Laurie Morin
-- Historique des RDV : Nicolas Wadoux
+- Historique des RDV + Décaler, annuler, reprendre RDV : Nicolas Wadoux
 - Ajouter un ou plusieurs établissements avec leurs prestations : Théo Dubuisson
 - Gérer son équipe de salariés par établissement ou globalement : Laurie Morin
 - Recherche avec filtres de prestation ou prestataire avec carte de géolocalisation : Nicolas Wadoux
